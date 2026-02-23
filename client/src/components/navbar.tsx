@@ -5,18 +5,8 @@ import { Button } from "@/components/ui/button";
 
 const navLinks = [
   { label: "Accueil", href: "/" },
-  {
-    label: "Services",
-    href: "/services",
-    children: [
-      { label: "Rénovation de jantes", href: "/services/renovation-jantes" },
-      { label: "Peinture de jantes", href: "/services/peinture-jantes" },
-      { label: "Redressage de jantes", href: "/services/redressage-jantes" },
-      { label: "Débosselage", href: "/services/debosselage" },
-    ],
-  },
-  { label: "Galerie", href: "/galerie" },
-  { label: "Blog", href: "/blog" },
+  { label: "Services", href: "/services" },
+  { label: "Réalisations", href: "/galerie" },
   { label: "À propos", href: "/a-propos" },
   { label: "Contact", href: "/contact" },
 ];
@@ -81,7 +71,6 @@ export function Navbar() {
                   }`}
                 >
                   {link.label}
-                  {link.children && <ChevronDown className="w-3.5 h-3.5 opacity-60" />}
                 </Link>
                 {link.children && openDropdown === link.href && (
                   <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-md shadow-xl border border-gray-100 py-1 z-50">
@@ -165,12 +154,12 @@ export function Navbar() {
             ))}
             <div className="pt-3 flex flex-col gap-2">
               <a
-                href="tel:+33600000000"
+                href="tel:+33321408053"
                 className="flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700"
                 data-testid="link-mobile-phone"
               >
                 <Phone className="w-4 h-4 text-auto-red" />
-                06 00 00 00 00
+                03 21 40 80 53
               </a>
               <Button
                 asChild

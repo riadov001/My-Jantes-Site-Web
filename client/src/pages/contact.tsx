@@ -97,8 +97,8 @@ export default function Contact() {
               <div className="space-y-5">
                 {[
                   { icon: Phone, title: "Téléphone", content: "03 21 40 80 53", href: "tel:+33321408053", sub: "Appel & WhatsApp" },
-                  { icon: Mail, title: "Email", content: "contact@myjantes.fr", href: "mailto:contact@myjantes.fr", sub: "Réponse sous 24h" },
-                  { icon: MapPin, title: "Zone d'intervention", content: "46 rue de la Convention, 62800 Liévin", href: null, sub: "Expert jantes alu" },
+                  { icon: Mail, title: "Email", content: "contact@myjantes.com", href: "mailto:contact@myjantes.com", sub: "Réponse sous 24h" },
+                  { icon: MapPin, title: "Adresse", content: "46 rue de la Convention, 62800 Liévin", href: null, sub: "Expert jantes alu" },
                 ].map((item) => (
                   <div key={item.title} className="flex gap-4">
                     <div className="w-10 h-10 rounded-lg bg-auto-red/10 flex items-center justify-center shrink-0">
@@ -126,9 +126,8 @@ export default function Contact() {
               </p>
               <div className="space-y-2 text-sm">
                 {[
-                  { day: "Lundi – Vendredi", hours: "8h00 – 18h00" },
-                  { day: "Samedi", hours: "9h00 – 13h00" },
-                  { day: "Dimanche", hours: "Fermé" },
+                  { day: "Lundi – Vendredi", hours: "9h00 – 12h00 / 13h30 – 18h00" },
+                  { day: "Samedi – Dimanche", hours: "Fermé" },
                 ].map((h) => (
                   <div key={h.day} className="flex justify-between">
                     <span className="text-gray-600">{h.day}</span>

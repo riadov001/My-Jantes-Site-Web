@@ -146,14 +146,6 @@ export default function Services() {
                       Devis gratuit <ArrowRight className="ml-2 w-4 h-4" />
                     </Link>
                   </Button>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="border-gray-200"
-                    data-testid={`button-service-detail-${service.id}`}
-                  >
-                    <Link href={service.href}>En savoir plus</Link>
-                  </Button>
                 </div>
               </div>
             </div>
@@ -171,7 +163,7 @@ export default function Services() {
               <Link href="/contact">Nous contacter</Link>
             </Button>
             <Button asChild variant="outline" className="border-white/20 text-white bg-transparent hover:bg-white/5" data-testid="button-services-cta-whatsapp">
-              <a href="https://wa.me/33600000000" target="_blank" rel="noopener noreferrer">
+              <a href="https://wa.me/33321408053" target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="mr-2 w-4 h-4" /> WhatsApp
               </a>
             </Button>

@@ -128,7 +128,7 @@ export default function Home() {
               className="border-white/30 text-white bg-white/10 backdrop-blur-sm hover:bg-white/20 px-8 text-base font-semibold h-14"
               data-testid="button-hero-galerie"
             >
-              <Link href="/galerie">Voir nos réalisations</Link>
+              <Link href="/galerie">Réalisations</Link>
             </Button>
           </div>
 
@@ -196,13 +196,13 @@ export default function Home() {
             </Badge>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4 font-['Montserrat',sans-serif]">Expertise complète</h2>
             <p className="text-gray-500 max-w-2xl mx-auto">
-              Chaque intervention est réalisée avec une rigueur absolue pour un résultat irréprochable.
+              Chaque intervention est réalisée avec une rigueur absolue à Liévin pour un résultat irréprochable.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {services.map((service, i) => (
-              <Link key={service.href} href={service.href}>
+              <Link key={service.href} href="/services">
                 <Card className="group overflow-hidden border-0 shadow-lg hover-elevate transition-all duration-500 h-full cursor-pointer bg-white">
                   <div className="relative h-64 overflow-hidden">
                     <img

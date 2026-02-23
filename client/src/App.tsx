@@ -11,8 +11,9 @@ import Services from "@/pages/services";
 import ServiceDetail from "@/pages/service-detail";
 import Galerie from "@/pages/galerie";
 import Contact from "@/pages/contact";
-import Blog from "@/pages/blog";
 import FAQ from "@/pages/faq";
+import About from "@/pages/about";
+import Garanties from "@/pages/garanties";
 
 import MentionsLegales from "@/pages/mentions-legales";
 import PolitiqueConfidentialite from "@/pages/politique-confidentialite";
@@ -27,10 +28,10 @@ function Router() {
           <Route path="/services" component={Services} />
           <Route path="/services/:id" component={ServiceDetail} />
           <Route path="/galerie" component={Galerie} />
-          <Route path="/blog" component={Blog} />
           <Route path="/faq" component={FAQ} />
           <Route path="/contact" component={Contact} />
-          <Route path="/a-propos" component={Home} /> {/* Placeholder for now */}
+          <Route path="/a-propos" component={About} />
+          <Route path="/garanties" component={Garanties} />
           <Route path="/mentions-legales" component={MentionsLegales} />
           <Route path="/politique-confidentialite" component={PolitiqueConfidentialite} />
           <Route component={NotFound} />
