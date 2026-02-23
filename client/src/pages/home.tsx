@@ -89,18 +89,12 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-t from-auto-dark via-transparent to-transparent" />
 
         <div className="relative z-10 text-center max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
-          <Badge
-            className="mb-6 bg-auto-red/20 text-auto-red-light border-auto-red/30 text-xs font-semibold uppercase tracking-widest px-4 py-1.5"
-            data-testid="badge-hero-specialist"
-          >
-            Spécialiste Jantes en Alliage
-          </Badge>
           <h1
-            className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight"
+            className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight font-['Montserrat',sans-serif]"
             data-testid="heading-hero-main"
           >
-            Vos jantes méritent
-            <span className="block text-auto-red mt-1">le meilleur</span>
+            L'Expert des
+            <span className="block text-auto-red mt-1">jantes en alu</span>
           </h1>
           <p
             className="text-lg sm:text-xl text-white/70 mb-10 max-w-2xl mx-auto leading-relaxed"
