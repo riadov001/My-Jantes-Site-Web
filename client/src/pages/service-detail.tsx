@@ -159,11 +159,11 @@ export default function ServiceDetail() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-auto-red hover:bg-auto-red-dark text-white px-10 h-14 font-black">
-              <Link href="/contact">Demander un devis</Link>
+              <Link href="/contact">Devis gratuit</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-14 px-10 border-gray-200 font-bold">
-              <a href="https://wa.me/33321408053" target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="mr-2 w-5 h-5" /> WhatsApp
+              <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">
+                Espace client <ArrowRight className="ml-2 w-4 h-4" />
               </a>
             </Button>
           </div>

@@ -172,22 +172,42 @@ export default function Contact() {
 
           {/* Form */}
           <div className="lg:col-span-2">
-            <div className="mb-10 bg-auto-red/5 border border-auto-red/10 rounded-2xl p-8 flex flex-col md:flex-row items-center gap-8 shadow-sm">
-              <div className="shrink-0 w-20 h-20 bg-auto-red text-white rounded-2xl flex items-center justify-center shadow-lg shadow-auto-red/20">
+            {/* Espace Client Banner */}
+            <div className="mb-10 bg-gradient-to-br from-auto-dark to-gray-900 border border-white/5 rounded-2xl p-8 flex flex-col md:flex-row items-center gap-8 shadow-xl">
+              <div className="shrink-0 w-20 h-20 bg-auto-red text-white rounded-2xl flex items-center justify-center shadow-lg shadow-auto-red/30">
                 <Smartphone className="w-10 h-10" />
               </div>
               <div className="flex-grow text-center md:text-left">
-                <h3 className="text-xl font-black text-gray-900 mb-2 font-['Montserrat',sans-serif]">Nouvel Espace Client</h3>
-                <p className="text-gray-600 text-sm mb-4 leading-relaxed">
-                  Pour faciliter vos démarches, nous avons lancé un outil de gestion dédié. 
-                  Créez votre espace pour un suivi en temps réel de vos prestations et factures.
+                <h3 className="text-xl font-black text-white mb-2 font-['Montserrat',sans-serif]">Espace Client MyJantes</h3>
+                <p className="text-white/70 text-sm mb-4 leading-relaxed">
+                  Accédez à votre espace personnel pour suivre vos prestations, gérer vos documents et communiquer directement avec notre équipe.
                 </p>
                 <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-6">
-                  <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">
-                    Créer votre espace client <ArrowRight className="ml-2 w-4 h-4" />
+                  <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer" data-testid="link-espace-client">
+                    Espace client <ArrowRight className="ml-2 w-4 h-4" />
                   </a>
                 </Button>
               </div>
+            </div>
+
+            {/* Asterisk benefits */}
+            <div className="mb-8 bg-blue-50 border border-blue-100 rounded-xl p-5">
+              <p className="text-xs font-semibold text-blue-800 uppercase tracking-wider mb-3">* Pourquoi créer votre Espace Client ?</p>
+              <ul className="space-y-2">
+                {[
+                  "Suivi complet et en temps réel de l'avancement de votre prestation",
+                  "Fluidité totale dans vos démarches : devis, validation, facturation en un seul endroit",
+                  "Visibilité complète sur chaque étape de la rénovation de vos jantes",
+                  "Historique de toutes vos interventions, factures et documents disponibles à tout moment",
+                  "Communication directe avec notre équipe sans passer par email ou téléphone",
+                  "Notifications en temps réel pour ne manquer aucune mise à jour sur votre dossier",
+                ].map((benefit) => (
+                  <li key={benefit} className="flex items-start gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
+                    <span className="text-blue-700 text-xs leading-relaxed">{benefit}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             <Card className="border border-gray-100 shadow-sm">

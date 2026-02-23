@@ -179,11 +179,18 @@ export default function Galerie() {
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-3">Confiez-nous vos jantes</h2>
           <p className="text-gray-500 mb-6">Un projet similaire ? Contactez-nous pour un devis gratuit.</p>
-          <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0" data-testid="button-gallery-cta">
-            <Link href="/contact">
-              Demander un devis <ArrowRight className="ml-2 w-4 h-4" />
-            </Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0" data-testid="button-gallery-cta">
+              <Link href="/contact">
+                Devis gratuit <ArrowRight className="ml-2 w-4 h-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="border-gray-200 font-bold">
+              <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">
+                Espace client
+              </a>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
