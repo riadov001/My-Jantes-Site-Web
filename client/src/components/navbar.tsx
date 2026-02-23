@@ -105,7 +105,7 @@ export function Navbar() {
                 className="hidden lg:inline-flex bg-auto-red hover:bg-auto-red-dark text-white border-0 text-sm font-black px-6"
                 data-testid="button-nav-devis"
               >
-                <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">Espace Client</a>
+                <Link href="/contact">Devis gratuit</Link>
               </Button>
             <button
               className="lg:hidden p-2 text-gray-700 hover:text-gray-900 transition-colors"

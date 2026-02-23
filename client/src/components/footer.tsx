@@ -49,10 +49,10 @@ export function Footer() {
                 <MessageCircle className="w-4 h-4" />
               </a>
               <a
-                href="https://g.page/r/YOUR_GOOGLE_ID/review"
+                href="https://share.google/WLKmvaJTSrAFGic2B"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Google Avis"
+                aria-label="Avis Google MyJantes"
                 className="w-9 h-9 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 transition-colors"
               >
                 <Star className="w-4 h-4 fill-current" />
@@ -164,7 +164,7 @@ export function Footer() {
             <Link href="/politique-confidentialite" className="text-white/35 hover:text-white/60 text-xs transition-colors">
               Confidentialité
             </Link>
-            <a href="https://g.page/r/YOUR_GOOGLE_ID/review" target="_blank" rel="noopener noreferrer" className="text-white/35 hover:text-white/60 text-xs transition-colors flex items-center gap-1">
+            <a href="https://share.google/WLKmvaJTSrAFGic2B" target="_blank" rel="noopener noreferrer" className="text-white/35 hover:text-white/60 text-xs transition-colors flex items-center gap-1">
               <Star className="w-3 h-3 fill-current" /> Avis Google
             </a>
           </div>

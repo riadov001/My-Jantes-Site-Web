@@ -1,93 +1,165 @@
 import { SEO } from "@/components/seo";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2, Shield, Award, Clock } from "lucide-react";
+import { CheckCircle2, Shield, Award, Clock, MapPin, Star, History, Users, Target } from "lucide-react";
 
-export default function APropos() {
+export default function About() {
   return (
     <div className="min-h-screen bg-white">
       <SEO
-        title="À Propos de MyJantes – Expert Rénovation Jantes à Liévin | MyJantes"
-        description="Découvrez l'histoire, les valeurs et l'expertise de MyJantes à Liévin. Spécialiste rénovation et peinture de jantes en alliage, garantie 12 mois, équipements de pointe."
-        keywords="MyJantes histoire, expert jantes Liévin, atelier jantes Hauts-de-France, rénovation jantes professionnelle"
+        title="Notre Histoire - MyJantes | L'Expert de la Jante à Liévin"
+        description="Découvrez l'histoire de MyJantes : de la passion automobile à l'expertise technologique en rénovation de jantes à Liévin."
+        keywords="histoire myjantes, rénovation jantes liévin, expert jantes alu, sablage jantes 62"
         canonicalPath="/a-propos"
-        schema={{
-          "@context": "https://schema.org",
-          "@type": "AboutPage",
-          "name": "À Propos de MyJantes",
-          "description": "L'Expert des jantes en alu à Liévin. Notre histoire, notre équipe et nos valeurs.",
-          "url": "https://myjantes.fr/a-propos",
-          "mainEntity": {
-            "@type": "AutoRepair",
-            "name": "MyJantes",
-            "address": {
-              "@type": "PostalAddress",
-              "streetAddress": "46 rue de la Convention",
-              "addressLocality": "Liévin",
-              "postalCode": "62800",
-              "addressCountry": "FR"
-            }
-          }
-        }}
       />
-      
-      <div className="bg-auto-dark pt-36 pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Badge className="mb-4 bg-auto-red/20 text-auto-red-light border-auto-red/30 text-xs uppercase tracking-wider">
-            Notre Histoire
+
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 bg-auto-dark overflow-hidden">
+        <div className="absolute inset-0 opacity-20">
+          <img 
+            src="/attached_assets/generated_videos/automotive_workshop_illustration.mp4" 
+            className="w-full h-full object-cover"
+            alt="Atelier"
+          />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <Badge className="mb-6 bg-auto-red/20 text-auto-red-light border-auto-red/30 px-4 py-1 uppercase tracking-widest text-xs font-bold">
+            Depuis 2020
           </Badge>
-          <h1 className="text-4xl sm:text-6xl font-black text-white mb-6 font-['Montserrat',sans-serif]">L'Expert des jantes en alu</h1>
-          <p className="text-white/60 max-w-2xl mx-auto text-lg leading-relaxed">
-            Depuis notre atelier de Liévin, nous redonnons vie à vos jantes avec une passion et une précision artisanale.
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white mb-6 font-['Montserrat',sans-serif] leading-tight">
+            Une passion, <br/><span className="text-auto-red">une expertise.</span>
+          </h1>
+          <p className="text-white/70 text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed font-medium">
+            Basés au cœur du Pas-de-Calais, nous transformons chaque jante avec la précision d'une pièce d'horlogerie.
           </p>
         </div>
-      </div>
+      </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <div className="grid lg:grid-cols-2 gap-16 items-center mb-24">
-          <div>
-            <h2 className="text-3xl font-black text-gray-900 mb-6 font-['Montserrat',sans-serif]">Une expertise reconnue</h2>
-            <p className="text-gray-600 text-lg leading-relaxed mb-6">
-              MyJantes est né d'une volonté simple : offrir un service de rénovation de jantes de qualité industrielle aux particuliers et professionnels de la région.
-            </p>
-            <p className="text-gray-600 text-lg leading-relaxed mb-8">
-              Initialement basés à Lille, nous nous sommes installés à Liévin pour bénéficier d'un espace technique plus vaste, nous permettant d'investir dans des équipements de pointe comme notre tour numérique pour les finitions Diamond Cut.
-            </p>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="flex items-center gap-3">
-                <CheckCircle2 className="text-auto-red w-5 h-5" />
-                <span className="font-bold text-gray-900">Savoir-faire artisanal</span>
+      {/* L'Histoire Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="relative">
+              <div className="absolute -top-10 -left-10 w-32 h-32 bg-auto-red/10 rounded-full blur-3xl" />
+              <img 
+                src="/images/service-renovation.png" 
+                alt="Notre expertise" 
+                className="rounded-3xl shadow-2xl relative z-10 w-full"
+              />
+              <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-2xl shadow-xl z-20 hidden sm:block">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-auto-red rounded-full flex items-center justify-center text-white">
+                    <History className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-black text-gray-900">5+ Ans</p>
+                    <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">D'expérience</p>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <CheckCircle2 className="text-auto-red w-5 h-5" />
-                <span className="font-bold text-gray-900">Technologie OEM</span>
+            </div>
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-8 font-['Montserrat',sans-serif]">
+                De la passion à l'excellence
+              </h2>
+              <div className="space-y-6 text-gray-600 text-lg leading-relaxed">
+                <p>
+                  L'aventure MyJantes a débuté avec un constat simple : les passionnés d'automobile manquaient d'un interlocuteur expert capable d'allier <strong>technologie industrielle</strong> et <strong>finition artisanale</strong> pour leurs jantes.
+                </p>
+                <p>
+                  Initialement focalisés sur la peinture classique, nous avons rapidement investi dans des équipements de pointe, notamment un <strong>tour numérique haute précision</strong> pour répondre à la demande croissante de jantes bi-ton (Diamond Cut).
+                </p>
+                <p>
+                  Aujourd'hui, notre atelier de Liévin est devenu une référence dans les Hauts-de-France, traitant plus de 100 jantes par semaine pour des particuliers exigeants et des concessions prestigieuses.
+                </p>
               </div>
             </div>
           </div>
-          <div className="relative">
-            <img src="/images/atelier.png" alt="Atelier MyJantes" className="rounded-2xl shadow-2xl relative z-10" />
-            <div className="absolute -bottom-6 -right-6 w-full h-full border-2 border-auto-red/20 rounded-2xl z-0" />
+        </div>
+      </section>
+
+      {/* Valeurs Section */}
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 font-['Montserrat',sans-serif]">Nos piliers fondamentaux</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { 
+                icon: Target, 
+                title: "Précision Millimétrée", 
+                desc: "Chaque redressage et chaque usinage est vérifié au comparateur pour garantir une sécurité totale." 
+              },
+              { 
+                icon: Users, 
+                title: "Relation Client", 
+                desc: "Pas de surprise. Nous communiquons en temps réel via notre application sur l'avancement de vos travaux." 
+              },
+              { 
+                icon: Award, 
+                title: "Qualité d'Usine", 
+                desc: "Nous utilisons exclusivement des peintures et vernis conformes aux normes constructeurs (OEM)." 
+              }
+            ].map((item, i) => (
+              <Card key={i} className="border-none shadow-sm bg-white overflow-hidden group hover:shadow-xl transition-all duration-300">
+                <CardContent className="pt-10 pb-8 px-8">
+                  <div className="w-14 h-14 bg-auto-red/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-auto-red transition-colors">
+                    <item.icon className="w-7 h-7 text-auto-red group-hover:text-white transition-colors" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                  <p className="text-gray-500 leading-relaxed text-sm">{item.desc}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
+      </section>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {[
-            { icon: Shield, title: "Qualité Totale", desc: "Nous ne faisons aucun compromis sur les matériaux et les processus de peinture." },
-            { icon: Award, title: "Garantie 12 Mois", desc: "Toutes nos prestations sont couvertes par une garantie totale sur la tenue de la finition." },
-            { icon: Clock, title: "Délais Respectés", desc: "Nous savons que votre temps est précieux. Nous respectons nos délais d'intervention." }
-          ].map((item, i) => (
-            <Card key={i} className="border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="pt-8 text-center">
-                <div className="w-12 h-12 bg-auto-red/10 rounded-xl flex items-center justify-center mx-auto mb-6">
-                  <item.icon className="w-6 h-6 text-auto-red" />
+      {/* Engagements Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-auto-dark rounded-[2.5rem] p-8 sm:p-16 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-auto-red/10 rounded-full blur-3xl" />
+            <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-3xl sm:text-4xl font-black text-white mb-6 font-['Montserrat',sans-serif]">
+                  Notre engagement à Liévin
+                </h2>
+                <div className="space-y-4">
+                  {[
+                    "Garantie totale de 12 mois sur la tenue de peinture.",
+                    "Délais d'intervention maîtrisés (48h à 72h en moyenne).",
+                    "Transparence totale sur les tarifs et les méthodes.",
+                    "Soutien de l'économie locale et formation interne."
+                  ].map((text, i) => (
+                    <div key={i} className="flex items-center gap-3 text-white/80">
+                      <CheckCircle2 className="w-5 h-5 text-auto-red shrink-0" />
+                      <span className="font-medium">{text}</span>
+                    </div>
+                  ))}
                 </div>
-                <h3 className="font-bold text-gray-900 mb-3">{item.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
-              </CardContent>
-            </Card>
-          ))}
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center">
+                  <p className="text-3xl font-black text-white">5 000+</p>
+                  <p className="text-white/40 text-xs uppercase tracking-widest mt-1">Jantes traitées</p>
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center">
+                  <p className="text-3xl font-black text-white">98%</p>
+                  <p className="text-white/40 text-xs uppercase tracking-widest mt-1">Satisfaction</p>
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-3xl p-6 text-center col-span-2">
+                  <p className="text-xl font-bold text-white flex items-center justify-center gap-2">
+                    <MapPin className="w-5 h-5 text-auto-red" /> 46 rue de la Convention
+                  </p>
+                  <p className="text-white/40 text-xs uppercase tracking-widest mt-1">Liévin, 62800</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
