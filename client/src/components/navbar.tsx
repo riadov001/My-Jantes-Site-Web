@@ -104,12 +104,12 @@ export function Navbar() {
           {/* CTA + mobile toggle */}
           <div className="flex items-center gap-3">
             <a
-              href="tel:+33600000000"
+              href="tel:+33321408053"
               data-testid="link-phone-cta"
               className="hidden sm:flex items-center gap-2 text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
             >
               <Phone className="w-4 h-4 text-auto-red" />
-              <span>06 00 00 00 00</span>
+              <span>03 21 40 80 53</span>
             </a>
             <Button
               asChild

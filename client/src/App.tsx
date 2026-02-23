@@ -13,6 +13,9 @@ import Contact from "@/pages/contact";
 import Blog from "@/pages/blog";
 import FAQ from "@/pages/faq";
 
+import MentionsLegales from "@/pages/mentions-legales";
+import PolitiqueConfidentialite from "@/pages/politique-confidentialite";
+
 function Router() {
   return (
     <div className="flex flex-col min-h-screen">
@@ -26,6 +29,8 @@ function Router() {
           <Route path="/faq" component={FAQ} />
           <Route path="/contact" component={Contact} />
           <Route path="/a-propos" component={Home} /> {/* Placeholder for now */}
+          <Route path="/mentions-legales" component={MentionsLegales} />
+          <Route path="/politique-confidentialite" component={PolitiqueConfidentialite} />
           <Route component={NotFound} />
         </Switch>
       </main>

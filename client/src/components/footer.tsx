@@ -36,12 +36,21 @@ export function Footer() {
                 <Instagram className="w-4 h-4" />
               </a>
               <a
-                href="https://wa.me/33600000000"
+                href="https://wa.me/33321408053"
                 aria-label="WhatsApp MyJantes"
                 data-testid="link-social-whatsapp"
                 className="w-9 h-9 rounded-full bg-green-600/20 flex items-center justify-center text-green-400 hover:text-green-300 hover:bg-green-600/30 transition-colors"
               >
                 <MessageCircle className="w-4 h-4" />
+              </a>
+              <a
+                href="https://g.page/r/YOUR_GOOGLE_ID/review"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Google Avis"
+                className="w-9 h-9 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 hover:text-amber-300 hover:bg-amber-500/30 transition-colors"
+              >
+                <Star className="w-4 h-4 fill-current" />
               </a>
             </div>
           </div>
@@ -55,7 +64,7 @@ export function Footer() {
                 { label: "Peinture de jantes", href: "/services/peinture-jantes" },
                 { label: "Redressage de jantes", href: "/services/redressage-jantes" },
                 { label: "Débosselage", href: "/services/debosselage" },
-                { label: "Tous les services", href: "/services" },
+                { label: "Garantie Totale", href: "/services" },
               ].map((item) => (
                 <li key={item.href}>
                   <Link
@@ -78,7 +87,7 @@ export function Footer() {
                 { label: "Galerie réalisations", href: "/galerie" },
                 { label: "Actualités & Conseils", href: "/blog" },
                 { label: "FAQ", href: "/faq" },
-                { label: "À propos", href: "/a-propos" },
+                { label: "Nous trouver", href: "/contact" },
                 { label: "Contact & Devis", href: "/contact" },
               ].map((item) => (
                 <li key={item.href}>
@@ -101,8 +110,8 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <Phone className="w-4 h-4 text-auto-red mt-0.5 shrink-0" />
                 <div>
-                  <a href="tel:+33600000000" data-testid="link-footer-phone" className="text-white/70 hover:text-white text-sm transition-colors">
-                    06 00 00 00 00
+                  <a href="tel:+33321408053" data-testid="link-footer-phone" className="text-white/70 hover:text-white text-sm transition-colors">
+                    03 21 40 80 53
                   </a>
                   <span className="block text-white/35 text-xs">Appel & WhatsApp</span>
                 </div>
@@ -115,7 +124,7 @@ export function Footer() {
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-auto-red mt-0.5 shrink-0" />
-                <span className="text-white/55 text-sm">France — Intervention nationale</span>
+                <span className="text-white/55 text-sm leading-tight">46 rue de la Convention,<br/>62800 Liévin</span>
               </li>
               <li className="flex items-start gap-3">
                 <Clock className="w-4 h-4 text-auto-red mt-0.5 shrink-0" />
@@ -139,8 +148,8 @@ export function Footer() {
             <Link href="/politique-confidentialite" className="text-white/35 hover:text-white/60 text-xs transition-colors">
               Confidentialité
             </Link>
-            <a href="/sitemap.xml" className="text-white/35 hover:text-white/60 text-xs transition-colors">
-              Sitemap
+            <a href="https://g.page/r/YOUR_GOOGLE_ID/review" target="_blank" rel="noopener noreferrer" className="text-white/35 hover:text-white/60 text-xs transition-colors flex items-center gap-1">
+              <Star className="w-3 h-3 fill-current" /> Avis Google
             </a>
           </div>
         </div>

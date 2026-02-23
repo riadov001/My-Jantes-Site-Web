@@ -96,9 +96,9 @@ export default function Contact() {
               <h2 className="text-xl font-bold text-gray-900 mb-6">Nos coordonnées</h2>
               <div className="space-y-5">
                 {[
-                  { icon: Phone, title: "Téléphone", content: "06 00 00 00 00", href: "tel:+33600000000", sub: "Appel & WhatsApp" },
+                  { icon: Phone, title: "Téléphone", content: "03 21 40 80 53", href: "tel:+33321408053", sub: "Appel & WhatsApp" },
                   { icon: Mail, title: "Email", content: "contact@myjantes.fr", href: "mailto:contact@myjantes.fr", sub: "Réponse sous 24h" },
-                  { icon: MapPin, title: "Zone d'intervention", content: "France entière", href: null, sub: "Envoi par colis accepté" },
+                  { icon: MapPin, title: "Zone d'intervention", content: "46 rue de la Convention, 62800 Liévin", href: null, sub: "Expert jantes alu" },
                 ].map((item) => (
                   <div key={item.title} className="flex gap-4">
                     <div className="w-10 h-10 rounded-lg bg-auto-red/10 flex items-center justify-center shrink-0">
@@ -140,7 +140,7 @@ export default function Contact() {
 
             {/* WhatsApp CTA */}
             <a
-              href="https://wa.me/33600000000?text=Bonjour,%20je%20souhaite%20un%20devis%20pour%20mes%20jantes."
+              href="https://wa.me/33321408053?text=Bonjour,%20je%20souhaite%20un%20devis%20pour%20mes%20jantes."
               target="_blank"
               rel="noopener noreferrer"
               data-testid="link-whatsapp-contact"
