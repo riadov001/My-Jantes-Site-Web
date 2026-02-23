@@ -8,13 +8,12 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-full bg-auto-red flex items-center justify-center font-bold text-white text-sm">MJ</div>
-              <div>
-                <span className="text-white font-bold text-xl">My</span>
-                <span className="text-auto-red font-bold text-xl">Jantes</span>
-                <span className="text-white/40 text-xs block leading-none -mt-0.5">.fr</span>
-              </div>
+            <Link href="/" className="inline-block mb-4">
+              <img
+                src="/images/logo-myjantes.png"
+                alt="MyJantes"
+                className="h-14 w-auto object-contain brightness-0 invert"
+              />
             </Link>
             <p className="text-white/55 text-sm leading-relaxed mb-5">
               Spécialiste de la rénovation, peinture et redressage de jantes en alliage. Qualité professionnelle garantie.
