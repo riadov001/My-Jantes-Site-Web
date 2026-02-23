@@ -11,10 +11,10 @@ export async function seedDatabase() {
     if (existingUsers.length > 0) return;
 
     await storage.createUser({
-      username: "admin",
-      password: "myjantes2024!",
+      username: "contact@myjantes.com",
+      password: "MyJantes@2026!*",
     });
-    await db.update(users).set({ isAdmin: true }).where(sql`username = 'admin'`);
+    await db.update(users).set({ isAdmin: true }).where(sql`username = 'contact@myjantes.com'`);
 
     await db.insert(testimonials).values([
       {
