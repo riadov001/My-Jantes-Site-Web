@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Phone, Mail, MapPin, Clock, Facebook, Instagram, MessageCircle } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Instagram, MessageCircle, Star } from "lucide-react";
 
 export function Footer() {
   return (
