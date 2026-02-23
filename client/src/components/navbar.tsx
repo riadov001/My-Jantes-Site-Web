@@ -111,13 +111,13 @@ export function Navbar() {
               <Phone className="w-4 h-4 text-auto-red" />
               <span>03 21 40 80 53</span>
             </a>
-            <Button
-              asChild
-              className="hidden lg:inline-flex bg-auto-red hover:bg-auto-red-dark text-white border-0 text-sm font-semibold"
-              data-testid="button-nav-devis"
-            >
-              <Link href="/contact">Devis gratuit</Link>
-            </Button>
+              <Button
+                asChild
+                className="hidden lg:inline-flex bg-auto-red hover:bg-auto-red-dark text-white border-0 text-sm font-black px-6"
+                data-testid="button-nav-devis"
+              >
+                <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">Espace Client</a>
+              </Button>
             <button
               className="lg:hidden p-2 text-gray-700 hover:text-gray-900 transition-colors"
               onClick={() => setIsOpen(!isOpen)}

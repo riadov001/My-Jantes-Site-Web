@@ -84,20 +84,31 @@ export function Footer() {
             <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Navigation</h3>
             <ul className="space-y-2.5">
               {[
+                { label: "Espace Client", href: "https://appmyjantes.mytoolsgroup.eu", external: true },
                 { label: "Galerie réalisations", href: "/galerie" },
                 { label: "Actualités & Conseils", href: "/blog" },
                 { label: "FAQ", href: "/faq" },
-                { label: "Nous trouver", href: "/contact" },
                 { label: "Contact & Devis", href: "/contact" },
               ].map((item) => (
                 <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    data-testid={`link-footer-nav-${item.href.replace("/", "")}`}
-                    className="text-white/55 hover:text-white text-sm transition-colors"
-                  >
-                    {item.label}
-                  </Link>
+                  {item.external ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-white/55 hover:text-white text-sm transition-colors font-bold text-auto-red"
+                    >
+                      {item.label}
+                    </a>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      data-testid={`link-footer-nav-${item.href.replace("/", "")}`}
+                      className="text-white/55 hover:text-white text-sm transition-colors"
+                    >
+                      {item.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

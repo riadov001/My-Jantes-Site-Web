@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/seo";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Phone, Mail, MapPin, Clock, MessageCircle, CheckCircle2, Send } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, MessageCircle, CheckCircle2, Send, Smartphone, ArrowRight } from "lucide-react";
 import { insertContactSchema } from "@shared/schema";
 
 const contactFormSchema = insertContactSchema.extend({
@@ -173,6 +173,24 @@ export default function Contact() {
 
           {/* Form */}
           <div className="lg:col-span-2">
+            <div className="mb-10 bg-auto-red/5 border border-auto-red/10 rounded-2xl p-8 flex flex-col md:flex-row items-center gap-8 shadow-sm">
+              <div className="shrink-0 w-20 h-20 bg-auto-red text-white rounded-2xl flex items-center justify-center shadow-lg shadow-auto-red/20">
+                <Smartphone className="w-10 h-10" />
+              </div>
+              <div className="flex-grow text-center md:text-left">
+                <h3 className="text-xl font-black text-gray-900 mb-2 font-['Montserrat',sans-serif]">Nouvel Espace Client</h3>
+                <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+                  Pour faciliter vos démarches, nous avons lancé un outil de gestion dédié. 
+                  Créez votre espace pour un suivi en temps réel de vos prestations et factures.
+                </p>
+                <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-6">
+                  <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">
+                    Créer votre espace client <ArrowRight className="ml-2 w-4 h-4" />
+                  </a>
+                </Button>
+              </div>
+            </div>
+
             <Card className="border border-gray-100 shadow-sm">
               <CardContent className="p-8">
                 <h2 className="text-xl font-bold text-gray-900 mb-2">Formulaire de contact</h2>
