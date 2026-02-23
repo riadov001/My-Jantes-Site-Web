@@ -54,12 +54,15 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link href="/" data-testid="link-logo" className="flex items-center group">
+          <Link href="/" data-testid="link-logo" className="flex flex-col items-start group">
             <img
               src="/images/logo-myjantes.png"
-              alt="MyJantes - Spécialiste rénovation jantes"
-              className="h-12 w-auto object-contain group-hover:opacity-90 transition-opacity"
+              alt="MyJantes"
+              className="h-10 w-auto object-contain group-hover:opacity-90 transition-opacity"
             />
+            <span className="text-[10px] font-semibold text-auto-red uppercase tracking-widest -mt-0.5">
+              L'Expert des jantes en alu
+            </span>
           </Link>
 
           {/* Desktop nav */}
