@@ -90,17 +90,18 @@ export default function Home() {
 
         <div className="relative z-10 text-center max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24">
           <h1
-            className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight font-['Montserrat',sans-serif]"
+            className="text-5xl sm:text-6xl lg:text-8xl font-black text-white mb-6 leading-[1.1] font-['Montserrat',sans-serif] tracking-tight"
             data-testid="heading-hero-main"
           >
             L'Expert des
-            <span className="block text-auto-red mt-1">jantes en alu</span>
+            <span className="block text-auto-red mt-2 drop-shadow-[0_5px_15px_rgba(220,38,38,0.4)]">jantes en alu</span>
           </h1>
           <p
-            className="text-lg sm:text-xl text-white/70 mb-10 max-w-2xl mx-auto leading-relaxed"
+            className="text-xl sm:text-2xl text-white/80 mb-12 max-w-2xl mx-auto leading-relaxed font-medium"
             data-testid="text-hero-description"
           >
-            Rénovation, peinture et redressage de jantes en alliage. Résultats professionnels garantis 12 mois. Devis gratuit sous 24h.
+            Rénovation, peinture et redressage de précision. 
+            <span className="block mt-2 text-white/60 text-lg">Qualité professionnelle garantie 12 mois.</span>
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
             <Button
