@@ -8,18 +8,15 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="inline-flex flex-col items-start mb-4">
+            <Link href="/" className="inline-block mb-3">
               <img
                 src="/images/logo-myjantes.png"
                 alt="MyJantes"
-                className="h-12 w-auto object-contain brightness-0 invert"
+                className="h-16 w-auto object-contain brightness-0 invert"
               />
-              <span className="text-[10px] font-semibold text-auto-red uppercase tracking-widest mt-0.5">
-                L'Expert des jantes en alu
-              </span>
             </Link>
-            <p className="text-white/55 text-sm leading-relaxed mb-5">
-              Spécialiste de la rénovation, peinture et redressage de jantes en alliage. Qualité professionnelle garantie.
+            <p className="text-white/80 text-sm font-semibold tracking-wide mb-4 font-['Montserrat',sans-serif]">
+              L'Expert des jantes en alliage
             </p>
             <div className="flex gap-3">
               <a

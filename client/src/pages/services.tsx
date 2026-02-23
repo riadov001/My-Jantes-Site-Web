@@ -88,7 +88,7 @@ export default function Services() {
       />
 
       {/* Hero */}
-      <div className="relative bg-auto-dark pt-32 pb-20 overflow-hidden">
+      <div className="relative bg-auto-dark pt-36 pb-20 overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "url('/images/atelier.png')", backgroundSize: "cover", backgroundPosition: "center" }} />
         <div className="absolute inset-0 bg-auto-dark/80" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

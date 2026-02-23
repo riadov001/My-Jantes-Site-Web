@@ -52,17 +52,14 @@ export function Navbar() {
       aria-label="Navigation principale"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
+        <div className="flex items-center justify-between h-20 lg:h-24">
           {/* Logo */}
-          <Link href="/" data-testid="link-logo" className="flex flex-col items-start group">
+          <Link href="/" data-testid="link-logo" className="flex items-center group">
             <img
               src="/images/logo-myjantes.png"
-              alt="MyJantes"
-              className="h-10 w-auto object-contain group-hover:opacity-90 transition-opacity"
+              alt="MyJantes - L'Expert des jantes en alu"
+              className="h-16 w-auto object-contain group-hover:opacity-90 transition-opacity"
             />
-            <span className="text-[10px] font-semibold text-auto-red uppercase tracking-widest -mt-0.5">
-              L'Expert des jantes en alu
-            </span>
           </Link>
 
           {/* Desktop nav */}
