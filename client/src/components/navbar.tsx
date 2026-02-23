@@ -45,8 +45,8 @@ export function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled || isOpen
-          ? "bg-auto-dark/95 backdrop-blur-md shadow-2xl"
-          : "bg-transparent"
+          ? "bg-white shadow-md"
+          : "bg-white/90 backdrop-blur-md shadow-sm"
       }`}
       role="navigation"
       aria-label="Navigation principale"
@@ -76,21 +76,21 @@ export function Navbar() {
                   data-testid={`link-nav-${link.label.toLowerCase().replace(/\s/g, "-")}`}
                   className={`flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-150 ${
                     isActive(link.href)
-                      ? "text-white bg-white/10"
-                      : "text-white/80 hover:text-white hover:bg-white/5"
+                      ? "text-auto-red bg-auto-red/8"
+                      : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                   }`}
                 >
                   {link.label}
                   {link.children && <ChevronDown className="w-3.5 h-3.5 opacity-60" />}
                 </Link>
                 {link.children && openDropdown === link.href && (
-                  <div className="absolute top-full left-0 mt-1 w-56 bg-auto-dark-2 rounded-md shadow-2xl border border-white/10 py-1 z-50">
+                  <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-md shadow-xl border border-gray-100 py-1 z-50">
                     {link.children.map((child) => (
                       <Link
                         key={child.href}
                         href={child.href}
                         data-testid={`link-dropdown-${child.label.toLowerCase().replace(/\s/g, "-")}`}
-                        className="block px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                        className="block px-4 py-2.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                       >
                         {child.label}
                       </Link>
@@ -106,7 +106,7 @@ export function Navbar() {
             <a
               href="tel:+33600000000"
               data-testid="link-phone-cta"
-              className="hidden sm:flex items-center gap-2 text-white/80 hover:text-white text-sm font-medium transition-colors"
+              className="hidden sm:flex items-center gap-2 text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
             >
               <Phone className="w-4 h-4 text-auto-red" />
               <span>06 00 00 00 00</span>
@@ -119,7 +119,7 @@ export function Navbar() {
               <Link href="/contact">Devis gratuit</Link>
             </Button>
             <button
-              className="lg:hidden p-2 text-white/80 hover:text-white transition-colors"
+              className="lg:hidden p-2 text-gray-700 hover:text-gray-900 transition-colors"
               onClick={() => setIsOpen(!isOpen)}
               data-testid="button-mobile-menu"
               aria-label="Menu"
@@ -132,7 +132,7 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="lg:hidden border-t border-white/10 bg-auto-dark/98">
+        <div className="lg:hidden border-t border-gray-100 bg-white">
           <div className="px-4 py-4 space-y-1">
             {navLinks.map((link) => (
               <div key={link.href}>
@@ -141,8 +141,8 @@ export function Navbar() {
                   data-testid={`link-mobile-${link.label.toLowerCase().replace(/\s/g, "-")}`}
                   className={`block px-3 py-2.5 text-sm font-medium rounded-md transition-colors ${
                     isActive(link.href)
-                      ? "text-white bg-white/10"
-                      : "text-white/75 hover:text-white hover:bg-white/5"
+                      ? "text-auto-red bg-auto-red/5"
+                      : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                   }`}
                 >
                   {link.label}
@@ -154,7 +154,7 @@ export function Navbar() {
                         key={child.href}
                         href={child.href}
                         data-testid={`link-mobile-sub-${child.label.toLowerCase().replace(/\s/g, "-")}`}
-                        className="block px-3 py-2 text-xs text-white/55 hover:text-white/80 transition-colors"
+                        className="block px-3 py-2 text-xs text-gray-500 hover:text-gray-800 transition-colors"
                       >
                         {child.label}
                       </Link>
@@ -166,7 +166,7 @@ export function Navbar() {
             <div className="pt-3 flex flex-col gap-2">
               <a
                 href="tel:+33600000000"
-                className="flex items-center gap-2 px-3 py-2.5 text-sm text-white/75"
+                className="flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700"
                 data-testid="link-mobile-phone"
               >
                 <Phone className="w-4 h-4 text-auto-red" />
