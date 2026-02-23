@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, boolean, integer, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -7,6 +7,64 @@ export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  isAdmin: boolean("is_admin").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const contactRequests = pgTable("contact_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  service: text("service"),
+  message: text("message").notNull(),
+  status: text("status").notNull().default("nouveau"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const blogPosts = pgTable("blog_posts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  excerpt: text("excerpt").notNull(),
+  content: text("content").notNull(),
+  coverImage: text("cover_image"),
+  metaTitle: text("meta_title"),
+  metaDescription: text("meta_description"),
+  published: boolean("published").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const galleryItems = pgTable("gallery_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  serviceType: text("service_type").notNull(),
+  beforeImage: text("before_image"),
+  afterImage: text("after_image").notNull(),
+  description: text("description"),
+  published: boolean("published").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const testimonials = pgTable("testimonials", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  location: text("location"),
+  rating: integer("rating").notNull().default(5),
+  content: text("content").notNull(),
+  vehicle: text("vehicle"),
+  published: boolean("published").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const faqItems = pgTable("faq_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  question: text("question").notNull(),
+  answer: text("answer").notNull(),
+  category: text("category").notNull().default("general"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  published: boolean("published").notNull().default(true),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -14,5 +72,41 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
 });
 
+export const insertContactSchema = createInsertSchema(contactRequests).omit({
+  id: true,
+  status: true,
+  createdAt: true,
+});
+
+export const insertBlogSchema = createInsertSchema(blogPosts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertGallerySchema = createInsertSchema(galleryItems).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTestimonialSchema = createInsertSchema(testimonials).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertFaqSchema = createInsertSchema(faqItems).omit({
+  id: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+export type ContactRequest = typeof contactRequests.$inferSelect;
+export type InsertContact = z.infer<typeof insertContactSchema>;
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlog = z.infer<typeof insertBlogSchema>;
+export type GalleryItem = typeof galleryItems.$inferSelect;
+export type InsertGallery = z.infer<typeof insertGallerySchema>;
+export type Testimonial = typeof testimonials.$inferSelect;
+export type InsertTestimonial = z.infer<typeof insertTestimonialSchema>;
+export type FaqItem = typeof faqItems.$inferSelect;
+export type InsertFaq = z.infer<typeof insertFaqSchema>;
