@@ -6,7 +6,30 @@ import { CheckCircle2, Shield, Award, Clock } from "lucide-react";
 export default function APropos() {
   return (
     <div className="min-h-screen bg-white">
-      <SEO title="À Propos - MyJantes" description="Découvrez l'histoire et l'expertise de MyJantes, spécialiste de la rénovation de jantes à Liévin." />
+      <SEO
+        title="À Propos de MyJantes – Expert Rénovation Jantes à Liévin | MyJantes"
+        description="Découvrez l'histoire, les valeurs et l'expertise de MyJantes à Liévin. Spécialiste rénovation et peinture de jantes en alliage, garantie 12 mois, équipements de pointe."
+        keywords="MyJantes histoire, expert jantes Liévin, atelier jantes Hauts-de-France, rénovation jantes professionnelle"
+        canonicalPath="/a-propos"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "AboutPage",
+          "name": "À Propos de MyJantes",
+          "description": "L'Expert des jantes en alu à Liévin. Notre histoire, notre équipe et nos valeurs.",
+          "url": "https://myjantes.fr/a-propos",
+          "mainEntity": {
+            "@type": "AutoRepair",
+            "name": "MyJantes",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "46 rue de la Convention",
+              "addressLocality": "Liévin",
+              "postalCode": "62800",
+              "addressCountry": "FR"
+            }
+          }
+        }}
+      />
       
       <div className="bg-auto-dark pt-36 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

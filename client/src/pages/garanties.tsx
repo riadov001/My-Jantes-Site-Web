@@ -7,7 +7,19 @@ import { Link } from "wouter";
 export default function Garanties() {
   return (
     <div className="min-h-screen bg-white">
-      <SEO title="Nos Garanties - MyJantes" description="Découvrez nos engagements de qualité et notre garantie totale de 12 mois sur toutes nos rénovations." />
+      <SEO
+        title="Garantie 12 Mois Rénovation Jantes – Qualité Certifiée | MyJantes"
+        description="Toutes nos prestations de rénovation et peinture de jantes sont garanties 12 mois. Découvrez nos engagements qualité, les conditions et exclusions de garantie."
+        keywords="garantie rénovation jantes, garantie peinture jantes 12 mois, qualité jantes alliage, MyJantes garantie"
+        canonicalPath="/garanties"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Garanties MyJantes – 12 mois sur toutes les prestations",
+          "description": "Garantie totale de 12 mois sur toutes nos rénovations de jantes en alliage.",
+          "url": "https://myjantes.fr/garanties"
+        }}
+      />
       
       <div className="bg-auto-dark pt-36 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

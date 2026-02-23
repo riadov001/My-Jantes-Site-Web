@@ -71,10 +71,16 @@ const services = [
 export default function Services() {
   const schema = {
     "@context": "https://schema.org",
-    "@type": "Service",
-    "name": "Rénovation et Peinture de Jantes",
-    "provider": { "@type": "LocalBusiness", "name": "MyJantes" },
-    "description": "Services professionnels de rénovation, peinture, redressage et débosselage de jantes en alliage.",
+    "@type": "ItemList",
+    "name": "Services de rénovation de jantes – MyJantes Liévin",
+    "description": "Rénovation complète, peinture, redressage et débosselage de jantes en alliage à Liévin.",
+    "url": "https://myjantes.fr/services",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Rénovation complète de jantes", "url": "https://myjantes.fr/services" },
+      { "@type": "ListItem", "position": 2, "name": "Peinture et customisation", "url": "https://myjantes.fr/services" },
+      { "@type": "ListItem", "position": 3, "name": "Redressage de jantes", "url": "https://myjantes.fr/services" },
+      { "@type": "ListItem", "position": 4, "name": "Débosselage PDR", "url": "https://myjantes.fr/services" }
+    ],
   };
 
   return (

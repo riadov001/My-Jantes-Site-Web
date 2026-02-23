@@ -62,18 +62,29 @@ export default function Home() {
   const schema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "MyJantes - L'Expert des jantes en alu",
-    "description": "Rénovation, peinture et redressage de jantes à Liévin. Qualité exceptionnelle, garantie totale.",
+    "name": "MyJantes – L'Expert des jantes en alu à Liévin",
+    "description": "Rénovation, peinture et redressage de jantes en alliage à Liévin. Garantie 12 mois, devis gratuit sous 24h.",
     "url": "https://myjantes.fr",
+    "speakable": {
+      "@type": "SpeakableSpecification",
+      "cssSelector": ["h1", "h2"]
+    },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Accueil", "item": "https://myjantes.fr" }
+      ]
+    }
   };
 
   return (
     <div className="min-h-screen bg-white">
       <SEO
-        title="MyJantes - L'Expert des jantes en alu | Rénovation & Peinture"
-        description="L'Expert de la rénovation, peinture et redressage de jantes en alliage à Liévin. Garantie totale, délais rapides, devis gratuit sous 24h."
-        keywords="rénovation jantes, peinture jantes, redressage jantes, jantes alu, Liévin, MyJantes"
+        title="MyJantes – L'Expert des jantes en alu à Liévin | Rénovation & Peinture"
+        description="Rénovation, peinture, redressage et débosselage de jantes en alliage à Liévin (62). Garantie 12 mois, devis gratuit sous 24h. MyJantes, l'expert reconnu des Hauts-de-France."
+        keywords="rénovation jantes Liévin, peinture jantes alliage, redressage jantes 62, rénovation jantes Hauts-de-France, MyJantes, expert jantes alu"
         canonicalPath="/"
+        ogImage="https://myjantes.fr/images/service-renovation.png"
         schema={schema}
       />
 
