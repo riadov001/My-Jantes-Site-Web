@@ -16,7 +16,7 @@ export function Footer() {
               />
             </Link>
             <p className="text-white/80 text-sm font-semibold tracking-wide mb-4 font-['Montserrat',sans-serif]">
-              L'Expert des jantes en alliage
+              L'Expert des jantes en alu
             </p>
             <div className="flex gap-3">
               <a
