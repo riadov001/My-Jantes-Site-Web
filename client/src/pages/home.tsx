@@ -217,7 +217,8 @@ export default function Home() {
                   <div className="relative h-52 sm:h-64 overflow-hidden">
                     <img
                       src={service.image}
-                      alt={service.title}
+                      alt={`Service MyJantes : ${service.title}`}
+                      loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
@@ -246,7 +247,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video">
-              <video autoPlay muted loop playsInline className="w-full h-full object-cover">
+              <video autoPlay muted loop playsInline className="w-full h-full object-cover" title="Atelier MyJantes à Liévin">
                 <source src="/attached_assets/generated_videos/automotive_workshop_illustration.mp4" type="video/mp4" />
               </video>
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
@@ -311,7 +312,8 @@ export default function Home() {
                   <div className="group relative aspect-square overflow-hidden rounded-2xl shadow-md cursor-pointer">
                     <img
                       src={item.afterImage}
-                      alt={item.title}
+                      alt={`Réalisation MyJantes : ${item.title}`}
+                      loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-end p-4 opacity-0 group-hover:opacity-100">

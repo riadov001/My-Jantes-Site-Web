@@ -43,8 +43,9 @@ export default function About() {
               <div className="absolute -top-10 -left-10 w-32 h-32 bg-auto-red/10 rounded-full blur-3xl" />
               <img 
                 src="/images/service-renovation.png" 
-                alt="Notre expertise" 
+                alt="Expertise MyJantes : Rénovation de jantes en alliage à Liévin" 
                 className="rounded-3xl shadow-2xl relative z-10 w-full"
+                loading="lazy"
               />
               <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-2xl shadow-xl z-20 hidden sm:block">
                 <div className="flex items-center gap-4">

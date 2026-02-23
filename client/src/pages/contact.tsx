@@ -272,7 +272,7 @@ export default function Contact() {
                             <FormLabel>Service souhaité</FormLabel>
                             <Select onValueChange={field.onChange} value={field.value || ""}>
                               <FormControl>
-                                <SelectTrigger data-testid="select-contact-service">
+                                <SelectTrigger data-testid="select-contact-service" aria-label="Choisir un service">
                                   <SelectValue placeholder="Choisir un service" />
                                 </SelectTrigger>
                               </FormControl>

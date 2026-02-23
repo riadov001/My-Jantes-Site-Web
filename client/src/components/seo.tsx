@@ -34,8 +34,10 @@ export function SEO({ title, description, keywords, canonicalPath, ogImage, sche
     setMeta("twitter:title", title);
     setMeta("twitter:description", description);
 
+    // Add alt text for OG image if exists
     if (ogImage) {
       setMeta("og:image", ogImage, true);
+      setMeta("og:image:alt", title, true);
       setMeta("twitter:image", ogImage);
     }
 

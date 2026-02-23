@@ -11,7 +11,7 @@ export function Footer() {
             <Link href="/" className="inline-block mb-3">
               <img
                 src="/images/logo-myjantes.png"
-                alt="MyJantes"
+                alt="Logo MyJantes - L'Expert des jantes en alu"
                 className="h-16 w-auto object-contain brightness-0 invert"
               />
             </Link>
