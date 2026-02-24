@@ -3,18 +3,30 @@ import { db } from "./db";
 import {
   users, testimonials, blogPosts, galleryItems, faqItems,
 } from "@shared/schema";
-import { sql } from "drizzle-orm";
+import { sql, eq } from "drizzle-orm";
+import bcrypt from "bcryptjs";
+
+const ADMIN_EMAIL = "contact@myjantes.com";
+const ADMIN_PASSWORD = "MyJantes@2026!*";
 
 export async function seedDatabase() {
   try {
-    const existingUsers = await db.select().from(users).limit(1);
-    if (existingUsers.length > 0) return;
+    // Always ensure admin user has a valid hashed password
+    const [existingAdmin] = await db.select().from(users).where(eq(users.username, ADMIN_EMAIL));
+    if (existingAdmin) {
+      if (!existingAdmin.password || existingAdmin.password.length < 10) {
+        const hash = await bcrypt.hash(ADMIN_PASSWORD, 10);
+        await db.update(users).set({ password: hash, isAdmin: true }).where(eq(users.username, ADMIN_EMAIL));
+      }
+      // Seed already ran, skip the rest
+      return;
+    }
 
     await storage.createUser({
-      username: "contact@myjantes.com",
-      password: "MyJantes@2026!*",
+      username: ADMIN_EMAIL,
+      password: ADMIN_PASSWORD,
     });
-    await db.update(users).set({ isAdmin: true }).where(sql`username = 'contact@myjantes.com'`);
+    await db.update(users).set({ isAdmin: true }).where(eq(users.username, ADMIN_EMAIL));
 
     await db.insert(testimonials).values([
       {
