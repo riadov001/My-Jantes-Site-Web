@@ -4,7 +4,7 @@ import { SEO } from "@/components/seo";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { MessageCircle, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { FaqItem } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -117,11 +117,6 @@ export default function FAQ() {
               <Link href="/contact">
                 Nous contacter <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
-            </Button>
-            <Button asChild variant="outline" className="border-white/20 text-white bg-transparent hover:bg-white/5" data-testid="button-faq-whatsapp">
-              <a href="https://wa.me/33600000000" target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="mr-2 w-4 h-4" /> WhatsApp
-              </a>
             </Button>
           </div>
         </div>

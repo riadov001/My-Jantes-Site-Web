@@ -9,7 +9,7 @@ export default function PolitiqueConfidentialite() {
         <div className="prose prose-gray max-w-none text-gray-600">
           <section className="mb-8">
             <h2 className="text-xl font-bold text-gray-900 mb-4">1. Collecte de l'information</h2>
-            <p>Nous recueillons des informations lorsque vous remplissez notre formulaire de contact ou nous contactez par WhatsApp. Les informations recueillies incluent votre nom, adresse e-mail, numéro de téléphone et les détails de votre véhicule.</p>
+            <p>Nous recueillons des informations lorsque vous remplissez notre formulaire de contact ou nous contactez par téléphone ou email. Les informations recueillies incluent votre nom, adresse e-mail, numéro de téléphone et les détails de votre véhicule.</p>
           </section>
           <section className="mb-8">
             <h2 className="text-xl font-bold text-gray-900 mb-4">2. Utilisation des informations</h2>

@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/seo";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Phone, Mail, MapPin, Clock, MessageCircle, CheckCircle2, Send, Smartphone, ArrowRight } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, CheckCircle2, Send, Smartphone, ArrowRight } from "lucide-react";
 import { insertContactSchema } from "@shared/schema";
 
 const contactFormSchema = insertContactSchema.extend({
@@ -67,7 +67,7 @@ export default function Contact() {
     <div className="min-h-screen bg-white">
       <SEO
         title="Contact & Devis Gratuit - Rénovation Jantes | MyJantes"
-        description="Contactez MyJantes pour un devis gratuit. Réponse sous 24h. Téléphone, WhatsApp ou formulaire en ligne. Spécialiste jantes alliage."
+        description="Contactez MyJantes pour un devis gratuit. Réponse sous 24h. Téléphone ou formulaire en ligne. Spécialiste jantes alliage."
         keywords="contact MyJantes, devis rénovation jantes, devis peinture jantes gratuit"
         canonicalPath="/contact"
         schema={schema}
@@ -96,7 +96,7 @@ export default function Contact() {
               <h2 className="text-xl font-bold text-gray-900 mb-6">Nos coordonnées</h2>
               <div className="space-y-5">
                 {[
-                  { icon: Phone, title: "Téléphone", content: "03 21 40 80 53", href: "tel:+33321408053", sub: "Appel & WhatsApp" },
+                  { icon: Phone, title: "Téléphone", content: "03 21 40 80 53", href: "tel:+33321408053", sub: "Lun–Ven 9h–18h" },
                   { icon: Mail, title: "Email", content: "contact@myjantes.com", href: "mailto:contact@myjantes.com", sub: "Réponse sous 24h" },
                   { icon: MapPin, title: "Adresse", content: "46 rue de la Convention, 62800 Liévin", href: null, sub: "Expert jantes alu" },
                 ].map((item) => (
@@ -136,21 +136,6 @@ export default function Contact() {
                 ))}
               </div>
             </div>
-
-            {/* WhatsApp CTA */}
-            <a
-              href="https://wa.me/33321408053?text=Bonjour,%20je%20souhaite%20un%20devis%20pour%20mes%20jantes."
-              target="_blank"
-              rel="noopener noreferrer"
-              data-testid="link-whatsapp-contact"
-              className="flex items-center gap-3 bg-green-600 hover:bg-green-700 text-white rounded-lg p-4 transition-colors"
-            >
-              <MessageCircle className="w-6 h-6 shrink-0" />
-              <div>
-                <p className="font-semibold text-sm">Demande rapide sur WhatsApp</p>
-                <p className="text-white/80 text-xs">Envoyez vos photos directement</p>
-              </div>
-            </a>
 
             <div className="bg-gray-50 rounded-lg p-5 border border-gray-100">
               <h3 className="font-semibold text-gray-900 text-sm mb-3">Pour un devis rapide, préparez :</h3>
@@ -213,7 +198,7 @@ export default function Contact() {
             <Card className="border border-gray-100 shadow-sm">
               <CardContent className="p-8">
                 <h2 className="text-xl font-bold text-gray-900 mb-2">Formulaire de contact</h2>
-                <p className="text-gray-500 text-sm mb-8">Décrivez votre projet et joignez vos photos par email ou WhatsApp.</p>
+                <p className="text-gray-500 text-sm mb-8">Décrivez votre projet et joignez vos photos par email.</p>
 
                 <Form {...form}>
                   <form

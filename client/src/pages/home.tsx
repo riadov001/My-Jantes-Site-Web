@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/seo";
 import {
-  Star, ArrowRight, Phone, MessageCircle, Shield, Zap, Award, Users,
+  Star, ArrowRight, Phone, Shield, Zap, Award, Users,
   CheckCircle2, Smartphone, Monitor, Globe, LayoutDashboard, Clock,
   Camera, FileText, Wrench, PartyPopper, MapPin, ChevronRight
 } from "lucide-react";
@@ -46,7 +46,7 @@ const stats = [
 ];
 
 const process = [
-  { icon: Camera, step: "01", title: "Envoyez vos photos", desc: "Par WhatsApp ou e-mail, montrez-nous vos jantes." },
+  { icon: Camera, step: "01", title: "Envoyez vos photos", desc: "Par e-mail ou via notre formulaire, montrez-nous vos jantes." },
   { icon: FileText, step: "02", title: "Devis sous 24h", desc: "Réponse rapide avec estimation personnalisée gratuite." },
   { icon: Wrench, step: "03", title: "Dépôt à l'atelier", desc: "46 rue de la Convention, 62800 Liévin." },
   { icon: PartyPopper, step: "04", title: "Récupérez-les neuves", desc: "Jantes livrées avec leur garantie 12 mois." },
@@ -433,18 +433,13 @@ export default function Home() {
             Redonnez vie à vos jantes
           </h2>
           <p className="text-white/80 text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
-            Devis gratuit sous 24h. Envoyez vos photos par WhatsApp ou via notre formulaire en ligne.
+            Devis gratuit sous 24h. Envoyez vos photos par e-mail ou via notre formulaire en ligne.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
             <Button asChild size="lg" className="bg-white text-auto-red hover:bg-white/90 border-0 font-black px-8 h-14">
               <Link href="/contact">
                 Devis gratuit <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="border-white/40 text-white bg-white/10 hover:bg-white/20 px-8 h-14 font-bold">
-              <a href="https://wa.me/33321408053" target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="mr-2 w-4 h-4" /> WhatsApp
-              </a>
             </Button>
             <Button asChild size="lg" variant="outline" className="border-white/40 text-white bg-white/10 hover:bg-white/20 px-8 h-14 font-bold">
               <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">

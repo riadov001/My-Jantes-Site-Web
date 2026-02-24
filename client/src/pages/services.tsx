@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/seo";
-import { ArrowRight, CheckCircle2, MessageCircle } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 const services = [
   {
@@ -167,11 +167,6 @@ export default function Services() {
           <div className="flex gap-4 justify-center flex-wrap">
             <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0 px-8" data-testid="button-services-cta-contact">
               <Link href="/contact">Nous contacter</Link>
-            </Button>
-            <Button asChild variant="outline" className="border-white/20 text-white bg-transparent hover:bg-white/5" data-testid="button-services-cta-whatsapp">
-              <a href="https://wa.me/33321408053" target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="mr-2 w-4 h-4" /> WhatsApp
-              </a>
             </Button>
           </div>
         </div>
