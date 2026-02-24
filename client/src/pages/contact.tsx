@@ -74,7 +74,7 @@ export default function Contact() {
       />
 
       {/* Hero */}
-      <div className="bg-auto-dark pt-36 pb-16">
+      <div className="bg-auto-dark pt-36 pb-16 md:pt-28 md:pb-10 lg:pt-24 lg:pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Badge className="mb-4 bg-auto-red/20 text-auto-red-light border-auto-red/30 text-xs uppercase tracking-wider">
             Devis gratuit
@@ -88,7 +88,7 @@ export default function Contact() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
         <div className="grid lg:grid-cols-3 gap-12">
           {/* Contact info */}
           <div className="space-y-6">

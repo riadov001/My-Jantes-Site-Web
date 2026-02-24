@@ -94,7 +94,7 @@ export default function Services() {
       />
 
       {/* Hero */}
-      <div className="relative bg-auto-dark pt-36 pb-20 overflow-hidden">
+      <div className="relative bg-auto-dark pt-36 pb-20 md:pt-28 md:pb-12 lg:pt-24 lg:pb-10 overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "url('/images/atelier.png')", backgroundSize: "cover", backgroundPosition: "center" }} />
         <div className="absolute inset-0 bg-auto-dark/80" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -111,8 +111,8 @@ export default function Services() {
       </div>
 
       {/* Services list */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="space-y-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        <div className="space-y-12 lg:space-y-16">
           {services.map((service, i) => (
             <div
               key={service.id}

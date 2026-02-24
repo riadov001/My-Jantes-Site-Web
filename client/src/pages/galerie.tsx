@@ -41,7 +41,7 @@ export default function Galerie() {
       />
 
       {/* Hero */}
-      <div className="bg-auto-dark pt-36 pb-16">
+      <div className="bg-auto-dark pt-36 pb-16 md:pt-28 md:pb-10 lg:pt-24 lg:pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Badge className="mb-4 bg-auto-red/20 text-auto-red-light border-auto-red/30 text-xs uppercase tracking-wider">
             Nos réalisations
@@ -55,7 +55,7 @@ export default function Galerie() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
         {/* Filters */}
         <div className="flex gap-2 flex-wrap mb-10 justify-center" role="group" aria-label="Filtrer par catégorie">
           {categories.map((cat) => (

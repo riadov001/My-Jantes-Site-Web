@@ -14,7 +14,7 @@ export default function About() {
       />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 bg-auto-dark overflow-hidden">
+      <section className="relative pt-32 pb-20 md:pt-28 md:pb-12 lg:pt-24 lg:pb-10 bg-auto-dark overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <img 
             src="/attached_assets/generated_videos/automotive_workshop_illustration.mp4" 
@@ -36,9 +36,9 @@ export default function About() {
       </section>
 
       {/* L'Histoire Section */}
-      <section className="py-24 bg-white">
+      <section className="py-12 sm:py-16 lg:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="relative">
               <div className="absolute -top-10 -left-10 w-32 h-32 bg-auto-red/10 rounded-full blur-3xl" />
               <img 
@@ -80,9 +80,9 @@ export default function About() {
       </section>
 
       {/* Valeurs Section */}
-      <section className="py-24 bg-gray-50">
+      <section className="py-12 sm:py-16 lg:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10 md:mb-14">
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 font-['Montserrat',sans-serif]">Nos piliers fondamentaux</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -118,9 +118,9 @@ export default function About() {
       </section>
 
       {/* Engagements Section */}
-      <section className="py-24 bg-white">
+      <section className="py-12 sm:py-16 lg:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-auto-dark rounded-[2.5rem] p-8 sm:p-16 relative overflow-hidden">
+          <div className="bg-auto-dark rounded-[2.5rem] p-8 sm:p-12 lg:p-14 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-auto-red/10 rounded-full blur-3xl" />
             <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
               <div>

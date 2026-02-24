@@ -88,15 +88,15 @@ export default function Home() {
       />
 
       {/* ─── HERO ─────────────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden" aria-label="Accueil">
+      <section className="relative min-h-screen md:min-h-[80vh] lg:min-h-[72vh] flex items-center justify-center overflow-hidden" aria-label="Accueil">
         <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
           <source src="/attached_assets/generated_videos/wheel_painting_illustration.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-auto-dark" />
 
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12 md:pt-22 md:pb-8 lg:pt-20 lg:pb-6">
           {/* Top badge */}
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center mb-6 md:mb-5">
             <span className="inline-flex items-center gap-2 bg-auto-red/20 border border-auto-red/40 text-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full backdrop-blur-sm">
               <span className="w-2 h-2 rounded-full bg-auto-red animate-pulse" />
               Atelier à Liévin — 62800
@@ -104,20 +104,20 @@ export default function Home() {
           </div>
 
           <h1
-            className="text-center text-5xl sm:text-6xl lg:text-8xl font-black text-white leading-[1.05] font-['Montserrat',sans-serif] tracking-tight mb-6"
+            className="text-center text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.05] font-['Montserrat',sans-serif] tracking-tight mb-5 md:mb-4"
             data-testid="heading-hero-main"
           >
             L'Expert des
             <span className="block text-auto-red drop-shadow-[0_4px_20px_rgba(220,38,38,0.5)]">jantes en alu</span>
           </h1>
 
-          <p className="text-center text-lg sm:text-xl text-white/75 mb-10 max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-description">
+          <p className="text-center text-lg sm:text-xl text-white/75 mb-8 md:mb-6 max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-description">
             Rénovation · Peinture · Redressage · Débosselage<br />
             <span className="text-white/50 text-base">Qualité exceptionnelle — Garantie 12 mois</span>
           </p>
 
           {/* CTA buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-16">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-10 md:mb-8">
             <Button asChild size="lg" className="w-full sm:w-auto bg-auto-red hover:bg-auto-red-dark text-white border-0 px-8 h-14 text-base font-black shadow-2xl shadow-auto-red/30" data-testid="button-hero-devis">
               <Link href="/contact">
                 Devis gratuit <ArrowRight className="ml-2 w-4 h-4" />
@@ -163,9 +163,9 @@ export default function Home() {
       </div>
 
       {/* ─── COMMENT ÇA MARCHE ────────────────────────────────────── */}
-      <section className="py-20 sm:py-28 bg-gray-50">
+      <section className="py-16 sm:py-20 lg:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
+          <div className="text-center mb-10 md:mb-12">
             <Badge className="mb-4 bg-auto-red/10 text-auto-red border-auto-red/20 text-xs uppercase tracking-widest">Simple & rapide</Badge>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 font-['Montserrat',sans-serif]">Comment ça marche ?</h2>
             <p className="text-gray-500 mt-3 max-w-xl mx-auto">De vos photos à des jantes comme neuves — en 4 étapes simples.</p>
@@ -202,9 +202,9 @@ export default function Home() {
       </section>
 
       {/* ─── SERVICES ─────────────────────────────────────────────── */}
-      <section className="py-20 sm:py-28 bg-white">
+      <section className="py-16 sm:py-20 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
+          <div className="text-center mb-10 md:mb-12">
             <Badge className="mb-4 bg-auto-red/10 text-auto-red border-auto-red/20 text-xs uppercase tracking-widest">Nos prestations</Badge>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 font-['Montserrat',sans-serif]">Expertise complète</h2>
             <p className="text-gray-500 mt-3 max-w-xl mx-auto">Chaque intervention est réalisée avec une rigueur absolue à Liévin.</p>
@@ -243,7 +243,7 @@ export default function Home() {
       </section>
 
       {/* ─── ATELIER VIDEO + AVANTAGES ────────────────────────────── */}
-      <section className="py-20 sm:py-28 bg-gray-50 overflow-hidden">
+      <section className="py-16 sm:py-20 lg:py-24 bg-gray-50 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video">
@@ -295,9 +295,9 @@ export default function Home() {
 
       {/* ─── RÉALISATIONS (gallery) ───────────────────────────────── */}
       {gallery.length > 0 && (
-        <section className="py-20 sm:py-28 bg-white">
+        <section className="py-16 sm:py-20 lg:py-24 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 md:mb-12">
               <div>
                 <Badge className="mb-4 bg-auto-red/10 text-auto-red border-auto-red/20 text-xs uppercase tracking-widest">Galerie</Badge>
                 <h2 className="text-3xl sm:text-4xl font-black text-gray-900 font-['Montserrat',sans-serif]">Nos réalisations</h2>
@@ -329,9 +329,9 @@ export default function Home() {
 
       {/* ─── AVIS CLIENTS ─────────────────────────────────────────── */}
       {testimonials.length > 0 && (
-        <section className="py-20 sm:py-28 bg-gray-50">
+        <section className="py-16 sm:py-20 lg:py-24 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
+            <div className="text-center mb-10 md:mb-12">
               <Badge className="mb-4 bg-auto-red/10 text-auto-red border-auto-red/20 text-xs uppercase tracking-widest">Avis vérifiés</Badge>
               <h2 className="text-3xl sm:text-4xl font-black text-gray-900 font-['Montserrat',sans-serif]">Ce que disent nos clients</h2>
               <div className="flex items-center justify-center gap-1 mt-3">
@@ -366,7 +366,7 @@ export default function Home() {
       )}
 
       {/* ─── APP PROMO ────────────────────────────────────────────── */}
-      <section className="py-20 sm:py-28 bg-auto-dark relative overflow-hidden">
+      <section className="py-16 sm:py-20 lg:py-24 bg-auto-dark relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-auto-red" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-auto-red/5 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -423,7 +423,7 @@ export default function Home() {
       </section>
 
       {/* ─── CTA FINAL ────────────────────────────────────────────── */}
-      <section className="py-20 sm:py-28 bg-auto-red relative overflow-hidden" aria-labelledby="heading-cta">
+      <section className="py-16 sm:py-20 lg:py-24 bg-auto-red relative overflow-hidden" aria-labelledby="heading-cta">
         <div className="absolute inset-0 pointer-events-none opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-white blur-3xl" />
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-white blur-2xl" />

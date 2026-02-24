@@ -21,7 +21,7 @@ export default function Garanties() {
         }}
       />
       
-      <div className="bg-auto-dark pt-36 pb-20">
+      <div className="bg-auto-dark pt-36 pb-20 md:pt-28 md:pb-12 lg:pt-24 lg:pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Badge className="mb-4 bg-auto-red/20 text-auto-red-light border-auto-red/30 text-xs uppercase tracking-wider">
             Sérénité Totale
@@ -33,7 +33,7 @@ export default function Garanties() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
         <div className="bg-gray-50 rounded-3xl p-10 mb-16 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-4 mb-8">
             <div className="w-14 h-14 bg-auto-red text-white rounded-2xl flex items-center justify-center shadow-lg shadow-auto-red/20">
