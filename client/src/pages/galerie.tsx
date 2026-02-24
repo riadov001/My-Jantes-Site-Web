@@ -76,9 +76,9 @@ export default function Galerie() {
 
         {/* Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <Skeleton key={i} className="aspect-square rounded-lg" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <Skeleton key={i} className="aspect-square rounded-xl" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
@@ -86,11 +86,11 @@ export default function Galerie() {
             <p className="text-lg">Aucune réalisation dans cette catégorie</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filtered.map((item) => (
               <div
                 key={item.id}
-                className="group relative overflow-hidden rounded-lg bg-gray-100 cursor-pointer"
+                className="group relative overflow-hidden rounded-xl bg-gray-100 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300"
                 onClick={() => setSelected(item)}
                 data-testid={`gallery-item-${item.id}`}
                 role="button"
@@ -102,19 +102,17 @@ export default function Galerie() {
                   <img
                     src={item.afterImage}
                     alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <Badge className="mb-2 bg-auto-red border-0 text-white text-xs capitalize">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute bottom-0 left-0 right-0 p-3">
+                    <Badge className="mb-1.5 bg-auto-red border-0 text-white text-[10px] uppercase font-bold px-2 py-0">
                       {item.serviceType}
                     </Badge>
-                    <p className="text-white font-semibold text-sm">{item.title}</p>
-                    {item.description && (
-                      <p className="text-white/70 text-xs mt-1 line-clamp-2">{item.description}</p>
-                    )}
+                    <p className="text-white font-bold text-xs line-clamp-1">{item.title}</p>
                   </div>
                 </div>
               </div>

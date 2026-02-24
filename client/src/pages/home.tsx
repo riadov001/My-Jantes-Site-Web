@@ -210,11 +210,11 @@ export default function Home() {
             <p className="text-gray-500 mt-3 max-w-xl mx-auto">Chaque intervention est réalisée avec une rigueur absolue à Liévin.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
             {services.map((service) => (
               <Link key={service.title} href="/services">
                 <Card className="group overflow-hidden border-0 shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer bg-white h-full">
-                  <div className="relative h-52 sm:h-64 overflow-hidden">
+                  <div className="relative aspect-[4/3] overflow-hidden">
                     <img
                       src={service.image}
                       alt={`Service MyJantes : ${service.title}`}
@@ -222,17 +222,17 @@ export default function Home() {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                    <span className="absolute top-3 right-3 bg-auto-red text-white text-xs font-bold px-3 py-1 rounded-full">
+                    <span className="absolute top-3 right-3 bg-auto-red text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                       {service.badge}
                     </span>
                   </div>
-                  <CardContent className="p-6 sm:p-8">
-                    <h3 className="font-black text-gray-900 text-lg sm:text-xl mb-2 group-hover:text-auto-red transition-colors font-['Montserrat',sans-serif]">
+                  <CardContent className="p-5">
+                    <h3 className="font-black text-gray-900 text-base mb-2 group-hover:text-auto-red transition-colors font-['Montserrat',sans-serif] line-clamp-1">
                       {service.title}
                     </h3>
-                    <p className="text-gray-500 text-sm leading-relaxed mb-5">{service.description}</p>
-                    <span className="inline-flex items-center gap-2 text-auto-red text-xs font-black uppercase tracking-widest">
-                      Découvrir <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    <p className="text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2">{service.description}</p>
+                    <span className="inline-flex items-center gap-2 text-auto-red text-[10px] font-black uppercase tracking-widest">
+                      Découvrir <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                     </span>
                   </CardContent>
                 </Card>
@@ -306,7 +306,7 @@ export default function Home() {
                 <Link href="/galerie">Voir tout <ChevronRight className="ml-1 w-4 h-4" /></Link>
               </Button>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
               {gallery.slice(0, 4).map((item) => (
                 <Link key={item.id} href="/galerie">
                   <div className="group relative aspect-square overflow-hidden rounded-2xl shadow-md cursor-pointer">
@@ -317,7 +317,7 @@ export default function Home() {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-end p-4 opacity-0 group-hover:opacity-100">
-                      <p className="text-white font-bold text-sm">{item.title}</p>
+                      <p className="text-white font-bold text-xs line-clamp-1">{item.title}</p>
                     </div>
                   </div>
                 </Link>

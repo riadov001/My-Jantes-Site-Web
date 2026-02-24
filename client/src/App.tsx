@@ -15,7 +15,7 @@ import Contact from "@/pages/contact";
 import About from "@/pages/about";
 import FAQ from "@/pages/faq";
 import Garanties from "@/pages/garanties";
-
+import Admin from "@/pages/admin";
 import MentionsLegales from "@/pages/mentions-legales";
 import PolitiqueConfidentialite from "@/pages/politique-confidentialite";
 
@@ -27,7 +27,7 @@ function ScrollToTop() {
   return null;
 }
 
-function Router() {
+function PublicLayout() {
   return (
     <div className="flex flex-col min-h-screen">
       <ScrollToTop />
@@ -50,6 +50,14 @@ function Router() {
       <Footer />
     </div>
   );
+}
+
+function Router() {
+  const [location] = useLocation();
+  if (location === "/admin" || location.startsWith("/admin/")) {
+    return <Admin />;
+  }
+  return <PublicLayout />;
 }
 
 function App() {
