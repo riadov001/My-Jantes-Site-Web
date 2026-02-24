@@ -88,15 +88,15 @@ export default function Home() {
       />
 
       {/* ─── HERO ─────────────────────────────────────────────────── */}
-      <section className="relative min-h-screen md:min-h-[80vh] lg:min-h-[72vh] flex items-center justify-center overflow-hidden" aria-label="Accueil">
+      <section className="relative min-h-screen md:min-h-0 flex items-center justify-center overflow-hidden" aria-label="Accueil">
         <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
           <source src="/attached_assets/generated_videos/wheel_painting_illustration.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-auto-dark" />
 
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12 md:pt-22 md:pb-8 lg:pt-20 lg:pb-6">
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-10 md:pt-28 md:pb-12 lg:pt-24 lg:pb-12">
           {/* Top badge */}
-          <div className="flex justify-center mb-6 md:mb-5">
+          <div className="flex justify-center mb-5">
             <span className="inline-flex items-center gap-2 bg-auto-red/20 border border-auto-red/40 text-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full backdrop-blur-sm">
               <span className="w-2 h-2 rounded-full bg-auto-red animate-pulse" />
               Atelier à Liévin — 62800
@@ -104,31 +104,31 @@ export default function Home() {
           </div>
 
           <h1
-            className="text-center text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.05] font-['Montserrat',sans-serif] tracking-tight mb-5 md:mb-4"
+            className="text-center text-5xl sm:text-6xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.05] font-['Montserrat',sans-serif] tracking-tight mb-4"
             data-testid="heading-hero-main"
           >
             L'Expert des
             <span className="block text-auto-red drop-shadow-[0_4px_20px_rgba(220,38,38,0.5)]">jantes en alu</span>
           </h1>
 
-          <p className="text-center text-lg sm:text-xl text-white/75 mb-8 md:mb-6 max-w-2xl mx-auto leading-relaxed" data-testid="text-hero-description">
+          <p className="text-center text-base sm:text-lg text-white/75 mb-6 max-w-xl mx-auto leading-relaxed" data-testid="text-hero-description">
             Rénovation · Peinture · Redressage · Débosselage<br />
-            <span className="text-white/50 text-base">Qualité exceptionnelle — Garantie 12 mois</span>
+            <span className="text-white/50 text-sm">Qualité exceptionnelle — Garantie 12 mois</span>
           </p>
 
           {/* CTA buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-10 md:mb-8">
-            <Button asChild size="lg" className="w-full sm:w-auto bg-auto-red hover:bg-auto-red-dark text-white border-0 px-8 h-14 text-base font-black shadow-2xl shadow-auto-red/30" data-testid="button-hero-devis">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-8">
+            <Button asChild size="lg" className="w-full sm:w-auto bg-auto-red hover:bg-auto-red-dark text-white border-0 px-8 h-12 text-sm font-black shadow-2xl shadow-auto-red/30" data-testid="button-hero-devis">
               <Link href="/contact">
                 Devis gratuit <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="w-full sm:w-auto border-white/25 text-white bg-white/10 backdrop-blur-sm hover:bg-white/20 px-8 h-14 font-semibold" data-testid="button-hero-galerie">
+            <Button asChild size="lg" variant="outline" className="w-full sm:w-auto border-white/25 text-white bg-white/10 backdrop-blur-sm hover:bg-white/20 px-8 h-12 font-semibold text-sm" data-testid="button-hero-galerie">
               <Link href="/galerie">Voir les réalisations</Link>
             </Button>
             <a
               href="tel:+33321408053"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-14 px-8 rounded-lg border border-white/20 text-white/80 hover:text-white hover:bg-white/10 transition-colors font-semibold text-sm"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-12 px-8 rounded-lg border border-white/20 text-white/80 hover:text-white hover:bg-white/10 transition-colors font-semibold text-sm"
               data-testid="link-hero-phone"
             >
               <Phone className="w-4 h-4 text-auto-red" />
@@ -139,9 +139,9 @@ export default function Home() {
           {/* Stats bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-white/10 rounded-2xl overflow-hidden backdrop-blur-sm border border-white/10">
             {stats.map((stat) => (
-              <div key={stat.label} className="bg-white/5 px-4 py-5 text-center">
-                <p className="text-2xl sm:text-3xl font-black text-white">{stat.value}</p>
-                <p className="text-white/50 text-xs mt-1 uppercase tracking-wider">{stat.label}</p>
+              <div key={stat.label} className="bg-white/5 px-4 py-4 text-center">
+                <p className="text-xl sm:text-2xl font-black text-white">{stat.value}</p>
+                <p className="text-white/50 text-xs mt-0.5 uppercase tracking-wider">{stat.label}</p>
               </div>
             ))}
           </div>
