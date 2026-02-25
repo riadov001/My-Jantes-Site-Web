@@ -2,6 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
+import cors from "cors";
 import { Pool } from "pg";
 import { storage } from "./storage";
 import {
@@ -31,6 +32,18 @@ function requireAdmin(req: Request, res: Response, next: NextFunction) {
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+  app.use(cors({
+    origin: [
+      "https://appmyjantes.mytoolsgroup.eu",
+      "http://appmyjantes.mytoolsgroup.eu",
+      /\.replit\.app$/,
+      /\.replit\.dev$/,
+    ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  }));
 
   app.use(
     session({
@@ -92,6 +105,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     const contact = await storage.updateContactStatus(req.params.id, status);
     if (!contact) return res.status(404).json({ message: "Contact non trouvé" });
     return res.json(contact);
+  });
+
+  app.delete("/api/admin/contacts/:id", requireAdmin, async (req, res) => {
+    await storage.deleteContactRequest(req.params.id);
+    return res.json({ message: "Contact supprimé" });
   });
 
   // Blog routes (public)

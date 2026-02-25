@@ -18,6 +18,7 @@ export interface IStorage {
   getContactRequests(): Promise<ContactRequest[]>;
   createContactRequest(data: InsertContact): Promise<ContactRequest>;
   updateContactStatus(id: string, status: string): Promise<ContactRequest | undefined>;
+  deleteContactRequest(id: string): Promise<void>;
 
   getBlogPosts(publishedOnly?: boolean): Promise<BlogPost[]>;
   getBlogPost(id: string): Promise<BlogPost | undefined>;
@@ -79,6 +80,10 @@ export class DatabaseStorage implements IStorage {
   async updateContactStatus(id: string, status: string) {
     const [req] = await db.update(contactRequests).set({ status }).where(eq(contactRequests.id, id)).returning();
     return req;
+  }
+
+  async deleteContactRequest(id: string) {
+    await db.delete(contactRequests).where(eq(contactRequests.id, id));
   }
 
   async getBlogPosts(publishedOnly = false) {
