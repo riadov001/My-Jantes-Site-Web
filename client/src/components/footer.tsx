@@ -11,12 +11,12 @@ export function Footer() {
             <Link href="/" className="inline-block mb-3">
               <img
                 src="/images/logo-myjantes.png"
-                alt="Logo MyJantes - L'Expert des jantes en alu"
+                alt="Logo MyJantes - L'expert de la jante alu"
                 className="h-16 w-auto object-contain brightness-0 invert"
               />
             </Link>
             <p className="text-white/80 text-sm font-semibold tracking-wide mb-4 font-['Montserrat',sans-serif]">
-              L'Expert des jantes en alu
+              L'expert de la jante alu
             </p>
             <div className="flex gap-3">
               <a
@@ -41,6 +41,30 @@ export function Footer() {
                 </svg>
               </a>
               <a
+                href="https://www.facebook.com/myjantes"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook MyJantes"
+                data-testid="link-social-facebook"
+                className="w-9 h-9 rounded-full bg-blue-600/10 flex items-center justify-center text-blue-400/60 hover:text-blue-400 hover:bg-blue-600/20 transition-colors"
+              >
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+              </a>
+              <a
+                href="https://www.tiktok.com/@myjantes"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="TikTok MyJantes"
+                data-testid="link-social-tiktok"
+                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-colors"
+              >
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                  <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V9.05a8.27 8.27 0 004.76 1.5V7.12a4.83 4.83 0 01-1-.43z" />
+                </svg>
+              </a>
+              <a
                 href="https://share.google/WLKmvaJTSrAFGic2B"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -57,11 +81,12 @@ export function Footer() {
             <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Nos Services</h3>
             <ul className="space-y-2.5">
               {[
-                { label: "Rénovation de jantes", href: "/services" },
-                { label: "Peinture de jantes", href: "/services" },
-                { label: "Redressage de jantes", href: "/services" },
-                { label: "Débosselage", href: "/services" },
-                { label: "Garantie Totale", href: "/garanties" },
+                { label: "Soudure", href: "/services" },
+                { label: "Sablage", href: "/services" },
+                { label: "Devoilage", href: "/services" },
+                { label: "Rénovation", href: "/services" },
+                { label: "Personnalisation", href: "/services" },
+                { label: "Hydrodipping", href: "/services" },
               ].map((item) => (
                 <li key={item.label}>
                   <Link

@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/seo";
 import {
-  Star, ArrowRight, Phone, Shield, Zap, Award, Users,
+  Star, ArrowRight, Phone, MessageCircle, Shield, Zap, Award, Users,
   CheckCircle2, Smartphone, Monitor, Globe, LayoutDashboard, Clock,
   Camera, FileText, Wrench, PartyPopper, MapPin, ChevronRight
 } from "lucide-react";
@@ -13,49 +13,61 @@ import type { Testimonial, GalleryItem } from "@shared/schema";
 
 const services = [
   {
-    title: "Rénovation complète",
-    description: "Sablage, apprêt, peinture et vernis. Vos jantes retrouvent leur éclat d'origine.",
+    title: "Soudure",
+    description: "Réparation structurelle de vos jantes fissurées ou cassées par soudure professionnelle.",
     image: "/images/service-renovation.png",
-    badge: "Best-seller",
+    badge: "Réparation",
   },
   {
-    title: "Peinture & Customisation",
-    description: "Noir mat, bronze, bicolore, diamond cut... Finitions professionnelles haut de gamme.",
+    title: "Sablage",
+    description: "Décapage complet par sablage pour une préparation parfaite avant rénovation.",
     image: "/images/service-peinture.png",
-    badge: "Sur mesure",
+    badge: "Préparation",
   },
   {
-    title: "Redressage de précision",
-    description: "Correction des voiles et déformations par presse hydraulique certifiée.",
+    title: "Devoilage",
+    description: "Correction des voiles et déformations par presse hydraulique de précision.",
     image: "/images/service-redressage.png",
     badge: "Sécurité",
   },
   {
-    title: "Débosselage PDR",
-    description: "Élimination des chocs sans repeinture. Technique innovante et économique.",
+    title: "Rénovation",
+    description: "Rénovation complète : sablage, apprêt, peinture et vernis haute résistance.",
+    image: "/images/service-renovation.png",
+    badge: "Best-seller",
+  },
+  {
+    title: "Personnalisation",
+    description: "Noir mat, bronze, bicolore, diamantage sur tour numérique... Finitions sur mesure.",
+    image: "/images/service-peinture.png",
+    badge: "Sur mesure",
+  },
+  {
+    title: "Hydrodipping",
+    description: "Personnalisation par impression hydrographique pour des finitions uniques.",
     image: "/images/gallery-2.png",
-    badge: "Rapide",
+    badge: "Coming soon",
   },
 ];
 
 const stats = [
   { value: "5 000+", label: "Jantes rénovées" },
   { value: "98%", label: "Clients satisfaits" },
-  { value: "12 mois", label: "Garantie totale" },
+  { value: "garantie*", label: "Sur nos prestations" },
   { value: "48h", label: "Délai moyen" },
 ];
 
 const process = [
-  { icon: Camera, step: "01", title: "Envoyez vos photos", desc: "Par e-mail ou via notre formulaire, montrez-nous vos jantes." },
+  { icon: Camera, step: "01", title: "Envoyez vos photos", desc: "Par WhatsApp, e-mail ou via notre formulaire, montrez-nous vos jantes.", whatsapp: true },
   { icon: FileText, step: "02", title: "Devis sous 24h", desc: "Réponse rapide avec estimation personnalisée gratuite." },
   { icon: Wrench, step: "03", title: "Dépôt à l'atelier", desc: "46 rue de la Convention, 62800 Liévin." },
-  { icon: PartyPopper, step: "04", title: "Récupérez-les neuves", desc: "Jantes livrées avec leur garantie 12 mois." },
+  { icon: PartyPopper, step: "04", title: "Restitution de vos jantes", desc: "Restitution de vos jantes avec leur garantie*." },
 ];
 
 const whyUs = [
-  { icon: Shield, title: "Garantie 12 Mois", desc: "Garantie totale sur la tenue de peinture et la finition." },
+  { icon: Shield, title: "Garantie*", desc: "Garantie sur la tenue de peinture et la finition de nos prestations." },
   { icon: Zap, title: "Délais rapides", desc: "Intervention sous 24 à 72h. Service express disponible." },
-  { icon: Award, title: "Usinage Numérique", desc: "Tour numérique pour finitions Diamond Cut parfaites." },
+  { icon: Award, title: "Usinage Numérique", desc: "Tour numérique pour finitions diamantage parfaites." },
   { icon: Users, title: "5 000+ jantes traitées", desc: "Expérience et savoir-faire reconnus à Liévin." },
 ];
 
@@ -66,8 +78,8 @@ export default function Home() {
   const schema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "MyJantes – L'Expert des jantes en alu à Liévin",
-    "description": "Rénovation, peinture et redressage de jantes en alliage à Liévin. Garantie 12 mois, devis gratuit sous 24h.",
+    "name": "MyJantes – L'expert de la jante alu à Liévin",
+    "description": "Rénovation, peinture et soudure de jantes en alliage à Liévin. Garantie*, devis gratuit sous 24h.",
     "url": "https://myjantes.fr",
     "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "h2"] },
     "breadcrumb": {
@@ -79,9 +91,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <SEO
-        title="MyJantes – L'Expert des jantes en alu à Liévin | Rénovation & Peinture"
-        description="Rénovation, peinture, redressage et débosselage de jantes en alliage à Liévin (62). Garantie 12 mois, devis gratuit sous 24h. MyJantes, l'expert reconnu des Hauts-de-France."
-        keywords="rénovation jantes Liévin, peinture jantes alliage, redressage jantes 62, rénovation jantes Hauts-de-France, MyJantes, expert jantes alu"
+        title="MyJantes – L'expert de la jante alu à Liévin | Rénovation & Peinture"
+        description="Rénovation, peinture, soudure et sablage de jantes en alliage à Liévin (62). Garantie*, devis gratuit sous 24h. MyJantes, l'expert de la jante alu dans les Hauts-de-France."
+        keywords="rénovation jantes Liévin, peinture jantes alliage, soudure jantes 62, sablage jantes, rénovation jantes Hauts-de-France, MyJantes, expert jante alu"
         canonicalPath="/"
         ogImage="https://myjantes.fr/images/service-renovation.png"
         schema={schema}
@@ -103,17 +115,25 @@ export default function Home() {
             </span>
           </div>
 
+          <div className="flex justify-center mb-6">
+            <img
+              src="/images/logo-myjantes.png"
+              alt="Logo MyJantes"
+              className="h-24 sm:h-32 lg:h-40 w-auto object-contain brightness-0 invert drop-shadow-2xl"
+            />
+          </div>
+
           <h1
-            className="text-center text-5xl sm:text-6xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.05] font-['Montserrat',sans-serif] tracking-tight mb-4"
+            className="text-center text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-black text-white leading-[1.05] font-['Montserrat',sans-serif] tracking-tight mb-4"
             data-testid="heading-hero-main"
           >
-            L'Expert des
-            <span className="block text-auto-red drop-shadow-[0_4px_20px_rgba(220,38,38,0.5)]">jantes en alu</span>
+            L'expert de la
+            <span className="block text-auto-red drop-shadow-[0_4px_20px_rgba(220,38,38,0.5)]">jante alu</span>
           </h1>
 
           <p className="text-center text-base sm:text-lg text-white/75 mb-6 max-w-xl mx-auto leading-relaxed" data-testid="text-hero-description">
-            Rénovation · Peinture · Redressage · Débosselage<br />
-            <span className="text-white/50 text-sm">Qualité exceptionnelle — Garantie 12 mois</span>
+            Soudure · Sablage · Devoilage · Rénovation · Personnalisation · Hydrodipping<br />
+            <span className="text-white/50 text-sm">Qualité exceptionnelle — garantie*</span>
           </p>
 
           {/* CTA buttons */}
@@ -152,7 +172,7 @@ export default function Home() {
       <div className="bg-auto-dark border-b border-white/5 py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-white/50 text-xs uppercase tracking-widest font-semibold">
-            {["Peinture certifiée OEM", "Diamond Cut sur tour numérique", "Garantie 12 mois", "Devis gratuit sous 24h", "Liévin — Hauts-de-France"].map(item => (
+            {["Peinture certifiée OEM", "Diamantage sur tour numérique", "Garantie*", "Devis gratuit sous 24h", "Liévin — Hauts-de-France"].map(item => (
               <span key={item} className="flex items-center gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-auto-red shrink-0" />
                 {item}
@@ -188,6 +208,18 @@ export default function Home() {
                   </div>
                   <h3 className="font-black text-gray-900 text-base mb-2 font-['Montserrat',sans-serif]">{step.title}</h3>
                   <p className="text-gray-500 text-sm leading-relaxed flex-grow">{step.desc}</p>
+                  {'whatsapp' in step && (step as any).whatsapp && (
+                    <a
+                      href="https://wa.me/33671370418?text=Bonjour,%20je%20souhaite%20un%20devis%20pour%20mes%20jantes."
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-testid="link-step1-whatsapp"
+                      className="inline-flex items-center gap-2 mt-3 bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-colors"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      WhatsApp : 06 71 37 04 18
+                    </a>
+                  )}
                 </div>
               </div>
             ))}
@@ -253,9 +285,13 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
               <div className="absolute bottom-5 left-5 sm:bottom-6 sm:left-6 text-white">
                 <p className="text-xs font-bold uppercase tracking-widest text-auto-red mb-1">Notre Atelier</p>
-                <h3 className="text-lg sm:text-xl font-bold">Tour numérique — Diamond Cut</h3>
+                <h3 className="text-lg sm:text-xl font-bold">Tour numérique — Diamantage</h3>
                 <p className="text-white/60 text-sm flex items-center gap-1.5 mt-1">
                   <MapPin className="w-3.5 h-3.5" /> 46 rue de la Convention, Liévin
+                </p>
+                <p className="text-white/40 text-xs mt-1.5 flex items-center gap-1.5">
+                  <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                  Retrouvez-nous sur Apple Maps
                 </p>
               </div>
             </div>

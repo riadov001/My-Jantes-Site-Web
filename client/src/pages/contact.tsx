@@ -263,9 +263,11 @@ export default function Contact() {
                               </FormControl>
                               <SelectContent>
                                 <SelectItem value="renovation">Rénovation complète</SelectItem>
-                                <SelectItem value="peinture">Peinture & Customisation</SelectItem>
-                                <SelectItem value="redressage">Redressage</SelectItem>
-                                <SelectItem value="debosselage">Débosselage</SelectItem>
+                                <SelectItem value="peinture">Peinture & Personnalisation</SelectItem>
+                                <SelectItem value="soudure">Soudure</SelectItem>
+                                <SelectItem value="sablage">Sablage</SelectItem>
+                                <SelectItem value="devoilage">Devoilage</SelectItem>
+                                <SelectItem value="hydrodipping">Hydrodipping</SelectItem>
                                 <SelectItem value="autre">Autre / Non défini</SelectItem>
                               </SelectContent>
                             </Select>
