@@ -49,7 +49,7 @@ export async function seedDatabase() {
         name: "Aurélien",
         location: "Arras",
         rating: 5,
-        content: "Rénovation de 4 jantes diamond cut. Le résultat est bluffant, identique à l'origine. Très bon rapport qualité/prix.",
+        content: "Rénovation de 4 jantes avec diamantage sur tour numérique. Le résultat est bluffant, identique à l'origine. Très bon rapport qualité/prix.",
         vehicle: "Mercedes Classe A",
         published: true,
       },
@@ -150,7 +150,7 @@ Les tons chauds métalliques font leur grand retour et se marient idéalement av
 
 - **Mat** : élégant et sportif
 - **Brillant** : classique et premium
-- **Diamond cut** : haut de gamme avec une touche de brillance
+- **Diamantage sur tour numérique** : haut de gamme avec une touche de brillance
 - **Bicolore** : personnalisation maximale
 
 ## Réalisez votre projet
@@ -212,7 +212,7 @@ Nos experts vous conseillent sur les meilleures options de personnalisation pour
       },
       {
         question: "La rénovation de jantes est-elle garantie ?",
-        answer: "Oui ! Toutes nos prestations sont garanties 12 mois contre les défauts de peinture et de main-d'œuvre. Nous utilisons des peintures professionnelles haute résistance.",
+        answer: "Oui ! Toutes nos prestations bénéficient d'une garantie* sur la tenue de peinture et la finition. Nous utilisons des peintures professionnelles haute résistance.",
         category: "garantie",
         sortOrder: 3,
         published: true,

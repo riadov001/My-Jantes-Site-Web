@@ -68,7 +68,7 @@ export default function About() {
                   L'aventure MyJantes a débuté avec un constat simple : les passionnés d'automobile manquaient d'un interlocuteur expert capable d'allier <strong>technologie industrielle</strong> et <strong>finition artisanale</strong> pour leurs jantes.
                 </p>
                 <p>
-                  Initialement focalisés sur la peinture classique, nous avons rapidement investi dans des équipements de pointe, notamment un <strong>tour numérique haute précision</strong> pour répondre à la demande croissante de jantes bi-ton (Diamond Cut).
+                  Initialement focalisés sur la peinture classique, nous avons rapidement investi dans des équipements de pointe, notamment un <strong>tour numérique haute précision</strong> pour répondre à la demande croissante de diamantage sur tour numérique (jantes bi-ton).
                 </p>
                 <p>
                   Aujourd'hui, notre atelier de Liévin est devenu une référence dans les Hauts-de-France, traitant plus de 100 jantes par semaine pour des particuliers exigeants et des concessions prestigieuses.
@@ -129,7 +129,7 @@ export default function About() {
                 </h2>
                 <div className="space-y-4">
                   {[
-                    "Garantie totale de 12 mois sur la tenue de peinture.",
+                    "Garantie* sur la tenue de peinture et la finition.",
                     "Délais d'intervention maîtrisés (48h à 72h en moyenne).",
                     "Transparence totale sur les tarifs et les méthodes.",
                     "Soutien de l'économie locale et formation interne."

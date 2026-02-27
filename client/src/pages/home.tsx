@@ -119,7 +119,7 @@ export default function Home() {
             <img
               src="/images/logo-myjantes.png"
               alt="Logo MyJantes"
-              className="h-24 sm:h-32 lg:h-40 w-auto object-contain brightness-0 invert drop-shadow-2xl"
+              className="h-32 sm:h-44 lg:h-56 w-auto object-contain brightness-0 invert drop-shadow-2xl"
             />
           </div>
 
@@ -284,8 +284,8 @@ export default function Home() {
               </video>
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
               <div className="absolute bottom-5 left-5 sm:bottom-6 sm:left-6 text-white">
-                <p className="text-xs font-bold uppercase tracking-widest text-auto-red mb-1">Notre Atelier</p>
-                <h3 className="text-lg sm:text-xl font-bold">Tour numérique — Diamantage</h3>
+                <p className="text-xs font-bold uppercase tracking-widest text-auto-red mb-1">Atelier MyJantes</p>
+                <h3 className="text-lg sm:text-xl font-bold">Diamantage sur tour numérique</h3>
                 <p className="text-white/60 text-sm flex items-center gap-1.5 mt-1">
                   <MapPin className="w-3.5 h-3.5" /> 46 rue de la Convention, Liévin
                 </p>

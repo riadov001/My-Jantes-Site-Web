@@ -30,7 +30,7 @@ const servicesData: Record<string, any> = {
     image: "/images/service-peinture.png",
     benefits: [
       "Large choix de teintes et de finitions",
-      "Possibilité de bi-ton (Diamond Cut)",
+      "Possibilité de bi-ton (diamantage sur tour numérique)",
       "Peinture résistante aux hautes températures des freins",
       "Finition personnalisée unique"
     ],

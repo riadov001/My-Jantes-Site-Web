@@ -8,15 +8,15 @@ export default function Garanties() {
   return (
     <div className="min-h-screen bg-white">
       <SEO
-        title="Garantie 12 Mois Rénovation Jantes – Qualité Certifiée | MyJantes"
-        description="Toutes nos prestations de rénovation et peinture de jantes sont garanties 12 mois. Découvrez nos engagements qualité, les conditions et exclusions de garantie."
-        keywords="garantie rénovation jantes, garantie peinture jantes 12 mois, qualité jantes alliage, MyJantes garantie"
+        title="Garantie Rénovation Jantes – Qualité Certifiée | MyJantes"
+        description="Toutes nos prestations de rénovation et peinture de jantes sont couvertes par notre garantie*. Découvrez nos engagements qualité, les conditions et exclusions."
+        keywords="garantie rénovation jantes, garantie peinture jantes, qualité jantes alliage, MyJantes garantie"
         canonicalPath="/garanties"
         schema={{
           "@context": "https://schema.org",
           "@type": "WebPage",
-          "name": "Garanties MyJantes – 12 mois sur toutes les prestations",
-          "description": "Garantie totale de 12 mois sur toutes nos rénovations de jantes en alliage.",
+          "name": "Garanties MyJantes – Qualité certifiée sur toutes les prestations",
+          "description": "Garantie* sur toutes nos rénovations de jantes en alliage.",
           "url": "https://myjantes.fr/garanties"
         }}
       />
@@ -39,10 +39,10 @@ export default function Garanties() {
             <div className="w-14 h-14 bg-auto-red text-white rounded-2xl flex items-center justify-center shadow-lg shadow-auto-red/20">
               <ShieldCheck className="w-8 h-8" />
             </div>
-            <h2 className="text-3xl font-black text-gray-900 font-['Montserrat',sans-serif]">Garantie de 12 Mois</h2>
+            <h2 className="text-3xl font-black text-gray-900 font-['Montserrat',sans-serif]">Garantie*</h2>
           </div>
           <p className="text-gray-600 text-lg leading-relaxed mb-8">
-            Toutes nos prestations de rénovation et de peinture bénéficient d'une **garantie totale de 12 mois** à compter de la date de facturation. Cette garantie couvre tout défaut de peinture (décollement, cloquage) lié à une malfaçon de préparation ou d'application.
+            Toutes nos prestations de rénovation et de peinture bénéficient d'une garantie* sur la tenue de peinture et la finition, à compter de la date de facturation. Cette garantie couvre tout défaut de peinture (décollement, cloquage) lié à une malfaçon de préparation ou d'application.
           </p>
           <div className="grid sm:grid-cols-2 gap-6">
             {[
