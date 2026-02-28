@@ -820,7 +820,7 @@ export default function Admin() {
                             </span>
                           </div>
                           <p className="text-gray-700 text-sm leading-relaxed mb-3 italic">"{t.content}"</p>
-                          <p className="font-bold text-gray-900 text-sm">{t.name} <span className="text-gray-400 font-normal">— {t.vehicle}, {t.location}</span></p>
+                          <p className="font-bold text-gray-900 text-sm">{t.name}{(t.vehicle || t.location) && <span className="text-gray-400 font-normal"> — {[t.vehicle, t.location].filter(Boolean).join(", ")}</span>}</p>
                         </div>
                         <div className="flex gap-2 shrink-0">
                           <button
@@ -885,6 +885,8 @@ export default function Admin() {
                         <option value="tarifs">Tarifs</option>
                         <option value="delais">Délais</option>
                         <option value="garantie">Garantie</option>
+                        <option value="devis">Devis & Tarifs</option>
+                        <option value="pratique">Infos pratiques</option>
                       </select>
                     </div>
                     <div>

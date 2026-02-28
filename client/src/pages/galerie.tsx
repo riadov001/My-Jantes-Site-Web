@@ -12,7 +12,11 @@ const categories = [
   { label: "Tout voir", value: "all" },
   { label: "Rénovation", value: "renovation" },
   { label: "Peinture", value: "peinture" },
-  { label: "Redressage", value: "redressage" },
+  { label: "Redressage", value: "devoilage" },
+  { label: "Soudure", value: "soudure" },
+  { label: "Sablage", value: "sablage" },
+  { label: "Personnalisation", value: "personnalisation" },
+  { label: "Hydrodipping", value: "hydrodipping" },
 ];
 
 export default function Galerie() {
