@@ -3,28 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/seo";
 import { CheckCircle2, RefreshCw, ArrowRight } from "lucide-react";
-import type { SiteService, SiteContent } from "@shared/schema";
-import { useEffect, useMemo } from "react";
+import type { SiteService } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 
 export default function Services() {
   const { data: siteServices = [], isLoading } = useQuery<SiteService[]>({ queryKey: ["/api/services"] });
-  const { data: siteContentItems = [] } = useQuery<SiteContent[]>({ queryKey: ["/api/site-content"] });
-  const content = useMemo(() => {
-    const m: Record<string, string> = {};
-    siteContentItems.forEach(i => m[i.key] = i.value);
-    return m;
-  }, [siteContentItems]);
+  const { data: content = {} } = useQuery<Record<string, string>>({ queryKey: ["/api/site-content"] });
 
   const fontFamily = content["typography.font"] || "Montserrat";
-
-  useEffect(() => {
-    if (fontFamily && fontFamily !== "Montserrat") {
-      document.documentElement.style.setProperty("--font-sans", `'${fontFamily}', sans-serif`);
-    } else {
-      document.documentElement.style.removeProperty("--font-sans");
-    }
-  }, [fontFamily]);
 
   const schema = {
     "@context": "https://schema.org",

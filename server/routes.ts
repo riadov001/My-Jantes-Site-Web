@@ -299,6 +299,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.json(c);
   });
 
+  app.patch("/api/admin/site-content/:key", requireAdmin, async (req, res) => {
+    const { value } = req.body;
+    if (value === undefined) return res.status(400).json({ message: "Valeur requise" });
+    const c = await storage.setSiteContent(req.params.key, String(value));
+    return res.json(c);
+  });
+
   app.delete("/api/admin/site-content/:key", requireAdmin, async (req, res) => {
     await storage.deleteSiteContent(req.params.key);
     return res.json({ message: "Contenu supprimé" });

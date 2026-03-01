@@ -1,20 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { SEO } from "@/components/seo";
-import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, ShieldCheck, AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { useMemo } from "react";
-import type { SiteContent } from "@shared/schema";
 
 export default function Garanties() {
-  const { data: siteContentItems = [], isLoading } = useQuery<SiteContent[]>({ queryKey: ["/api/site-content"] });
-  const content = useMemo(() => {
-    const m: Record<string, string> = {};
-    siteContentItems.forEach(i => m[i.key] = i.value);
-    return m;
-  }, [siteContentItems]);
-
+  const { data: content = {}, isLoading } = useQuery<Record<string, string>>({ queryKey: ["/api/site-content"] });
   const fontFamily = content["typography.font"] || "Montserrat";
 
   if (isLoading) return <div className="min-h-screen flex items-center justify-center"><RefreshCw className="w-8 h-8 text-auto-red animate-spin" /></div>;
@@ -24,18 +15,17 @@ export default function Garanties() {
       <SEO
         title={`${content["pages.guarantees.title"] || "Garanties"} - MyJantes`}
         description={content["pages.guarantees.content"]?.slice(0, 160)}
+        keywords="garantie rénovation jantes, garantie peinture jantes, qualité jantes alliage, MyJantes garantie"
         canonicalPath="/garanties"
+        schema={{ "@context": "https://schema.org", "@type": "WebPage", "name": content["pages.guarantees.title"] || "Garanties MyJantes", "url": "https://myjantes.fr/garanties" }}
       />
-      
+
       <div className="bg-auto-dark pt-36 pb-20 md:pt-28 md:pb-12 lg:pt-24 lg:pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Badge className="mb-4 bg-auto-red/20 text-auto-red-light border-auto-red/30 text-xs uppercase tracking-wider">
-            Sérénité Totale
-          </Badge>
-          <h1 className="text-4xl sm:text-6xl font-black text-white mb-6" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>{content["pages.guarantees.title"] || "Qualité Exceptionnelle"}</h1>
-          <p className="text-white/60 max-w-2xl mx-auto text-lg">
-            Votre satisfaction est notre priorité. Nous garantissons chaque jante qui sort de notre atelier.
-          </p>
+          <h1 className="text-4xl sm:text-6xl font-black text-white mb-6" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
+            {content["pages.guarantees.title"] || "Qualité Exceptionnelle"}
+          </h1>
+          <p className="text-white/60 max-w-2xl mx-auto text-lg">Votre satisfaction est notre priorité. Nous garantissons chaque jante qui sort de notre atelier.</p>
         </div>
       </div>
 
@@ -51,12 +41,7 @@ export default function Garanties() {
             {content["pages.guarantees.content"] || "Toutes nos prestations de rénovation et de peinture bénéficient d'une garantie* sur la tenue de peinture et la finition."}
           </div>
           <div className="grid sm:grid-cols-2 gap-6">
-            {[
-              "Tenue de la peinture",
-              "Éclat du vernis",
-              "Adhérence des apprêts",
-              "Conformité de la teinte"
-            ].map(item => (
+            {["Tenue de la peinture", "Éclat du vernis", "Adhérence des apprêts", "Conformité de la teinte"].map(item => (
               <div key={item} className="flex items-center gap-3">
                 <CheckCircle2 className="text-auto-red w-5 h-5 shrink-0" />
                 <span className="font-bold text-gray-900">{item}</span>

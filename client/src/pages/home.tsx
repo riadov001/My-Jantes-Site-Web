@@ -86,9 +86,9 @@ export default function Home() {
 
       {/* ─── HERO ─────────────────────────────────────────────────── */}
       <section className="relative min-h-screen md:min-h-0 flex items-center justify-center overflow-hidden" aria-label="Accueil">
-        {c("hero.bg_video", "/attached_assets/generated_videos/wheel_painting_illustration.mp4") ? (
+        {c("hero.bg_video") ? (
           <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-            <source src={c("hero.bg_video", "/attached_assets/generated_videos/wheel_painting_illustration.mp4")} type="video/mp4" />
+            <source src={c("hero.bg_video")} type="video/mp4" />
           </video>
         ) : c("hero.bg_image") ? (
           <img src={c("hero.bg_image")} alt="" className="absolute inset-0 w-full h-full object-cover" />
