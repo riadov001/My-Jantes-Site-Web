@@ -1,12 +1,12 @@
 import { db } from "./db";
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, asc, sql } from "drizzle-orm";
 import {
-  users, contactRequests, blogPosts, galleryItems, testimonials, faqItems,
+  users, contactRequests, blogPosts, galleryItems, testimonials, faqItems, siteServices, siteContent,
   type User, type InsertUser, type ContactRequest, type InsertContact,
   type BlogPost, type InsertBlog, type GalleryItem, type InsertGallery,
   type Testimonial, type InsertTestimonial, type FaqItem, type InsertFaq,
+  type SiteService, type InsertSiteService, type SiteContent, type InsertSiteContent,
 } from "@shared/schema";
-import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
 
 export interface IStorage {
@@ -42,6 +42,17 @@ export interface IStorage {
   createFaqItem(data: InsertFaq): Promise<FaqItem>;
   updateFaqItem(id: string, data: Partial<InsertFaq>): Promise<FaqItem | undefined>;
   deleteFaqItem(id: string): Promise<void>;
+
+  getSiteServices(publishedOnly?: boolean): Promise<SiteService[]>;
+  getSiteService(id: string): Promise<SiteService | undefined>;
+  createSiteService(data: InsertSiteService): Promise<SiteService>;
+  updateSiteService(id: string, data: Partial<InsertSiteService>): Promise<SiteService | undefined>;
+  deleteSiteService(id: string): Promise<void>;
+
+  getAllSiteContent(): Promise<SiteContent[]>;
+  getSiteContentByKey(key: string): Promise<SiteContent | undefined>;
+  setSiteContent(key: string, value: string, label?: string, category?: string): Promise<SiteContent>;
+  deleteSiteContent(key: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -183,6 +194,59 @@ export class DatabaseStorage implements IStorage {
 
   async deleteFaqItem(id: string) {
     await db.delete(faqItems).where(eq(faqItems.id, id));
+  }
+
+  async getSiteServices(publishedOnly = false) {
+    if (publishedOnly) {
+      return db.select().from(siteServices).where(eq(siteServices.published, true)).orderBy(asc(siteServices.sortOrder));
+    }
+    return db.select().from(siteServices).orderBy(asc(siteServices.sortOrder));
+  }
+
+  async getSiteService(id: string) {
+    const [s] = await db.select().from(siteServices).where(eq(siteServices.id, id));
+    return s;
+  }
+
+  async createSiteService(data: InsertSiteService) {
+    const [s] = await db.insert(siteServices).values(data).returning();
+    return s;
+  }
+
+  async updateSiteService(id: string, data: Partial<InsertSiteService>) {
+    const [s] = await db.update(siteServices).set(data).where(eq(siteServices.id, id)).returning();
+    return s;
+  }
+
+  async deleteSiteService(id: string) {
+    await db.delete(siteServices).where(eq(siteServices.id, id));
+  }
+
+  async getAllSiteContent() {
+    return db.select().from(siteContent).orderBy(siteContent.category, siteContent.key);
+  }
+
+  async getSiteContentByKey(key: string) {
+    const [c] = await db.select().from(siteContent).where(eq(siteContent.key, key));
+    return c;
+  }
+
+  async setSiteContent(key: string, value: string, label = "", category = "general") {
+    const existing = await this.getSiteContentByKey(key);
+    if (existing) {
+      const [c] = await db.update(siteContent)
+        .set({ value, label, category, updatedAt: new Date() })
+        .where(eq(siteContent.key, key))
+        .returning();
+      return c;
+    } else {
+      const [c] = await db.insert(siteContent).values({ key, value, label, category }).returning();
+      return c;
+    }
+  }
+
+  async deleteSiteContent(key: string) {
+    await db.delete(siteContent).where(eq(siteContent.key, key));
   }
 }
 

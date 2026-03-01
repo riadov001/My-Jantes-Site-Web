@@ -11,8 +11,10 @@ import {
   insertGallerySchema,
   insertTestimonialSchema,
   insertFaqSchema,
+  insertSiteServiceSchema,
 } from "@shared/schema";
 import { seedDatabase } from "./seed";
+import { z } from "zod";
 
 const PgSession = connectPgSimple(session);
 
@@ -244,6 +246,66 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.delete("/api/admin/faq/:id", requireAdmin, async (req, res) => {
     await storage.deleteFaqItem(req.params.id);
     return res.json({ message: "FAQ supprimée" });
+  });
+
+  // Site Services routes (public)
+  app.get("/api/services", async (req, res) => {
+    const items = await storage.getSiteServices(true);
+    return res.json(items);
+  });
+
+  // Site Services routes (admin)
+  app.get("/api/admin/services", requireAdmin, async (req, res) => {
+    const items = await storage.getSiteServices(false);
+    return res.json(items);
+  });
+
+  app.post("/api/admin/services", requireAdmin, async (req, res) => {
+    const result = insertSiteServiceSchema.safeParse(req.body);
+    if (!result.success) return res.status(400).json({ errors: result.error.errors });
+    const s = await storage.createSiteService(result.data);
+    return res.status(201).json(s);
+  });
+
+  app.put("/api/admin/services/:id", requireAdmin, async (req, res) => {
+    const result = insertSiteServiceSchema.partial().safeParse(req.body);
+    if (!result.success) return res.status(400).json({ errors: result.error.errors });
+    const s = await storage.updateSiteService(req.params.id, result.data);
+    if (!s) return res.status(404).json({ message: "Prestation non trouvée" });
+    return res.json(s);
+  });
+
+  app.delete("/api/admin/services/:id", requireAdmin, async (req, res) => {
+    await storage.deleteSiteService(req.params.id);
+    return res.json({ message: "Prestation supprimée" });
+  });
+
+  // Site Content routes (public)
+  app.get("/api/site-content", async (req, res) => {
+    const items = await storage.getAllSiteContent();
+    const map: Record<string, string> = {};
+    for (const item of items) {
+      map[item.key] = item.value;
+    }
+    return res.json(map);
+  });
+
+  // Site Content routes (admin)
+  app.get("/api/admin/site-content", requireAdmin, async (req, res) => {
+    const items = await storage.getAllSiteContent();
+    return res.json(items);
+  });
+
+  app.put("/api/admin/site-content/:key", requireAdmin, async (req, res) => {
+    const { value, label, category } = req.body;
+    if (value === undefined) return res.status(400).json({ message: "Valeur requise" });
+    const c = await storage.setSiteContent(req.params.key, String(value), label, category);
+    return res.json(c);
+  });
+
+  app.delete("/api/admin/site-content/:key", requireAdmin, async (req, res) => {
+    await storage.deleteSiteContent(req.params.key);
+    return res.json({ message: "Contenu supprimé" });
   });
 
   return httpServer;

@@ -67,6 +67,28 @@ export const faqItems = pgTable("faq_items", {
   published: boolean("published").notNull().default(true),
 });
 
+export const siteServices = pgTable("site_services", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  image: text("image").notNull().default("/images/service-renovation.png"),
+  badge: text("badge").notNull().default(""),
+  features: jsonb("features").$type<string[]>().notNull().default([]),
+  price: text("price").notNull().default(""),
+  slug: text("slug").notNull().default(""),
+  sortOrder: integer("sort_order").notNull().default(0),
+  published: boolean("published").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const siteContent = pgTable("site_content", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  label: text("label").notNull().default(""),
+  category: text("category").notNull().default("general"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -98,6 +120,15 @@ export const insertFaqSchema = createInsertSchema(faqItems).omit({
   id: true,
 });
 
+export const insertSiteServiceSchema = createInsertSchema(siteServices).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertSiteContentSchema = createInsertSchema(siteContent).omit({
+  updatedAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type ContactRequest = typeof contactRequests.$inferSelect;
@@ -110,3 +141,7 @@ export type Testimonial = typeof testimonials.$inferSelect;
 export type InsertTestimonial = z.infer<typeof insertTestimonialSchema>;
 export type FaqItem = typeof faqItems.$inferSelect;
 export type InsertFaq = z.infer<typeof insertFaqSchema>;
+export type SiteService = typeof siteServices.$inferSelect;
+export type InsertSiteService = z.infer<typeof insertSiteServiceSchema>;
+export type SiteContent = typeof siteContent.$inferSelect;
+export type InsertSiteContent = z.infer<typeof insertSiteContentSchema>;

@@ -7,7 +7,7 @@ Stack : Express + Vite + React + PostgreSQL + Drizzle ORM + TailwindCSS + shadcn
 ## Architecture
 - `client/` — Frontend React (Vite, wouter, TanStack Query)
 - `server/` — Backend Express (routes, storage, seed, vite dev server)
-- `shared/schema.ts` — Modèles Drizzle + Zod (users, contactRequests, blogPosts, galleryItems, testimonials, faqItems)
+- `shared/schema.ts` — Modèles Drizzle + Zod (users, contactRequests, blogPosts, galleryItems, testimonials, faqItems, siteServices, siteContent)
 
 ## Accès Admin
 - Route : `/admin`
@@ -17,8 +17,10 @@ Stack : Express + Vite + React + PostgreSQL + Drizzle ORM + TailwindCSS + shadcn
 ## Fonctionnalités Admin (CRUD complet)
 - **Contacts/Devis** : voir, rechercher, filtrer par statut, trier, changer statut (nouveau/en_cours/traite/annule), supprimer
 - **Galerie** : ajouter, modifier, publier/masquer, supprimer (titre, type, images URL, description, aperçu)
+- **Prestations** : ajouter, modifier, publier/masquer, supprimer — gère les cartes services dynamiquement (titre, description, image, badge, caractéristiques, tarif, slug, ordre)
 - **Avis clients** : ajouter, modifier, publier/masquer, supprimer (nom, ville, véhicule, note 1-5, commentaire)
 - **FAQ** : ajouter, modifier, publier/masquer, supprimer (question, réponse, catégorie, ordre)
+- **Contenu du site** : éditer hero (badge, titre, sous-titre, CTA), stats (4 blocs), bande de confiance, coordonnées (téléphone, WhatsApp, adresse, email), titres des sections, typographie (choix police)
 
 ## Intégration externe (CORS)
 - `appmyjantes.mytoolsgroup.eu` autorisé via CORS

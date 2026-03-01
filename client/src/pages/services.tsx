@@ -1,122 +1,40 @@
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/seo";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
-
-const services = [
-  {
-    id: "renovation-jantes",
-    title: "Rénovation complète de jantes",
-    description: "La rénovation complète est notre prestation phare. Elle redonne une seconde vie à vos jantes abîmées, rayées ou oxydées.",
-    image: "/images/service-renovation.png",
-    features: [
-      "Sablage ou décapage chimique complet",
-      "Application d'un apprêt anti-corrosion",
-      "Peinture en cabine professionnelle",
-      "Vernis bi-composant haute résistance",
-      "Contrôle qualité final",
-    ],
-    price: "À partir de 120€/jante",
-    href: "/services/renovation-jantes",
-  },
-  {
-    id: "peinture-jantes",
-    title: "Peinture & Personnalisation",
-    description: "Exprimez votre personnalité avec une peinture sur mesure. Noir mat, gris anthracite, bronze, bicolore... Toutes les finitions sont possibles.",
-    image: "/images/service-peinture.png",
-    features: [
-      "Plus de 50 couleurs disponibles",
-      "Finitions mat, satiné, brillant, métallisé",
-      "Diamantage sur tour numérique (bi-ton usiné)",
-      "Peinture assortie à la carrosserie",
-      "Peinture à l'eau écologique",
-    ],
-    price: "À partir de 100€/jante",
-    href: "/services/peinture-jantes",
-  },
-  {
-    id: "soudure-jantes",
-    title: "Soudure de jantes",
-    description: "Réparation structurelle de vos jantes fissurées ou cassées. Notre soudure professionnelle TIG/MIG redonne solidité et sécurité.",
-    image: "/images/service-redressage.png",
-    features: [
-      "Diagnostic gratuit avant intervention",
-      "Soudure TIG/MIG professionnelle",
-      "Contrôle d'étanchéité après réparation",
-      "Applicable sur jantes 14 à 22 pouces",
-      "Résultat garanti",
-    ],
-    price: "À partir de 60€/jante",
-    href: "/services/soudure-jantes",
-  },
-  {
-    id: "sablage",
-    title: "Sablage",
-    description: "Le sablage est une étape essentielle pour un résultat de rénovation parfait. Décapage complet de l'ancienne peinture et des impuretés.",
-    image: "/images/service-renovation.png",
-    features: [
-      "Décapage complet de la peinture",
-      "Élimination de la corrosion",
-      "Préparation de surface optimale",
-      "Compatible tous types de jantes",
-      "Étape clé avant peinture",
-    ],
-    price: "Inclus dans la rénovation",
-    href: "/services/sablage",
-  },
-  {
-    id: "devoilage",
-    title: "Devoilage",
-    description: "Une jante voilée ou déformée est un danger pour la sécurité. Notre presse hydraulique de précision corrige tous types de déformations.",
-    image: "/images/service-redressage.png",
-    features: [
-      "Diagnostic gratuit avant intervention",
-      "Presse hydraulique de précision CNC",
-      "Contrôle du voile par laser",
-      "Applicable sur jantes 14 à 22 pouces",
-      "Résultat garanti",
-    ],
-    price: "À partir de 45€/jante",
-    href: "/services/devoilage",
-  },
-  {
-    id: "hydrodipping",
-    title: "Hydrodipping (Coming soon)",
-    description: "Personnalisation par impression hydrographique pour des finitions uniques et originales. Carbone, bois, camouflage et bien plus encore.",
-    image: "/images/gallery-2.png",
-    features: [
-      "Centaines de motifs disponibles",
-      "Finition unique et personnalisée",
-      "Résistant aux UV et intempéries",
-      "Compatible toutes jantes",
-      "Vernis de protection haute résistance",
-    ],
-    price: "Bientôt disponible",
-    href: "/services/hydrodipping",
-  },
-];
+import { ArrowRight, CheckCircle2, RefreshCw } from "lucide-react";
+import type { SiteService } from "@shared/schema";
+import { useEffect } from "react";
 
 export default function Services() {
+  const { data: siteServices = [], isLoading } = useQuery<SiteService[]>({ queryKey: ["/api/services"] });
+  const { data: siteContent = {} } = useQuery<Record<string, string>>({ queryKey: ["/api/site-content"] });
+
+  const fontFamily = siteContent["typography.font"] || "Montserrat";
+
+  useEffect(() => {
+    if (fontFamily && fontFamily !== "Montserrat") {
+      document.documentElement.style.setProperty("--font-sans", `'${fontFamily}', sans-serif`);
+    } else {
+      document.documentElement.style.removeProperty("--font-sans");
+    }
+  }, [fontFamily]);
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "name": "Services de rénovation de jantes – MyJantes Liévin",
     "description": "Rénovation complète, peinture, soudure, sablage, devoilage et hydrodipping de jantes en alliage à Liévin.",
     "url": "https://myjantes.fr/services",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Rénovation complète de jantes", "url": "https://myjantes.fr/services" },
-      { "@type": "ListItem", "position": 2, "name": "Peinture et personnalisation", "url": "https://myjantes.fr/services" },
-      { "@type": "ListItem", "position": 3, "name": "Soudure de jantes", "url": "https://myjantes.fr/services" },
-      { "@type": "ListItem", "position": 4, "name": "Sablage", "url": "https://myjantes.fr/services" },
-      { "@type": "ListItem", "position": 5, "name": "Devoilage", "url": "https://myjantes.fr/services" },
-      { "@type": "ListItem", "position": 6, "name": "Hydrodipping", "url": "https://myjantes.fr/services" }
-    ],
+    "itemListElement": siteServices.map((s, i) => ({
+      "@type": "ListItem", "position": i + 1, "name": s.title, "url": "https://myjantes.fr/services"
+    })),
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
       <SEO
         title="Nos Services - Rénovation, Peinture, Soudure, Sablage | MyJantes"
         description="Découvrez tous nos services : rénovation, peinture, soudure, sablage, devoilage, hydrodipping. Devis gratuit, garantie*."
@@ -125,7 +43,6 @@ export default function Services() {
         schema={schema}
       />
 
-      {/* Hero */}
       <div className="relative bg-auto-dark pt-36 pb-20 md:pt-28 md:pb-12 lg:pt-24 lg:pb-10 overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "url('/images/atelier.png')", backgroundSize: "cover", backgroundPosition: "center" }} />
         <div className="absolute inset-0 bg-auto-dark/80" />
@@ -133,68 +50,81 @@ export default function Services() {
           <Badge className="mb-4 bg-auto-red/20 text-auto-red-light border-auto-red/30 text-xs uppercase tracking-wider">
             Nos prestations
           </Badge>
-          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4" data-testid="heading-services-page">
-            Services professionnels
+          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4" data-testid="heading-services-page" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
+            {siteContent["sections.services.title"] || "Services professionnels"}
           </h1>
           <p className="text-white/60 max-w-2xl mx-auto text-lg">
-            Des solutions adaptées à tous vos besoins pour des jantes toujours parfaites.
+            {siteContent["sections.services.subtitle"] || "Des solutions adaptées à tous vos besoins pour des jantes toujours parfaites."}
           </p>
         </div>
       </div>
 
-      {/* Services list */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-        <div className="space-y-12 lg:space-y-16">
-          {services.map((service, i) => (
-            <div
-              key={service.id}
-              id={service.id}
-              className={`grid lg:grid-cols-2 gap-12 items-center ${i % 2 === 1 ? "lg:grid-flow-dense" : ""}`}
-              data-testid={`section-service-${service.id}`}
-            >
-              <div className={i % 2 === 1 ? "lg:col-start-2" : ""}>
-                <img
-                  src={service.image}
-                  alt={service.title}
-                  className="w-full rounded-lg shadow-xl"
-                  loading="lazy"
-                />
-              </div>
-              <div className={i % 2 === 1 ? "lg:col-start-1 lg:row-start-1" : ""}>
-                <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 text-xs uppercase tracking-wider">
-                  {service.price}
-                </Badge>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">{service.title}</h2>
-                <p className="text-gray-500 mb-6 leading-relaxed">{service.description}</p>
-                <ul className="space-y-3 mb-8">
-                  {service.features.map((feat) => (
-                    <li key={feat} className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                      <span className="text-gray-600 text-sm">{feat}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex gap-3 flex-wrap">
-                  <Button
-                    asChild
-                    className="bg-auto-red hover:bg-auto-red-dark text-white border-0"
-                    data-testid={`button-service-devis-${service.id}`}
-                  >
-                    <Link href="/contact">
-                      Devis gratuit <ArrowRight className="ml-2 w-4 h-4" />
-                    </Link>
-                  </Button>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-24">
+            <RefreshCw className="w-8 h-8 text-auto-red animate-spin" />
+          </div>
+        ) : (
+          <div className="space-y-12 lg:space-y-16">
+            {siteServices.map((service, i) => (
+              <div
+                key={service.id}
+                id={service.slug || service.id}
+                className={`grid lg:grid-cols-2 gap-12 items-center ${i % 2 === 1 ? "lg:grid-flow-dense" : ""}`}
+                data-testid={`section-service-${service.id}`}
+              >
+                <div className={i % 2 === 1 ? "lg:col-start-2" : ""}>
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full rounded-2xl shadow-xl"
+                    loading="lazy"
+                  />
+                </div>
+                <div className={i % 2 === 1 ? "lg:col-start-1 lg:row-start-1" : ""}>
+                  {service.price && (
+                    <Badge className="mb-4 bg-auto-red/10 text-auto-red border-auto-red/20 text-xs uppercase tracking-wider">
+                      {service.price}
+                    </Badge>
+                  )}
+                  <div className="flex items-center gap-2 mb-3 flex-wrap">
+                    <h2 className="text-2xl sm:text-3xl font-black text-gray-900" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>{service.title}</h2>
+                    {service.badge && (
+                      <span className="text-[10px] font-black bg-auto-red text-white px-2 py-0.5 rounded-full">{service.badge}</span>
+                    )}
+                  </div>
+                  <p className="text-gray-500 mb-6 leading-relaxed">{service.description}</p>
+                  {(service.features as string[]).length > 0 && (
+                    <ul className="space-y-3 mb-8">
+                      {(service.features as string[]).map((feat) => (
+                        <li key={feat} className="flex items-start gap-3">
+                          <CheckCircle2 className="w-5 h-5 text-auto-red shrink-0 mt-0.5" />
+                          <span className="text-gray-600 text-sm">{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <div className="flex gap-3 flex-wrap">
+                    <Button
+                      asChild
+                      className="bg-auto-red hover:bg-auto-red-dark text-white border-0"
+                      data-testid={`button-service-devis-${service.id}`}
+                    >
+                      <Link href="/contact">
+                        Devis gratuit <ArrowRight className="ml-2 w-4 h-4" />
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* CTA */}
       <div className="bg-gray-950 py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Besoin d'un conseil personnalisé ?</h2>
+          <h2 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>Besoin d'un conseil personnalisé ?</h2>
           <p className="text-white/60 mb-8">Notre équipe répond à toutes vos questions et vous propose le meilleur devis.</p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0 px-8" data-testid="button-services-cta-contact">
