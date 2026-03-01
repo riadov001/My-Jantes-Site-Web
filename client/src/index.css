@@ -43,6 +43,9 @@
   --chart-3: 197 37% 45%;
   --chart-4: 43 74% 49%;
   --chart-5: 27 87% 55%;
+  --auto-red: 0 84% 50%;
+  --auto-red-dark: 0 77% 42%;
+  --auto-red-light: 0 93% 82%;
   --font-sans: 'Montserrat', sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;

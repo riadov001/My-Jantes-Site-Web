@@ -81,9 +81,9 @@ export default {
           offline: "rgb(156 163 175)",
         },
         auto: {
-          red: "#dc2626",
-          "red-dark": "#b91c1c",
-          "red-light": "#fca5a5",
+          red: "hsl(var(--auto-red) / <alpha-value>)",
+          "red-dark": "hsl(var(--auto-red-dark) / <alpha-value>)",
+          "red-light": "hsl(var(--auto-red-light) / <alpha-value>)",
           gold: "#d97706",
           "dark": "#0f0f0f",
           "dark-2": "#1a1a1a",

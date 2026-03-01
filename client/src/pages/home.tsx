@@ -5,12 +5,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/seo";
 import {
-  Star, ArrowRight, Phone, MessageCircle, Shield, Zap, Award, Users,
+  Star, ArrowRight, Phone, Shield, Zap, Award, Users,
   CheckCircle2, Smartphone, Monitor, Globe, LayoutDashboard, Clock,
   Camera, FileText, Wrench, PartyPopper, MapPin, ChevronRight
 } from "lucide-react";
 import type { Testimonial, GalleryItem, SiteService } from "@shared/schema";
-import { useEffect } from "react";
 
 const DEFAULT_STATS = [
   { value: "5 000+", label: "Jantes rénovées" },
@@ -28,7 +27,7 @@ const DEFAULT_TRUST = [
 ];
 
 const process = [
-  { icon: Camera, step: "01", title: "Envoyez vos photos", desc: "Par WhatsApp, e-mail ou via notre formulaire, montrez-nous vos jantes.", whatsapp: true },
+  { icon: Camera, step: "01", title: "Envoyez vos photos", desc: "Par WhatsApp, e-mail ou via notre formulaire, montrez-nous vos jantes." },
   { icon: FileText, step: "02", title: "Devis sous 24h", desc: "Réponse rapide avec estimation personnalisée gratuite." },
   { icon: Wrench, step: "03", title: "Dépôt à l'atelier", desc: "46 rue de la Convention, 62800 Liévin." },
   { icon: PartyPopper, step: "04", title: "Restitution de vos jantes", desc: "Restitution de vos jantes avec leur garantie*." },
@@ -59,14 +58,6 @@ export default function Home() {
 
   const fontFamily = c("typography.font", "Montserrat");
 
-  useEffect(() => {
-    if (fontFamily && fontFamily !== "Montserrat") {
-      document.documentElement.style.setProperty("--font-sans", `'${fontFamily}', sans-serif`);
-    } else {
-      document.documentElement.style.removeProperty("--font-sans");
-    }
-  }, [fontFamily]);
-
   const displayServices = siteServices.length > 0 ? siteServices : [];
 
   const schema = {
@@ -95,9 +86,13 @@ export default function Home() {
 
       {/* ─── HERO ─────────────────────────────────────────────────── */}
       <section className="relative min-h-screen md:min-h-0 flex items-center justify-center overflow-hidden" aria-label="Accueil">
-        <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
-          <source src="/attached_assets/generated_videos/wheel_painting_illustration.mp4" type="video/mp4" />
-        </video>
+        {c("hero.bg_video", "/attached_assets/generated_videos/wheel_painting_illustration.mp4") ? (
+          <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover">
+            <source src={c("hero.bg_video", "/attached_assets/generated_videos/wheel_painting_illustration.mp4")} type="video/mp4" />
+          </video>
+        ) : c("hero.bg_image") ? (
+          <img src={c("hero.bg_image")} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        ) : null}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-auto-dark" />
 
         <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-10 md:pt-28 md:pb-12 lg:pt-24 lg:pb-12">
@@ -106,14 +101,6 @@ export default function Home() {
               <span className="w-2 h-2 rounded-full bg-auto-red animate-pulse" />
               {c("hero.badge", "Atelier à Liévin — 62800")}
             </span>
-          </div>
-
-          <div className="flex justify-center mb-6">
-            <img
-              src="/images/logo-myjantes.png"
-              alt="Logo MyJantes"
-              className="h-32 sm:h-44 lg:h-56 w-auto object-contain brightness-0 invert drop-shadow-2xl"
-            />
           </div>
 
           <h1
@@ -207,18 +194,6 @@ export default function Home() {
                   </div>
                   <h3 className="font-black text-gray-900 text-base mb-2" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>{step.title}</h3>
                   <p className="text-gray-500 text-sm leading-relaxed flex-grow">{step.desc}</p>
-                  {step.whatsapp && (
-                    <a
-                      href={c("contact.whatsapp_href", "https://wa.me/33671370418?text=Bonjour,%20je%20souhaite%20un%20devis%20pour%20mes%20jantes.")}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      data-testid="link-step1-whatsapp"
-                      className="inline-flex items-center gap-2 mt-3 bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-colors"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      WhatsApp : {c("contact.whatsapp_number", "06 71 37 04 18")}
-                    </a>
-                  )}
                 </div>
               </div>
             ))}

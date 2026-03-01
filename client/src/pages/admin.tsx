@@ -120,21 +120,53 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.E
 };
 
 const AVAILABLE_FONTS = [
-  { value: "Montserrat", label: "Montserrat (actuelle)" },
+  { value: "Montserrat", label: "Montserrat" },
   { value: "Open Sans", label: "Open Sans" },
   { value: "Poppins", label: "Poppins" },
   { value: "Raleway", label: "Raleway" },
   { value: "Inter", label: "Inter" },
   { value: "Roboto", label: "Roboto" },
+  { value: "Lato", label: "Lato" },
+  { value: "Nunito", label: "Nunito" },
+  { value: "Oswald", label: "Oswald" },
+  { value: "Playfair Display", label: "Playfair Display" },
+  { value: "Bebas Neue", label: "Bebas Neue" },
+  { value: "Quicksand", label: "Quicksand" },
+  { value: "Rubik", label: "Rubik" },
+  { value: "Work Sans", label: "Work Sans" },
 ];
 
-const CONTENT_FIELDS: { key: string; label: string; category: string; multiline?: boolean; type?: "json-array-simple" | "json-stats" | "font-select" }[] = [
-  { key: "hero.badge", label: "Badge hero (texte sur fond rouge)", category: "hero" },
+const COLOR_PRESETS = [
+  { value: "red", label: "Rouge (par défaut)", preview: "#dc2626" },
+  { value: "blue", label: "Bleu", preview: "#3b82f6" },
+  { value: "green", label: "Vert", preview: "#16a34a" },
+  { value: "orange", label: "Orange", preview: "#f97316" },
+  { value: "purple", label: "Violet", preview: "#8b5cf6" },
+  { value: "pink", label: "Rose", preview: "#ec4899" },
+  { value: "teal", label: "Turquoise", preview: "#14b8a6" },
+  { value: "gold", label: "Or", preview: "#eab308" },
+];
+
+const LOGO_SIZES = [
+  { value: "sm", label: "Petit (48px)" },
+  { value: "md", label: "Moyen (64px)" },
+  { value: "lg", label: "Grand (80px)" },
+  { value: "xl", label: "Très grand (96px)" },
+];
+
+const CONTENT_FIELDS: { key: string; label: string; category: string; multiline?: boolean; type?: "json-array-simple" | "json-stats" | "font-select" | "color-select" | "logo-size-select" }[] = [
+  { key: "header.logo_url", label: "URL du logo (header & footer)", category: "header" },
+  { key: "header.logo_size", label: "Taille du logo dans le header", category: "header", type: "logo-size-select" },
+  { key: "theme.color", label: "Couleur principale du site", category: "theme", type: "color-select" },
+  { key: "typography.font", label: "Police d'écriture principale", category: "typography", type: "font-select" },
+  { key: "hero.badge", label: "Badge hero (texte sur fond couleur)", category: "hero" },
   { key: "hero.title_line1", label: "Titre hero — ligne 1", category: "hero" },
-  { key: "hero.title_line2", label: "Titre hero — ligne 2 (accent rouge)", category: "hero" },
+  { key: "hero.title_line2", label: "Titre hero — ligne 2 (accent couleur)", category: "hero" },
   { key: "hero.subtitle", label: "Sous-titre hero", category: "hero", multiline: true },
   { key: "hero.cta_primary", label: "Bouton principal (devis)", category: "hero" },
   { key: "hero.cta_gallery", label: "Bouton galerie", category: "hero" },
+  { key: "hero.bg_video", label: "URL vidéo fond hero (MP4)", category: "hero" },
+  { key: "hero.bg_image", label: "URL image fond hero (si pas de vidéo)", category: "hero" },
   { key: "stats", label: "Statistiques (4 blocs)", category: "stats", type: "json-stats" },
   { key: "trust_items", label: "Bande de confiance (items)", category: "trust", type: "json-array-simple" },
   { key: "contact.phone", label: "Numéro de téléphone (affiché)", category: "contact" },
@@ -151,16 +183,27 @@ const CONTENT_FIELDS: { key: string; label: string; category: string; multiline?
   { key: "sections.gallery.subtitle", label: "Sous-titre — Section galerie", category: "sections" },
   { key: "sections.testimonials.title", label: "Titre — Section avis clients", category: "sections" },
   { key: "sections.whyus.title", label: "Titre — Section avantages", category: "sections" },
-  { key: "typography.font", label: "Police d'écriture principale", category: "typography", type: "font-select" },
+  { key: "footer.tagline", label: "Slogan sous le logo", category: "footer" },
+  { key: "footer.hours_line1", label: "Horaires ligne 1", category: "footer" },
+  { key: "footer.hours_line2", label: "Horaires ligne 2", category: "footer" },
+  { key: "footer.hours_short", label: "Horaires (format court)", category: "footer" },
+  { key: "footer.social_instagram", label: "Lien Instagram", category: "footer" },
+  { key: "footer.social_facebook", label: "Lien Facebook", category: "footer" },
+  { key: "footer.social_snapchat", label: "Lien Snapchat", category: "footer" },
+  { key: "footer.social_tiktok", label: "Lien TikTok", category: "footer" },
+  { key: "footer.social_google", label: "Lien avis Google", category: "footer" },
 ];
 
 const CATEGORY_LABELS: Record<string, string> = {
+  header: "Header & Logo",
+  theme: "Couleur du site",
+  typography: "Typographie",
   hero: "Section Hero",
   stats: "Statistiques",
   trust: "Bande de confiance",
   contact: "Coordonnées & Contact",
   sections: "Titres des sections",
-  typography: "Typographie",
+  footer: "Footer & Réseaux sociaux",
 };
 
 function StatEditor({ value, onChange }: { value: string; onChange: (v: string) => void }) {
@@ -1115,10 +1158,13 @@ export default function Admin() {
                     <Card key={category} className="border-0 shadow-sm">
                       <CardContent className="p-6">
                         <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                          {category === "header" && <Image className="w-4 h-4 text-auto-red" />}
+                          {category === "theme" && <Settings className="w-4 h-4 text-amber-600" />}
                           {category === "hero" && <Globe className="w-4 h-4 text-auto-red" />}
                           {category === "typography" && <Type className="w-4 h-4 text-purple-600" />}
                           {category === "contact" && <Phone className="w-4 h-4 text-blue-600" />}
                           {category === "sections" && <FileText className="w-4 h-4 text-gray-600" />}
+                          {category === "footer" && <Globe className="w-4 h-4 text-green-600" />}
                           {CATEGORY_LABELS[category] || category}
                         </h3>
                         <div className="space-y-4">
@@ -1142,7 +1188,36 @@ export default function Admin() {
                                   )}
                                 </div>
 
-                                {field.type === "font-select" ? (
+                                {field.type === "color-select" ? (
+                                  <div>
+                                    <div className="flex flex-wrap gap-2">
+                                      {COLOR_PRESETS.map(cp => (
+                                        <button
+                                          key={cp.value}
+                                          onClick={() => setContentEdits(p => ({ ...p, [field.key]: cp.value }))}
+                                          data-testid={`button-color-${cp.value}`}
+                                          className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${(currentVal || "red") === cp.value ? "border-gray-900 bg-gray-50 shadow-sm" : "border-gray-200 hover:border-gray-300"}`}
+                                        >
+                                          <span className="w-5 h-5 rounded-full shadow-inner border border-black/10" style={{ backgroundColor: cp.preview }} />
+                                          {cp.label}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                ) : field.type === "logo-size-select" ? (
+                                  <div>
+                                    <select
+                                      value={currentVal || "lg"}
+                                      onChange={e => setContentEdits(p => ({ ...p, [field.key]: e.target.value }))}
+                                      className="w-full h-10 border rounded-md px-3 text-sm"
+                                      data-testid={`select-content-${field.key.replace(/\./g, "-")}`}
+                                    >
+                                      {LOGO_SIZES.map(s => (
+                                        <option key={s.value} value={s.value}>{s.label}</option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                ) : field.type === "font-select" ? (
                                   <div>
                                     <select
                                       value={currentVal}
@@ -1156,11 +1231,6 @@ export default function Admin() {
                                       ))}
                                     </select>
                                     <p className="text-xs text-gray-400 mt-1">Aperçu: <span style={{ fontFamily: currentVal, fontSize: "14px" }}>MyJantes — L'expert de la jante alu à Liévin</span></p>
-                                    {isDirty && (
-                                      <Button size="sm" onClick={() => saveContent(field.key)} disabled={savingContent[field.key]} className="mt-2 h-7 px-3 text-xs bg-auto-red hover:bg-auto-red-dark text-white border-0">
-                                        {savingContent[field.key] ? "..." : <><Save className="w-3 h-3 mr-1" /> Appliquer la police</>}
-                                      </Button>
-                                    )}
                                   </div>
                                 ) : field.type === "json-stats" ? (
                                   <StatEditor value={currentVal} onChange={v => setContentEdits(p => ({ ...p, [field.key]: v }))} />

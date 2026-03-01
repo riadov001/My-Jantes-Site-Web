@@ -25,11 +25,8 @@ export async function seedDatabase() {
         await seedServices();
       }
 
-      // Seed site content if empty
-      const existingContent = await db.select().from(siteContent).limit(1);
-      if (existingContent.length === 0) {
-        await seedSiteContent();
-      }
+      // Seed missing site content keys
+      await seedSiteContent();
 
       return;
     }
@@ -178,12 +175,18 @@ async function seedServices() {
 
 async function seedSiteContent() {
   const defaults = [
+    { key: "header.logo_url", value: "/images/logo-myjantes.png", label: "URL du logo", category: "header" },
+    { key: "header.logo_size", value: "lg", label: "Taille du logo", category: "header" },
+    { key: "theme.color", value: "red", label: "Couleur principale", category: "theme" },
+    { key: "typography.font", value: "Montserrat", label: "Police d'écriture principale", category: "typography" },
     { key: "hero.badge", value: "Atelier à Liévin — 62800", label: "Badge Hero", category: "hero" },
     { key: "hero.title_line1", value: "L'expert de la", label: "Titre hero ligne 1", category: "hero" },
     { key: "hero.title_line2", value: "jante alu", label: "Titre hero ligne 2 (accent)", category: "hero" },
     { key: "hero.subtitle", value: "Soudure · Sablage · Devoilage · Rénovation · Personnalisation · Hydrodipping", label: "Sous-titre hero", category: "hero" },
     { key: "hero.cta_primary", value: "Devis gratuit", label: "Bouton principal CTA", category: "hero" },
     { key: "hero.cta_gallery", value: "Voir les réalisations", label: "Bouton galerie CTA", category: "hero" },
+    { key: "hero.bg_video", value: "/attached_assets/generated_videos/wheel_painting_illustration.mp4", label: "Vidéo fond hero", category: "hero" },
+    { key: "hero.bg_image", value: "", label: "Image fond hero (fallback)", category: "hero" },
     { key: "stats", value: JSON.stringify([{ value: "5 000+", label: "Jantes rénovées" }, { value: "98%", label: "Clients satisfaits" }, { value: "garantie*", label: "Sur nos prestations" }, { value: "48h", label: "Délai moyen" }]), label: "Statistiques (JSON)", category: "stats" },
     { key: "trust_items", value: JSON.stringify(["Peinture certifiée OEM", "Diamantage sur tour numérique", "Garantie*", "Devis gratuit sous 24h", "Liévin — Hauts-de-France"]), label: "Bande de confiance (JSON)", category: "trust" },
     { key: "contact.phone", value: "03 21 40 80 53", label: "Téléphone", category: "contact" },
@@ -192,7 +195,6 @@ async function seedSiteContent() {
     { key: "contact.whatsapp_href", value: "https://wa.me/33671370418?text=Bonjour,%20je%20souhaite%20un%20devis%20pour%20mes%20jantes.", label: "Lien WhatsApp (href)", category: "contact" },
     { key: "contact.address", value: "46 rue de la Convention, 62800 Liévin", label: "Adresse atelier", category: "contact" },
     { key: "contact.email", value: "contact@myjantes.com", label: "Email", category: "contact" },
-    { key: "typography.font", value: "Montserrat", label: "Police d'écriture principale", category: "typography" },
     { key: "sections.process.title", value: "Comment ça marche ?", label: "Titre section processus", category: "sections" },
     { key: "sections.process.subtitle", value: "De vos photos à des jantes comme neuves — en 4 étapes simples.", label: "Sous-titre section processus", category: "sections" },
     { key: "sections.services.title", value: "Expertise complète", label: "Titre section prestations", category: "sections" },
@@ -201,8 +203,21 @@ async function seedSiteContent() {
     { key: "sections.gallery.subtitle", value: "Avant / Après — L'excellence MyJantes en images.", label: "Sous-titre section galerie", category: "sections" },
     { key: "sections.testimonials.title", value: "Ce que disent nos clients", label: "Titre section avis", category: "sections" },
     { key: "sections.whyus.title", value: "Pourquoi choisir MyJantes ?", label: "Titre section avantages", category: "sections" },
+    { key: "footer.tagline", value: "L'expert de la jante alu dans les Hauts-de-France", label: "Slogan footer", category: "footer" },
+    { key: "footer.hours_line1", value: "Lun–Ven : 9h – 18h", label: "Horaires ligne 1", category: "footer" },
+    { key: "footer.hours_line2", value: "Sam : 9h – 14h | Dim : Fermé", label: "Horaires ligne 2", category: "footer" },
+    { key: "footer.hours_short", value: "Lun-Ven 9h-18h", label: "Horaires courts", category: "footer" },
+    { key: "footer.social_instagram", value: "https://www.instagram.com/myjantes_officiel", label: "Lien Instagram", category: "footer" },
+    { key: "footer.social_facebook", value: "https://www.facebook.com/MyJantes", label: "Lien Facebook", category: "footer" },
+    { key: "footer.social_snapchat", value: "https://www.snapchat.com/add/myjantes", label: "Lien Snapchat", category: "footer" },
+    { key: "footer.social_tiktok", value: "https://www.tiktok.com/@myjantes", label: "Lien TikTok", category: "footer" },
+    { key: "footer.social_google", value: "https://g.page/r/myjantes/review", label: "Lien avis Google", category: "footer" },
   ];
+  const existingKeys = await db.select({ key: siteContent.key }).from(siteContent);
+  const existingSet = new Set(existingKeys.map(r => r.key));
   for (const item of defaults) {
-    await storage.setSiteContent(item.key, item.value, item.label, item.category);
+    if (!existingSet.has(item.key)) {
+      await storage.setSiteContent(item.key, item.value, item.label, item.category);
+    }
   }
 }

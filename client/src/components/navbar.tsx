@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Phone, ChevronDown } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Menu, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navLinks = [
@@ -11,11 +12,25 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
+const LOGO_SIZES: Record<string, string> = {
+  sm: "h-12",
+  md: "h-16",
+  lg: "h-20",
+  xl: "h-24",
+};
+
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [location] = useLocation();
+  const { data: siteContent = {} } = useQuery<Record<string, string>>({ queryKey: ["/api/site-content"] });
+
+  const logoUrl = siteContent["header.logo_url"] || "/images/logo-myjantes.png";
+  const logoSize = siteContent["header.logo_size"] || "lg";
+  const logoClass = LOGO_SIZES[logoSize] || LOGO_SIZES.lg;
+  const phone = siteContent["contact.phone"] || "03 21 40 80 53";
+  const phoneHref = siteContent["contact.phone_href"] || "tel:+33321408053";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -43,22 +58,20 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 lg:h-24">
-          {/* Logo */}
           <Link href="/" data-testid="link-logo" className="flex items-center group">
             <img
-              src="/images/logo-myjantes.png"
+              src={logoUrl}
               alt="MyJantes - L'Expert des jantes en alu"
-              className="h-16 w-auto object-contain group-hover:opacity-90 transition-opacity"
+              className={`${logoClass} w-auto object-contain group-hover:opacity-90 transition-opacity`}
             />
           </Link>
 
-          {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => (
               <div
                 key={link.href}
                 className="relative"
-                onMouseEnter={() => link.children && setOpenDropdown(link.href)}
+                onMouseEnter={() => undefined}
                 onMouseLeave={() => setOpenDropdown(null)}
               >
                 <Link
@@ -72,33 +85,18 @@ export function Navbar() {
                 >
                   {link.label}
                 </Link>
-                {link.children && openDropdown === link.href && (
-                  <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-md shadow-xl border border-gray-100 py-1 z-50">
-                    {link.children.map((child) => (
-                      <Link
-                        key={child.href}
-                        href={child.href}
-                        data-testid={`link-dropdown-${child.label.toLowerCase().replace(/\s/g, "-")}`}
-                        className="block px-4 py-2.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
               </div>
             ))}
           </div>
 
-          {/* CTA + mobile toggle */}
           <div className="flex items-center gap-3">
             <a
-              href="tel:+33321408053"
+              href={phoneHref}
               data-testid="link-phone-cta"
               className="hidden sm:flex items-center gap-2 text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
             >
               <Phone className="w-4 h-4 text-auto-red" />
-              <span>03 21 40 80 53</span>
+              <span>{phone}</span>
             </a>
               <Button
                 asChild
@@ -119,7 +117,6 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {isOpen && (
         <div className="lg:hidden border-t border-gray-100 bg-white">
           <div className="px-4 py-4 space-y-1">
@@ -136,30 +133,16 @@ export function Navbar() {
                 >
                   {link.label}
                 </Link>
-                {link.children && (
-                  <div className="ml-4 mt-1 space-y-1">
-                    {link.children.map((child) => (
-                      <Link
-                        key={child.href}
-                        href={child.href}
-                        data-testid={`link-mobile-sub-${child.label.toLowerCase().replace(/\s/g, "-")}`}
-                        className="block px-3 py-2 text-xs text-gray-500 hover:text-gray-800 transition-colors"
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
               </div>
             ))}
             <div className="pt-3 flex flex-col gap-2">
               <a
-                href="tel:+33321408053"
+                href={phoneHref}
                 className="flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700"
                 data-testid="link-mobile-phone"
               >
                 <Phone className="w-4 h-4 text-auto-red" />
-                03 21 40 80 53
+                {phone}
               </a>
               <Button
                 asChild
