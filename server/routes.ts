@@ -283,11 +283,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   // Site Content routes (public)
   app.get("/api/site-content", async (req, res) => {
     const items = await storage.getAllSiteContent();
-    const map: Record<string, string> = {};
-    for (const item of items) {
-      map[item.key] = item.value;
-    }
-    return res.json(map);
+    return res.json(items);
   });
 
   // Site Content routes (admin)

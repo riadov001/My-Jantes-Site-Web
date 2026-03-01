@@ -11,23 +11,17 @@ const ADMIN_PASSWORD = "MyJantes@2026!*";
 
 export async function seedDatabase() {
   try {
-    // Always ensure admin user has a valid hashed password
     const [existingAdmin] = await db.select().from(users).where(eq(users.username, ADMIN_EMAIL));
     if (existingAdmin) {
       if (!existingAdmin.password || existingAdmin.password.length < 10) {
         const hash = await bcrypt.hash(ADMIN_PASSWORD, 10);
         await db.update(users).set({ password: hash, isAdmin: true }).where(eq(users.username, ADMIN_EMAIL));
       }
-
-      // Seed services if empty
       const existingServices = await db.select().from(siteServices).limit(1);
       if (existingServices.length === 0) {
         await seedServices();
       }
-
-      // Seed missing site content keys
       await seedSiteContent();
-
       return;
     }
 
@@ -53,26 +47,6 @@ export async function seedDatabase() {
         metaDescription: "Apprenez à entretenir vos jantes en alliage avec nos conseils professionnels.",
         published: true,
       },
-      {
-        title: "Rénovation de jantes : Quand est-il temps de les refaire ?",
-        slug: "quand-renover-jantes",
-        excerpt: "Rayures, fissures, déformations... Apprenez à identifier les signes qui indiquent qu'il est temps de rénover vos jantes.",
-        content: `# Rénovation de jantes : Quand agir ?\n\nVos jantes subissent quotidiennement de nombreuses agressions. Il est important de savoir identifier le bon moment pour les rénover.\n\n## Les signes qui ne trompent pas\n\n### Rayures et éraflures\nLes rayures superficielles sont les dommages les plus courants. Elles peuvent souvent être traitées par polissage ou peinture locale.\n\n### Déformations et voiles\nUne jante déformée ou voilée peut affecter la tenue de route et la sécurité. Un redressage professionnel s'impose.\n\n### Corrosion et oxydation\nL'oxydation est un signe de dégradation avancée. Sans traitement, elle peut fragiliser la structure de la jante.\n\n## Notre solution\n\nChez MyJantes, nous réalisons un diagnostic complet gratuit avant tout devis. Contactez-nous pour une évaluation de vos jantes.`,
-        coverImage: "/images/service-renovation.png",
-        metaTitle: "Quand Rénover ses Jantes - Guide Complet | MyJantes",
-        metaDescription: "Identifiez les signes d'usure de vos jantes : rayures, déformations, corrosion.",
-        published: true,
-      },
-      {
-        title: "Les tendances de peinture jantes 2024 : Couleurs et finitions tendance",
-        slug: "tendances-peinture-jantes-2024",
-        excerpt: "Noir mat, gris anthracite, bronze... Découvrez les couleurs et finitions les plus tendance pour personnaliser vos jantes en 2024.",
-        content: `# Tendances Peinture Jantes 2024\n\nLa personnalisation des jantes est en plein essor. Voici les tendances qui dominent le marché en 2024.\n\n## Les couleurs phares\n\n### Noir mat\nLe noir mat reste la couleur la plus demandée. Il apporte un aspect sportif et élégant à tout type de véhicule.\n\n### Gris anthracite\nCette teinte sophistiquée s'accorde parfaitement avec la plupart des couleurs de carrosserie.\n\n### Bronze et cuivre\nLes tons chauds métalliques font leur grand retour et se marient idéalement avec les véhicules sombres.\n\n## Les finitions tendance\n\n- **Mat** : élégant et sportif\n- **Brillant** : classique et premium\n- **Diamantage sur tour numérique** : haut de gamme avec une touche de brillance\n- **Bicolore** : personnalisation maximale`,
-        coverImage: "/images/service-peinture.png",
-        metaTitle: "Tendances Peinture Jantes 2024 - Couleurs et Finitions | MyJantes",
-        metaDescription: "Découvrez les tendances 2024 en peinture de jantes : noir mat, gris anthracite, bronze.",
-        published: true,
-      },
     ]);
 
     await db.insert(galleryItems).values([
@@ -85,12 +59,6 @@ export async function seedDatabase() {
     await db.insert(faqItems).values([
       { question: "Combien de temps dure une rénovation de jantes ?", answer: "La durée varie selon le type de prestation. Un redressage simple prend 1 à 2 jours. Une rénovation complète avec peinture peut prendre 3 à 5 jours ouvrés.", category: "delais", sortOrder: 1, published: true },
       { question: "Quels types de jantes pouvez-vous rénover ?", answer: "Nous travaillons sur tous types de jantes en alliage (aluminium), quelle que soit la marque ou le modèle. Nous intervenons également sur les jantes acier.", category: "services", sortOrder: 2, published: true },
-      { question: "La rénovation de jantes est-elle garantie ?", answer: "Oui ! Toutes nos prestations bénéficient d'une garantie* sur la tenue de peinture et la finition. Nous utilisons des peintures professionnelles haute résistance.", category: "garantie", sortOrder: 3, published: true },
-      { question: "Peut-on changer la couleur de ses jantes ?", answer: "Absolument ! Nous pouvons peindre vos jantes dans la couleur de votre choix : noir mat, gris anthracite, bronze, couleur carrosserie assortie et bien plus encore.", category: "services", sortOrder: 4, published: true },
-      { question: "Comment obtenir un devis ?", answer: "Contactez-nous par téléphone, WhatsApp ou via notre formulaire en ligne. Envoyez-nous des photos de vos jantes et nous vous répondrons dans les 24h avec un devis gratuit.", category: "devis", sortOrder: 5, published: true },
-      { question: "Faut-il démonter les roues avant de les apporter ?", answer: "Non, vous pouvez amener votre véhicule tel quel. Nous nous occupons du démontage et remontage des jantes. Nous pouvons également intervenir si vous avez déjà démonté les roues.", category: "pratique", sortOrder: 6, published: true },
-      { question: "Quels sont vos tarifs ?", answer: "Nos tarifs débutent à partir de 45€ par jante pour un polissage simple. La rénovation complète commence à partir de 120€ par jante. Contactez-nous pour un devis personnalisé.", category: "tarifs", sortOrder: 7, published: true },
-      { question: "Puis-je vous envoyer uniquement mes jantes par colis ?", answer: "Oui, nous acceptons les jantes envoyées par colis. Contactez-nous d'abord pour convenir des modalités d'envoi et de retour. Des frais de transport s'appliquent.", category: "pratique", sortOrder: 8, published: true },
     ]);
 
     await seedServices();
@@ -109,7 +77,7 @@ async function seedServices() {
       description: "Réparation structurelle de vos jantes fissurées ou cassées par soudure professionnelle TIG/MIG.",
       image: "/images/service-renovation.png",
       badge: "Réparation",
-      features: ["Diagnostic gratuit avant intervention", "Soudure TIG/MIG professionnelle", "Contrôle d'étanchéité après réparation", "Applicable sur jantes 14 à 22 pouces", "Résultat garanti"],
+      features: ["Diagnostic gratuit avant intervention", "Soudure TIG/MIG professionnelle", "Contrôle d'étanchéité après réparation", "Applicable on jantes 14 à 22 pouces", "Résultat garanti"],
       price: "À partir de 60€/jante",
       slug: "soudure-jantes",
       sortOrder: 1,
@@ -131,7 +99,7 @@ async function seedServices() {
       description: "Correction des voiles et déformations par presse hydraulique de précision. Sécurité avant tout.",
       image: "/images/service-redressage.png",
       badge: "Sécurité",
-      features: ["Diagnostic gratuit avant intervention", "Presse hydraulique de précision CNC", "Contrôle du voile par laser", "Applicable sur jantes 14 à 22 pouces", "Résultat garanti"],
+      features: ["Diagnostic gratuit avant intervention", "Presse hydraulique de précision CNC", "Contrôle du voile par laser", "Applicable on jantes 14 à 22 pouces", "Résultat garanti"],
       price: "À partir de 45€/jante",
       slug: "devoilage",
       sortOrder: 3,
@@ -203,6 +171,13 @@ async function seedSiteContent() {
     { key: "sections.gallery.subtitle", value: "Avant / Après — L'excellence MyJantes en images.", label: "Sous-titre section galerie", category: "sections" },
     { key: "sections.testimonials.title", value: "Ce que disent nos clients", label: "Titre section avis", category: "sections" },
     { key: "sections.whyus.title", value: "Pourquoi choisir MyJantes ?", label: "Titre section avantages", category: "sections" },
+    { key: "pages.about.title", value: "À propos de MyJantes", label: "Titre page À propos", category: "pages" },
+    { key: "pages.about.content", value: "Situé à Liévin, MyJantes est votre expert local en rénovation de jantes alu. Notre atelier utilise des technologies de pointe comme le diamantage sur tour numérique pour redonner vie à vos roues.", label: "Contenu page À propos", category: "pages" },
+    { key: "pages.about.image", value: "/images/service-renovation.png", label: "Image page À propos", category: "pages" },
+    { key: "pages.guarantees.title", value: "Nos Garanties", label: "Titre page Garanties", category: "pages" },
+    { key: "pages.guarantees.content", value: "Toutes nos prestations bénéficient d'une garantie* sur la tenue de peinture et la finition. Nous nous engageons sur la qualité et la durabilité de notre travail.", label: "Contenu page Garanties", category: "pages" },
+    { key: "pages.contact.title", value: "Contactez-nous", label: "Titre page Contact", category: "pages" },
+    { key: "pages.contact.subtitle", value: "Une question ? Un devis ? Notre équipe vous répond sous 24h.", label: "Sous-titre page Contact", category: "pages" },
     { key: "footer.tagline", value: "L'expert de la jante alu dans les Hauts-de-France", label: "Slogan footer", category: "footer" },
     { key: "footer.hours_line1", value: "Lun–Ven : 9h – 18h", label: "Horaires ligne 1", category: "footer" },
     { key: "footer.hours_line2", value: "Sam : 9h – 14h | Dim : Fermé", label: "Horaires ligne 2", category: "footer" },

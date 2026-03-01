@@ -1,18 +1,22 @@
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/seo";
-import { ArrowRight, CheckCircle2, RefreshCw } from "lucide-react";
-import type { SiteService } from "@shared/schema";
-import { useEffect } from "react";
+import { CheckCircle2, RefreshCw, ArrowRight } from "lucide-react";
+import type { SiteService, SiteContent } from "@shared/schema";
+import { useEffect, useMemo } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function Services() {
   const { data: siteServices = [], isLoading } = useQuery<SiteService[]>({ queryKey: ["/api/services"] });
-  const { data: siteContent = {} } = useQuery<Record<string, string>>({ queryKey: ["/api/site-content"] });
+  const { data: siteContentItems = [] } = useQuery<SiteContent[]>({ queryKey: ["/api/site-content"] });
+  const content = useMemo(() => {
+    const m: Record<string, string> = {};
+    siteContentItems.forEach(i => m[i.key] = i.value);
+    return m;
+  }, [siteContentItems]);
 
-  const fontFamily = siteContent["typography.font"] || "Montserrat";
+  const fontFamily = content["typography.font"] || "Montserrat";
 
   useEffect(() => {
     if (fontFamily && fontFamily !== "Montserrat") {
@@ -51,10 +55,10 @@ export default function Services() {
             Nos prestations
           </Badge>
           <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4" data-testid="heading-services-page" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
-            {siteContent["sections.services.title"] || "Services professionnels"}
+            {content["sections.services.title"] || "Services professionnels"}
           </h1>
           <p className="text-white/60 max-w-2xl mx-auto text-lg">
-            {siteContent["sections.services.subtitle"] || "Des solutions adaptées à tous vos besoins pour des jantes toujours parfaites."}
+            {content["sections.services.subtitle"] || "Des solutions adaptées à tous vos besoins pour des jantes toujours parfaites."}
           </p>
         </div>
       </div>

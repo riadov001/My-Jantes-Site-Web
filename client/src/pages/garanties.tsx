@@ -1,24 +1,30 @@
+import { useQuery } from "@tanstack/react-query";
 import { SEO } from "@/components/seo";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, ShieldCheck, AlertTriangle } from "lucide-react";
+import { CheckCircle2, ShieldCheck, AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { useMemo } from "react";
+import type { SiteContent } from "@shared/schema";
 
 export default function Garanties() {
+  const { data: siteContentItems = [], isLoading } = useQuery<SiteContent[]>({ queryKey: ["/api/site-content"] });
+  const content = useMemo(() => {
+    const m: Record<string, string> = {};
+    siteContentItems.forEach(i => m[i.key] = i.value);
+    return m;
+  }, [siteContentItems]);
+
+  const fontFamily = content["typography.font"] || "Montserrat";
+
+  if (isLoading) return <div className="min-h-screen flex items-center justify-center"><RefreshCw className="w-8 h-8 text-auto-red animate-spin" /></div>;
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
       <SEO
-        title="Garantie Rénovation Jantes – Qualité Certifiée | MyJantes"
-        description="Toutes nos prestations de rénovation et peinture de jantes sont couvertes par notre garantie*. Découvrez nos engagements qualité, les conditions et exclusions."
-        keywords="garantie rénovation jantes, garantie peinture jantes, qualité jantes alliage, MyJantes garantie"
+        title={`${content["pages.guarantees.title"] || "Garanties"} - MyJantes`}
+        description={content["pages.guarantees.content"]?.slice(0, 160)}
         canonicalPath="/garanties"
-        schema={{
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          "name": "Garanties MyJantes – Qualité certifiée sur toutes les prestations",
-          "description": "Garantie* sur toutes nos rénovations de jantes en alliage.",
-          "url": "https://myjantes.fr/garanties"
-        }}
       />
       
       <div className="bg-auto-dark pt-36 pb-20 md:pt-28 md:pb-12 lg:pt-24 lg:pb-10">
@@ -26,7 +32,7 @@ export default function Garanties() {
           <Badge className="mb-4 bg-auto-red/20 text-auto-red-light border-auto-red/30 text-xs uppercase tracking-wider">
             Sérénité Totale
           </Badge>
-          <h1 className="text-4xl sm:text-6xl font-black text-white mb-6 font-['Montserrat',sans-serif]">Qualité Exceptionnelle</h1>
+          <h1 className="text-4xl sm:text-6xl font-black text-white mb-6" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>{content["pages.guarantees.title"] || "Qualité Exceptionnelle"}</h1>
           <p className="text-white/60 max-w-2xl mx-auto text-lg">
             Votre satisfaction est notre priorité. Nous garantissons chaque jante qui sort de notre atelier.
           </p>
@@ -39,11 +45,11 @@ export default function Garanties() {
             <div className="w-14 h-14 bg-auto-red text-white rounded-2xl flex items-center justify-center shadow-lg shadow-auto-red/20">
               <ShieldCheck className="w-8 h-8" />
             </div>
-            <h2 className="text-3xl font-black text-gray-900 font-['Montserrat',sans-serif]">Garantie*</h2>
+            <h2 className="text-3xl font-black text-gray-900" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>Garantie*</h2>
           </div>
-          <p className="text-gray-600 text-lg leading-relaxed mb-8">
-            Toutes nos prestations de rénovation et de peinture bénéficient d'une garantie* sur la tenue de peinture et la finition, à compter de la date de facturation. Cette garantie couvre tout défaut de peinture (décollement, cloquage) lié à une malfaçon de préparation ou d'application.
-          </p>
+          <div className="text-gray-600 text-lg leading-relaxed mb-8 whitespace-pre-wrap">
+            {content["pages.guarantees.content"] || "Toutes nos prestations de rénovation et de peinture bénéficient d'une garantie* sur la tenue de peinture et la finition."}
+          </div>
           <div className="grid sm:grid-cols-2 gap-6">
             {[
               "Tenue de la peinture",
@@ -61,7 +67,7 @@ export default function Garanties() {
 
         <div className="space-y-12">
           <section>
-            <h3 className="text-2xl font-black text-gray-900 mb-6 font-['Montserrat',sans-serif] flex items-center gap-3">
+            <h3 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
               <AlertTriangle className="text-amber-500 w-6 h-6" />
               Exclusions de garantie
             </h3>
@@ -78,7 +84,7 @@ export default function Garanties() {
           </section>
 
           <section className="bg-auto-dark text-white rounded-3xl p-10 text-center">
-            <h3 className="text-2xl font-black mb-4 font-['Montserrat',sans-serif]">Une question sur la garantie ?</h3>
+            <h3 className="text-2xl font-black mb-4" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>Une question sur la garantie ?</h3>
             <p className="text-white/60 mb-8">Notre équipe est à votre disposition pour tout complément d'information.</p>
             <Button asChild size="lg" className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-10">
               <Link href="/contact">Nous contacter</Link>
