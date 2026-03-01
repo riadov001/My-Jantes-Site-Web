@@ -1,111 +1,130 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-interface EmailAttachment {
-  filename: string;
-  content: Buffer;
-  contentType: string;
+let connectionSettings: any;
+
+async function getCredentials() {
+  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
+  const xReplitToken = process.env.REPL_IDENTITY
+    ? "repl " + process.env.REPL_IDENTITY
+    : process.env.WEB_REPL_RENEWAL
+    ? "depl " + process.env.WEB_REPL_RENEWAL
+    : null;
+
+  if (!xReplitToken) {
+    throw new Error("X-Replit-Token not found for repl/depl");
+  }
+
+  connectionSettings = await fetch(
+    "https://" + hostname + "/api/v2/connection?include_secrets=true&connector_names=resend",
+    {
+      headers: {
+        Accept: "application/json",
+        "X-Replit-Token": xReplitToken,
+      },
+    }
+  )
+    .then((res) => res.json())
+    .then((data) => data.items?.[0]);
+
+  if (!connectionSettings || !connectionSettings.settings.api_key) {
+    throw new Error("Resend not connected");
+  }
+
+  return {
+    apiKey: connectionSettings.settings.api_key as string,
+    fromEmail: (connectionSettings.settings.from_email as string) || "MyJantes <noreply@myjantes.fr>",
+  };
 }
 
-interface ContactEmailData {
+async function getUncachableResendClient() {
+  const { apiKey, fromEmail } = await getCredentials();
+  return { client: new Resend(apiKey), fromEmail };
+}
+
+export interface ContactEmailData {
   name: string;
   email: string;
-  phone?: string;
-  service?: string;
+  phone?: string | null;
+  vehicle?: string | null;
   message: string;
-  attachments?: EmailAttachment[];
+  service?: string | null;
 }
 
-function createTransporter() {
-  const host = process.env.SMTP_HOST;
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+export async function sendContactNotification(data: ContactEmailData): Promise<void> {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
 
-  if (!host || !user || !pass) {
-    return null;
-  }
+    const subject = `Nouvelle demande — ${data.name}`;
 
-  return nodemailer.createTransport({
-    host,
-    port: parseInt(process.env.SMTP_PORT || "587"),
-    secure: process.env.SMTP_SECURE === "true",
-    auth: { user, pass },
-  });
-}
-
-export async function sendContactEmail(data: ContactEmailData): Promise<boolean> {
-  const transporter = createTransporter();
-
-  if (!transporter) {
-    console.log("[email] SMTP not configured — skipping email send. Configure SMTP_HOST, SMTP_USER, SMTP_PASS in environment secrets.");
-    return false;
-  }
-
-  const serviceLabels: Record<string, string> = {
-    renovation: "Rénovation complète",
-    peinture: "Peinture & Customisation",
-    redressage: "Redressage",
-    debosselage: "Débosselage PDR",
-    autre: "Autre",
-  };
-
-  const serviceLabel = data.service ? (serviceLabels[data.service] || data.service) : "Non précisé";
-
-  const htmlBody = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <div style="background: #DC2626; padding: 24px; border-radius: 8px 8px 0 0;">
-        <h1 style="color: white; margin: 0; font-size: 20px;">Nouvelle demande de devis — MyJantes</h1>
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .header { background: #111; padding: 32px 40px; text-align: center; }
+    .header h1 { color: #fff; font-size: 22px; font-weight: 900; margin: 0; letter-spacing: -0.5px; }
+    .badge { display: inline-block; background: #dc2626; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 1px; margin-top: 12px; }
+    .body { padding: 36px 40px; }
+    .field { margin-bottom: 18px; }
+    .label { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .value { font-size: 15px; color: #111827; font-weight: 500; }
+    .value a { color: #dc2626; text-decoration: none; }
+    .message-box { background: #f9fafb; border-left: 4px solid #dc2626; border-radius: 4px; padding: 16px 20px; margin-top: 8px; font-size: 15px; color: #374151; line-height: 1.7; white-space: pre-wrap; }
+    .divider { border: none; border-top: 1px solid #e5e7eb; margin: 24px 0; }
+    .cta { display: inline-block; margin-top: 24px; background: #dc2626; color: #fff !important; font-size: 14px; font-weight: 700; padding: 13px 30px; border-radius: 8px; text-decoration: none; }
+    .footer { background: #f9fafb; padding: 20px 40px; text-align: center; }
+    .footer p { font-size: 12px; color: #9ca3af; margin: 4px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>MyJantes</h1>
+      <div class="badge">Nouvelle demande de contact</div>
+    </div>
+    <div class="body">
+      <div class="field">
+        <div class="label">Nom</div>
+        <div class="value">${data.name}</div>
       </div>
-      <div style="background: #f9f9f9; padding: 24px; border-radius: 0 0 8px 8px; border: 1px solid #eee;">
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr>
-            <td style="padding: 8px 0; color: #666; width: 140px; font-weight: bold;">Nom :</td>
-            <td style="padding: 8px 0;">${data.name}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #666; font-weight: bold;">Email :</td>
-            <td style="padding: 8px 0;"><a href="mailto:${data.email}">${data.email}</a></td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #666; font-weight: bold;">Téléphone :</td>
-            <td style="padding: 8px 0;">${data.phone || "Non renseigné"}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #666; font-weight: bold;">Service :</td>
-            <td style="padding: 8px 0;">${serviceLabel}</td>
-          </tr>
-        </table>
-        <div style="margin-top: 16px; padding: 16px; background: white; border-left: 4px solid #DC2626; border-radius: 4px;">
-          <p style="color: #666; font-weight: bold; margin: 0 0 8px 0;">Message :</p>
-          <p style="margin: 0; white-space: pre-wrap;">${data.message}</p>
-        </div>
-        ${data.attachments && data.attachments.length > 0 ? `<p style="color: #666; margin-top: 12px; font-size: 13px;">${data.attachments.length} photo(s) jointe(s) à ce message.</p>` : ""}
-        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
-          Reçu depuis myjantes.fr — MyJantes, 46 rue de la Convention, 62800 Liévin
-        </div>
+      <div class="field">
+        <div class="label">Email</div>
+        <div class="value"><a href="mailto:${data.email}">${data.email}</a></div>
+      </div>
+      ${data.phone ? `<div class="field"><div class="label">Téléphone</div><div class="value"><a href="tel:${data.phone}">${data.phone}</a></div></div>` : ""}
+      ${data.vehicle ? `<div class="field"><div class="label">Véhicule</div><div class="value">${data.vehicle}</div></div>` : ""}
+      ${data.service ? `<div class="field"><div class="label">Service demandé</div><div class="value">${data.service}</div></div>` : ""}
+      <hr class="divider" />
+      <div class="field">
+        <div class="label">Message</div>
+        <div class="message-box">${data.message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+      </div>
+      <div style="text-align:center;">
+        <a href="mailto:${data.email}?subject=Re: Votre demande MyJantes" class="cta">Répondre à ${data.name}</a>
       </div>
     </div>
-  `;
+    <div class="footer">
+      <p>Notification automatique — Formulaire de contact MyJantes</p>
+      <p>MyJantes · 46 rue de la Convention, 62800 Liévin</p>
+    </div>
+  </div>
+</body>
+</html>`;
 
-  const mailOptions = {
-    from: `"MyJantes Site" <${process.env.SMTP_USER}>`,
-    to: "contact@myjantes.com",
-    bcc: "rbelmahi90@gmail.com",
-    replyTo: data.email,
-    subject: `[MyJantes] Demande de devis — ${data.name} — ${serviceLabel}`,
-    html: htmlBody,
-    attachments: (data.attachments || []).map((att) => ({
-      filename: att.filename,
-      content: att.content,
-      contentType: att.contentType,
-    })),
-  };
+    await client.emails.send({
+      from: fromEmail,
+      to: "contact@myjantes.com",
+      bcc: "rbelmahi90@gmail.com",
+      reply_to: data.email,
+      subject,
+      html,
+    });
 
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log(`[email] Email sent successfully to contact@myjantes.com`);
-    return true;
+    console.log(`[email] Notification envoyée pour ${data.name} (${data.email})`);
   } catch (error) {
-    console.error("[email] Failed to send email:", error);
-    return false;
+    console.error("[email] Erreur envoi notification:", error);
   }
 }

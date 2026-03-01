@@ -5,6 +5,7 @@ import connectPgSimple from "connect-pg-simple";
 import cors from "cors";
 import { Pool } from "pg";
 import { storage } from "./storage";
+import { sendContactNotification } from "./email";
 import {
   insertContactSchema,
   insertBlogSchema,
@@ -94,6 +95,14 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       return res.status(400).json({ message: "Données invalides", errors: result.error.errors });
     }
     const contact = await storage.createContactRequest(result.data);
+    sendContactNotification({
+      name: result.data.name,
+      email: result.data.email,
+      phone: result.data.phone,
+      vehicle: result.data.vehicle,
+      message: result.data.message,
+      service: result.data.service,
+    }).catch(err => console.error("[email] sendContactNotification failed:", err));
     return res.status(201).json(contact);
   });
 
