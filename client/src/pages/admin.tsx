@@ -160,6 +160,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.E
 };
 
 const AVAILABLE_FONTS = [
+  "Eurostile Extended",
   "Montserrat", "Open Sans", "Poppins", "Raleway", "Inter", "Roboto",
   "Lato", "Nunito", "Oswald", "Playfair Display", "Bebas Neue", "Quicksand", "Rubik", "Work Sans",
 ];
@@ -185,7 +186,8 @@ const CONTENT_FIELDS: { key: string; label: string; category: string; multiline?
   { key: "header.logo_url", label: "URL du logo", category: "header", type: "image-picker" },
   { key: "header.logo_size", label: "Taille du logo", category: "header", type: "logo-size-select" },
   { key: "theme.color", label: "Couleur principale", category: "theme", type: "color-select" },
-  { key: "typography.font", label: "Police d'écriture", category: "typography", type: "font-select" },
+  { key: "typography.font", label: "Police d'écriture (corps du texte)", category: "typography", type: "font-select" },
+  { key: "typography.heading_font", label: "Police des titres (H1, H2, H3...)", category: "typography", type: "font-select" },
   { key: "hero.badge", label: "Badge hero", category: "hero" },
   { key: "hero.title_line1", label: "Titre hero — ligne 1", category: "hero" },
   { key: "hero.title_line2", label: "Titre hero — ligne 2 (accent)", category: "hero" },

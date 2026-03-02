@@ -497,7 +497,7 @@ export default function Home() {
           </div>
           <p className="mt-8 text-white/50 text-sm flex items-center justify-center gap-2">
             <MapPin className="w-4 h-4" />
-            {c("contact.address", "46 rue de la Convention, 62800 Liévin")} — Lun–Ven 9h–12h / 13h30–18h
+            {c("contact.address", "46 rue de la Convention, 62800 Liévin")} — {c("footer.hours_line1", "Lun–Ven 9h–12h30")} / {c("footer.hours_line2", "13h30–18h")}
           </p>
         </div>
       </section>

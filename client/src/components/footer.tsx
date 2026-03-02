@@ -15,7 +15,7 @@ export function Footer() {
   const email = c("contact.email", "contact@myjantes.com");
   const address = c("contact.address", "46 rue de la Convention, 62800 Liévin");
   const tagline = c("footer.tagline", "L'expert de la jante alu");
-  const hoursLine1 = c("footer.hours_line1", "Lun – Ven : 9h – 12h");
+  const hoursLine1 = c("footer.hours_line1", "Lun – Ven : 9h – 12h30");
   const hoursLine2 = c("footer.hours_line2", "13h30 – 18h00");
   const hoursShort = c("footer.hours_short", "Lun–Ven 9h–18h");
 

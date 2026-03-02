@@ -102,8 +102,8 @@ export default function Contact() {
   const whatsappNumber = c("contact.whatsapp_number", "06 71 37 04 18");
   const address = c("contact.address", "46 rue de la Convention, 62800 Liévin");
   const email = c("contact.email", "contact@myjantes.com");
-  const hoursLine1 = c("footer.hours_line1", "Lun-Ven : 9h-12h30 13h30-18h");
-  const hoursLine2 = c("footer.hours_line2", "Sam-Dim : Fermé");
+  const hoursLine1 = c("footer.hours_line1", "Lun – Ven : 9h – 12h30");
+  const hoursLine2 = c("footer.hours_line2", "13h30 – 18h00");
 
   const schema = {
     "@context": "https://schema.org",
