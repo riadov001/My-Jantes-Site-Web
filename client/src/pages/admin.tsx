@@ -421,7 +421,10 @@ export default function Admin() {
             {menuItems.map(item => (
               <button
                 key={item.id}
-                onClick={() => setTab(item.id)}
+                onClick={() => {
+                  setTab(item.id);
+                  setSidebarOpen(false);
+                }}
                 className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-bold transition-all group ${tab === item.id ? "bg-auto-red text-white shadow-lg shadow-auto-red/20" : "text-white/50 hover:bg-white/5 hover:text-white"}`}
               >
                 <item.icon className={`w-5 h-5 transition-colors ${tab === item.id ? "text-white" : "text-white/30 group-hover:text-white"}`} />
