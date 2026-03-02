@@ -255,8 +255,6 @@ export default function Admin() {
   const [savingContent, setSavingContent] = useState<Record<string, boolean>>({});
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
 
-  const [showAddGallery, setShowAddGallery] = useState(false);
-  const [showAddTestimonial, setShowAddTestimonial] = useState(false);
   const [showAddFaq, setShowAddFaq] = useState(false);
   const [showAddService, setShowAddService] = useState(false);
   const [editingGalleryId, setEditingGalleryId] = useState<string | null>(null);
@@ -719,7 +717,7 @@ export default function Admin() {
                 {showAddService && (
                   <Card className="border-2 border-auto-red/20 shadow-lg">
                     <CardContent className="p-6 space-y-4">
-                      <div className="flex justify-between items-center"><h3 className="font-black uppercase text-sm">Nouvelle prestation</h3><Button variant="ghost" size="sm" onClick={() => setShowAddService(false)}><X className="w-4 h-4" /></Button></div>
+                      <div className="flex justify-between items-center"><h3 className="font-black uppercase text-sm">{editingServiceId ? "Modifier la prestation" : "Nouvelle prestation"}</h3><Button variant="ghost" size="sm" onClick={() => { setShowAddService(false); setEditingServiceId(null); setServiceForm(defaultServiceForm); }}><X className="w-4 h-4" /></Button></div>
                       <div className="grid sm:grid-cols-2 gap-4">
                         <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Titre</label><Input value={serviceForm.title} onChange={e => setServiceForm(p => ({ ...p, title: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-service-title" /></div>
                         <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Slug</label><Input value={serviceForm.slug} onChange={e => setServiceForm(p => ({ ...p, slug: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-service-slug" /></div>
@@ -730,8 +728,14 @@ export default function Admin() {
                         <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Badge</label><Input value={serviceForm.badge} onChange={e => setServiceForm(p => ({ ...p, badge: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-service-badge" /></div>
                         <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Prix</label><Input value={serviceForm.price} onChange={e => setServiceForm(p => ({ ...p, price: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-service-price" /></div>
                       </div>
-                      <Button onClick={() => addServiceMut.mutate(serviceForm)} disabled={!serviceForm.title || addServiceMut.isPending} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase" data-testid="button-submit-service">
-                        {addServiceMut.isPending ? "Ajout..." : "Ajouter la prestation"}
+                      <Button onClick={() => {
+                        if (editingServiceId) {
+                          updateServiceMut.mutate({ id: parseInt(editingServiceId), data: serviceForm });
+                        } else {
+                          addServiceMut.mutate(serviceForm);
+                        }
+                      }} disabled={!serviceForm.title || addServiceMut.isPending || updateServiceMut.isPending} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase" data-testid="button-submit-service">
+                        {editingServiceId ? (updateServiceMut.isPending ? "Modification..." : "Modifier la prestation") : (addServiceMut.isPending ? "Ajout..." : "Ajouter la prestation")}
                       </Button>
                     </CardContent>
                   </Card>
@@ -751,11 +755,28 @@ export default function Admin() {
                             </div>
                             <p className="text-sm text-gray-500 line-clamp-2">{svc.description}</p>
                           </div>
-                          <div className="flex gap-2 shrink-0">
-                            <Button variant="outline" size="sm" className="text-[10px] font-bold h-8" onClick={() => deleteServiceMut.mutate(svc.id)} data-testid={`button-delete-service-${svc.id}`}>
-                              <Trash2 className="w-3 h-3 mr-1" /> Supprimer
-                            </Button>
-                          </div>
+                            <div className="flex gap-2 shrink-0">
+                              <Button variant="outline" size="sm" className="text-[10px] font-bold h-8" onClick={() => {
+                                setServiceForm({
+                                  title: svc.title,
+                                  description: svc.description,
+                                  image: svc.image,
+                                  badge: svc.badge || "",
+                                  features: (svc.features as string[]) || [],
+                                  price: svc.price || "",
+                                  slug: svc.slug || "",
+                                  sortOrder: svc.sortOrder || 0,
+                                  published: svc.published ?? true
+                                });
+                                setEditingServiceId(svc.id.toString());
+                                setShowAddService(true);
+                              }} data-testid={`button-edit-service-${svc.id}`}>
+                                <Edit2 className="w-3 h-3 mr-1" /> Modifier
+                              </Button>
+                              <Button variant="outline" size="sm" className="text-[10px] font-bold h-8 text-red-500 hover:bg-red-50" onClick={() => deleteServiceMut.mutate(svc.id)} data-testid={`button-delete-service-${svc.id}`}>
+                                <Trash2 className="w-3 h-3 mr-1" /> Supprimer
+                              </Button>
+                            </div>
                         </div>
                       </CardContent>
                     </Card>

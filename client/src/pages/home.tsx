@@ -7,7 +7,7 @@ import { SEO } from "@/components/seo";
 import {
   Star, ArrowRight, Phone, Shield, Zap, Award, Users,
   CheckCircle2, Smartphone, Monitor, Globe, LayoutDashboard, Clock,
-  Camera, FileText, Wrench, PartyPopper, MapPin, ChevronRight
+  Camera, FileText, Wrench, PartyPopper, MapPin, ChevronRight, Activity
 } from "lucide-react";
 import type { Testimonial, GalleryItem, SiteService } from "@shared/schema";
 
@@ -459,19 +459,41 @@ export default function Home() {
               </Button>
             </div>
             <div className="order-1 lg:order-2 flex justify-center">
-              <div className="relative bg-white/5 border border-white/10 rounded-3xl p-8 max-w-sm w-full shadow-2xl">
-                <div className="text-center mb-6">
-                  <Smartphone className="w-14 h-14 text-auto-red mx-auto mb-3 animate-pulse" />
-                  <p className="font-black text-white text-xl" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>MyJantes App</p>
-                  <p className="text-white/40 text-sm mt-1">appmyjantes.mytoolsgroup.eu</p>
-                </div>
-                <div className="space-y-3">
-                  {["Suivi prestation", "Devis & factures", "Historique", "Notifications"].map(item => (
-                    <div key={item} className="flex items-center gap-3 bg-white/5 rounded-lg px-4 py-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-auto-red shrink-0" />
-                      <span className="text-white/70 text-sm">{item}</span>
+              <div className="relative w-full max-w-sm">
+                <div className="absolute -inset-4 bg-gradient-to-r from-auto-red to-auto-red-dark rounded-[2.5rem] blur-2xl opacity-20"></div>
+                <div className="relative bg-[#1A1A1A] border border-white/10 rounded-[2.5rem] p-8 shadow-2xl overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-auto-red"></div>
+                  <div className="text-center mb-8">
+                    <div className="w-20 h-20 bg-auto-red/10 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-auto-red/20">
+                      <Smartphone className="w-10 h-10 text-auto-red" />
                     </div>
-                  ))}
+                    <p className="font-black text-white text-2xl uppercase tracking-tighter" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>Espace Client</p>
+                    <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-white/5 rounded-full border border-white/10">
+                      <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                      <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Connecté au réseau</span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {[
+                      { label: "Suivi prestation", icon: Activity },
+                      { label: "Devis & factures", icon: FileText },
+                      { label: "Historique complet", icon: Globe },
+                      { label: "Notifications push", icon: Zap }
+                    ].map(item => (
+                      <div key={item.label} className="flex items-center justify-between bg-white/5 border border-white/5 rounded-2xl px-5 py-3.5 group hover:bg-white/10 transition-colors cursor-default">
+                        <div className="flex items-center gap-4">
+                          <item.icon className="w-4 h-4 text-auto-red" />
+                          <span className="text-white/70 text-sm font-bold">{item.label}</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-white/10 group-hover:text-auto-red transition-colors" />
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-8 pt-6 border-t border-white/5">
+                    <p className="text-[10px] text-white/20 text-center uppercase tracking-[0.2em] font-black">Accès sécurisé SSL</p>
+                  </div>
                 </div>
               </div>
             </div>
