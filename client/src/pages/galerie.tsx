@@ -24,6 +24,7 @@ export default function Galerie() {
   const [selected, setSelected] = useState<GalleryItem | null>(null);
 
   const { data: gallery = [], isLoading } = useQuery<GalleryItem[]>({ queryKey: ["/api/gallery"] });
+  const { data: content = {} } = useQuery<Record<string, string>>({ queryKey: ["/api/site-content"] });
 
   const filtered = filter === "all" ? gallery : gallery.filter((g) => g.serviceType === filter);
 
@@ -48,7 +49,7 @@ export default function Galerie() {
       <div className="bg-auto-dark pt-36 pb-16 md:pt-28 md:pb-10 lg:pt-24 lg:pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Badge className="mb-4 bg-auto-red/20 text-auto-red-light border-auto-red/30 text-xs uppercase tracking-wider">
-            Nos réalisations
+            {content["pages.gallery.badge"] || "Nos réalisations"}
           </Badge>
           <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4" data-testid="heading-galerie">
             Galerie avant / après

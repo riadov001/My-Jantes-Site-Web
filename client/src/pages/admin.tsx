@@ -11,11 +11,16 @@ import {
   LogOut, Image, Star, HelpCircle, CheckCircle2,
   Clock, XCircle, Eye, Trash2, MessageSquare, LayoutDashboard,
   Lock, User, Plus, X, Phone,
-  Edit2, Save, Wrench, FileText, Globe, Type, Settings, Monitor, Images
+  Edit2, Save, Wrench, FileText, Globe, Type, Settings, Monitor, Images,
+  TrendingUp, Link2, MousePointerClick, Users, Activity,
 } from "lucide-react";
+import {
+  BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer, Cell,
+} from "recharts";
 import type { ContactRequest, GalleryItem, Testimonial, FaqItem, SiteService, SiteContent, MediaFile } from "@shared/schema";
 
-type Tab = "contacts" | "galerie" | "avis" | "faq" | "prestations" | "contenu" | "medias";
+type Tab = "dashboard" | "contacts" | "galerie" | "avis" | "faq" | "prestations" | "contenu" | "liens" | "medias";
 
 const AVAILABLE_IMAGES = [
   { url: "/images/atelier-soudure.jpg", label: "Service Soudure" },
@@ -213,13 +218,57 @@ const CONTENT_FIELDS: { key: string; label: string; category: string; multiline?
   { key: "sections.testimonials.title", label: "Titre — Section avis", category: "sections" },
   { key: "sections.whyus.title", label: "Titre — Section avantages", category: "sections" },
   { key: "sections.whyus.items", label: "Avantages (JSON)", category: "sections", multiline: true },
-  { key: "pages.about.title", label: "Titre — Page À propos", category: "pages" },
-  { key: "pages.about.content", label: "Contenu — Page À propos", category: "pages", multiline: true },
+  { key: "pages.services.badge", label: "Badge — Page Services", category: "pages" },
+  { key: "pages.gallery.badge", label: "Badge — Page Galerie", category: "pages" },
+  { key: "pages.faq.badge", label: "Badge — Page FAQ", category: "pages" },
+  { key: "pages.about.badge", label: "Badge — Page À propos (ex : Depuis 2022)", category: "pages" },
+  { key: "pages.about.experience", label: "Années d'expérience (ex : 4+ Ans)", category: "pages" },
+  { key: "pages.about.hero_title_line1", label: "Titre À propos — ligne 1", category: "pages" },
+  { key: "pages.about.hero_title_line2", label: "Titre À propos — ligne 2 (accent)", category: "pages" },
+  { key: "pages.about.hero_subtitle", label: "Sous-titre À propos", category: "pages" },
+  { key: "pages.about.story_title", label: "Titre section histoire", category: "pages" },
+  { key: "pages.about.story_content", label: "Texte section histoire", category: "pages", multiline: true },
+  { key: "pages.about.values_title", label: "Titre section valeurs", category: "pages" },
+  { key: "pages.about.value1_title", label: "Valeur 1 — Titre", category: "pages" },
+  { key: "pages.about.value1_desc", label: "Valeur 1 — Description", category: "pages", multiline: true },
+  { key: "pages.about.value2_title", label: "Valeur 2 — Titre", category: "pages" },
+  { key: "pages.about.value2_desc", label: "Valeur 2 — Description", category: "pages", multiline: true },
+  { key: "pages.about.value3_title", label: "Valeur 3 — Titre", category: "pages" },
+  { key: "pages.about.value3_desc", label: "Valeur 3 — Description", category: "pages", multiline: true },
+  { key: "pages.about.commitments_title", label: "Titre section engagements", category: "pages" },
+  { key: "pages.about.commitment1", label: "Engagement 1", category: "pages" },
+  { key: "pages.about.commitment2", label: "Engagement 2", category: "pages" },
+  { key: "pages.about.commitment3", label: "Engagement 3", category: "pages" },
+  { key: "pages.about.commitment4", label: "Engagement 4", category: "pages" },
+  { key: "pages.about.stat1_value", label: "Stat 1 — Chiffre (ex : 5 000+)", category: "pages" },
+  { key: "pages.about.stat1_label", label: "Stat 1 — Label", category: "pages" },
+  { key: "pages.about.stat2_value", label: "Stat 2 — Chiffre (ex : 98%)", category: "pages" },
+  { key: "pages.about.stat2_label", label: "Stat 2 — Label", category: "pages" },
   { key: "pages.about.image", label: "Image — Page À propos", category: "pages", type: "image-picker" },
   { key: "pages.guarantees.title", label: "Titre — Page Garanties", category: "pages" },
   { key: "pages.guarantees.content", label: "Contenu — Page Garanties", category: "pages", multiline: true },
   { key: "pages.contact.title", label: "Titre — Page Contact", category: "pages" },
   { key: "pages.contact.subtitle", label: "Sous-titre — Page Contact", category: "pages" },
+  { key: "trust_item_1", label: "Bande de confiance — Item 1", category: "trust" },
+  { key: "trust_item_2", label: "Bande de confiance — Item 2", category: "trust" },
+  { key: "trust_item_3", label: "Bande de confiance — Item 3", category: "trust" },
+  { key: "trust_item_4", label: "Bande de confiance — Item 4", category: "trust" },
+  { key: "trust_item_5", label: "Bande de confiance — Item 5", category: "trust" },
+  { key: "legal.owner", label: "Raison sociale (ex : SAS MY JANTES)", category: "legal" },
+  { key: "legal.siren", label: "SIREN", category: "legal" },
+  { key: "legal.responsible", label: "Responsable de publication", category: "legal" },
+  { key: "legal.host", label: "Hébergeur", category: "legal" },
+  { key: "legal.host_address", label: "Adresse hébergeur", category: "legal" },
+  { key: "legal.cgu", label: "CGU — Texte", category: "legal", multiline: true },
+  { key: "legal.services_desc", label: "Description des services — Texte", category: "legal", multiline: true },
+  { key: "legal.liability", label: "Limitations de responsabilité — Texte", category: "legal", multiline: true },
+  { key: "legal.intellectual_property", label: "Propriété intellectuelle — Texte", category: "legal", multiline: true },
+  { key: "legal.gdpr", label: "Données personnelles (RGPD) — Texte", category: "legal", multiline: true },
+  { key: "privacy.collection", label: "Politique confidentialité — Collecte", category: "legal", multiline: true },
+  { key: "privacy.usage", label: "Politique confidentialité — Utilisation", category: "legal", multiline: true },
+  { key: "privacy.protection", label: "Politique confidentialité — Protection", category: "legal", multiline: true },
+  { key: "privacy.cookies", label: "Politique confidentialité — Cookies", category: "legal", multiline: true },
+  { key: "privacy.rights", label: "Politique confidentialité — Droits", category: "legal", multiline: true },
   { key: "footer.tagline", label: "Slogan footer", category: "footer" },
   { key: "footer.hours_line1", label: "Horaires ligne 1", category: "footer" },
   { key: "footer.hours_line2", label: "Horaires ligne 2", category: "footer" },
@@ -233,8 +282,10 @@ const CONTENT_FIELDS: { key: string; label: string; category: string; multiline?
 
 const CATEGORY_LABELS: Record<string, string> = {
   header: "Header & Logo", theme: "Couleur du site", typography: "Typographie",
-  hero: "Section Hero (fond, textes, boutons)", contact: "Coordonnées & Contact",
-  sections: "Titres des sections", pages: "Contenu des pages", footer: "Footer & Réseaux sociaux",
+  nav: "Navigation (liens du menu)", hero: "Section Hero (fond, textes, boutons)",
+  contact: "Coordonnées & Contact", sections: "Titres des sections",
+  trust: "Bande de confiance", pages: "Contenu des pages",
+  legal: "Mentions légales & Confidentialité", footer: "Footer & Réseaux sociaux",
 };
 
 function FeatureListEditor({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
@@ -257,7 +308,7 @@ function FeatureListEditor({ value, onChange }: { value: string[]; onChange: (v:
 export default function Admin() {
   const [, setLocation] = useLocation();
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
-  const [tab, setTab] = useState<Tab>("contacts");
+  const [tab, setTab] = useState<Tab>("dashboard");
   const { toast } = useToast();
   const qc = useQueryClient();
 
@@ -304,6 +355,12 @@ export default function Admin() {
   const { data: siteServices = [] } = useQuery<SiteService[]>({ queryKey: ["/api/admin/services"], enabled: authenticated === true });
   const { data: siteContentItems = [] } = useQuery<SiteContent[]>({ queryKey: ["/api/admin/site-content"], enabled: authenticated === true });
   const { data: mediaFiles = [] } = useQuery<MediaFile[]>({ queryKey: ["/api/admin/media"], enabled: authenticated === true });
+  const { data: analytics } = useQuery<{
+    totalViews: number; viewsByPage: { path: string; views: number }[];
+    viewsByDay: { date: string; views: number }[]; recentViews: { path: string; createdAt: string }[];
+    totalContacts: number; newContacts: number; pendingContacts: number; treatedContacts: number;
+    totalGallery: number; totalTestimonials: number; totalServices: number; totalFaq: number;
+  }>({ queryKey: ["/api/admin/analytics"], enabled: authenticated === true });
 
   const contentMap = useMemo(() => {
     const m: Record<string, string> = {};
@@ -451,12 +508,14 @@ export default function Admin() {
   if (authenticated === false) return <LoginForm onLogin={() => setAuthenticated(true)} />;
 
   const tabs: { id: Tab; label: string; icon: React.ElementType; badge?: number }[] = [
+    { id: "dashboard", label: "Tableau de bord", icon: TrendingUp },
     { id: "contacts", label: "Contacts", icon: MessageSquare, badge: contacts.filter(c => c.status === "nouveau").length },
     { id: "galerie", label: "Réalisations", icon: Image },
     { id: "prestations", label: "Prestations", icon: Wrench },
     { id: "avis", label: "Avis", icon: Star },
     { id: "faq", label: "FAQ", icon: HelpCircle },
     { id: "contenu", label: "Contenu", icon: Settings },
+    { id: "liens", label: "Liens & Navigation", icon: Link2 },
     { id: "medias", label: "Médiathèque", icon: Images },
   ];
 
@@ -483,6 +542,127 @@ export default function Admin() {
             </button>
           ))}
         </div>
+
+        {/* ── DASHBOARD ── */}
+        {tab === "dashboard" && (
+          <div className="space-y-6">
+            {/* KPI Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              {[
+                { label: "Vues totales", value: analytics?.totalViews ?? 0, icon: Eye, color: "bg-blue-50 text-blue-600" },
+                { label: "Contacts reçus", value: analytics?.totalContacts ?? 0, icon: MessageSquare, color: "bg-purple-50 text-purple-600" },
+                { label: "Nouveaux contacts", value: analytics?.newContacts ?? 0, icon: Activity, color: "bg-red-50 text-auto-red", highlight: (analytics?.newContacts ?? 0) > 0 },
+                { label: "Réalisations", value: analytics?.totalGallery ?? 0, icon: Image, color: "bg-green-50 text-green-600" },
+                { label: "Avis publiés", value: analytics?.totalTestimonials ?? 0, icon: Star, color: "bg-yellow-50 text-yellow-600" },
+              ].map((kpi, i) => (
+                <Card key={i} className={`border-0 shadow-sm ${kpi.highlight ? "ring-2 ring-auto-red" : ""}`}>
+                  <CardContent className="p-5">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${kpi.color}`}>
+                      <kpi.icon className="w-5 h-5" />
+                    </div>
+                    <p className="text-3xl font-black text-gray-900">{kpi.value.toLocaleString("fr-FR")}</p>
+                    <p className="text-xs text-gray-500 font-medium mt-1">{kpi.label}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Second row: contact status breakdown + content counts */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {[
+                { label: "En attente", value: analytics?.newContacts ?? 0, color: "bg-orange-50 text-orange-600" },
+                { label: "En cours", value: analytics?.pendingContacts ?? 0, color: "bg-blue-50 text-blue-600" },
+                { label: "Traités", value: analytics?.treatedContacts ?? 0, color: "bg-green-50 text-green-600" },
+                { label: "Prestations actives", value: analytics?.totalServices ?? 0, color: "bg-gray-50 text-gray-600" },
+              ].map((item, i) => (
+                <Card key={i} className="border-0 shadow-sm">
+                  <CardContent className="p-4 flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${item.color}`}>
+                      <span className="text-sm font-black">{item.value}</span>
+                    </div>
+                    <p className="text-sm text-gray-600 font-medium">{item.label}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-6">
+              {/* Évolution des visites (30 jours) */}
+              <Card className="border-0 shadow-sm">
+                <CardContent className="p-6">
+                  <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-auto-red" /> Visites — 30 derniers jours</h3>
+                  {(analytics?.viewsByDay?.length ?? 0) === 0 ? (
+                    <div className="h-48 flex items-center justify-center text-gray-400 text-sm">Aucune donnée de visite disponible</div>
+                  ) : (
+                    <ResponsiveContainer width="100%" height={200}>
+                      <LineChart data={analytics?.viewsByDay ?? []} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                        <XAxis dataKey="date" tick={{ fontSize: 10 }} tickFormatter={d => d.slice(5)} />
+                        <YAxis tick={{ fontSize: 10 }} />
+                        <Tooltip formatter={(v) => [v, "Visites"]} labelFormatter={l => `Date: ${l}`} />
+                        <Line type="monotone" dataKey="views" stroke="#dc2626" strokeWidth={2} dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Top pages visitées */}
+              <Card className="border-0 shadow-sm">
+                <CardContent className="p-6">
+                  <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2"><MousePointerClick className="w-4 h-4 text-auto-red" /> Pages les plus visitées</h3>
+                  {(analytics?.viewsByPage?.length ?? 0) === 0 ? (
+                    <div className="h-48 flex items-center justify-center text-gray-400 text-sm">Aucune donnée disponible</div>
+                  ) : (
+                    <ResponsiveContainer width="100%" height={200}>
+                      <BarChart data={analytics?.viewsByPage?.slice(0, 8) ?? []} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                        <XAxis dataKey="path" tick={{ fontSize: 9 }} />
+                        <YAxis tick={{ fontSize: 10 }} />
+                        <Tooltip formatter={(v) => [v, "Visites"]} />
+                        <Bar dataKey="views" radius={[4, 4, 0, 0]}>
+                          {(analytics?.viewsByPage?.slice(0, 8) ?? []).map((_, idx) => (
+                            <Cell key={idx} fill={idx === 0 ? "#dc2626" : "#f87171"} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Derniers contacts reçus */}
+            <Card className="border-0 shadow-sm">
+              <CardContent className="p-6">
+                <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2"><MessageSquare className="w-4 h-4 text-auto-red" /> Derniers contacts reçus</h3>
+                {contacts.length === 0 ? (
+                  <p className="text-gray-400 text-sm text-center py-4">Aucun contact pour l'instant</p>
+                ) : (
+                  <div className="space-y-2">
+                    {contacts.slice(0, 5).map(c => (
+                      <div key={c.id} className="flex items-center justify-between gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-semibold text-sm text-gray-900 truncate">{c.name}</p>
+                          <p className="text-xs text-gray-500 truncate">{c.email} {c.phone && `· ${c.phone}`}</p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${statusConfig[c.status]?.color || "bg-gray-100"}`}>{statusConfig[c.status]?.label || c.status}</span>
+                          <button onClick={() => setTab("contacts")} className="text-[10px] text-auto-red font-semibold hover:underline">Voir</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {contacts.length > 5 && (
+                  <button onClick={() => setTab("contacts")} className="mt-3 text-xs text-auto-red font-semibold hover:underline w-full text-center">
+                    Voir tous les contacts ({contacts.length}) →
+                  </button>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* ── CONTACTS ── */}
         {tab === "contacts" && (
@@ -779,6 +959,177 @@ export default function Admin() {
                 </CardContent></Card>
               );
             })}
+          </div>
+        )}
+
+        {/* ── LIENS & NAVIGATION ── */}
+        {tab === "liens" && (
+          <div className="space-y-6">
+            {/* Nav links editor */}
+            <Card className="border-0 shadow-sm">
+              <CardContent className="p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2"><Link2 className="w-4 h-4 text-auto-red" /> Menu de navigation</h2>
+                <p className="text-sm text-gray-500 mb-6">Modifiez les liens et libellés affichés dans la barre de navigation du site.</p>
+                <div className="space-y-3">
+                  {[1, 2, 3, 4, 5].map(n => {
+                    const labelKey = `nav.link_${n}_label`;
+                    const hrefKey = `nav.link_${n}_href`;
+                    return (
+                      <div key={n} className="flex flex-col sm:flex-row gap-2 p-3 bg-gray-50 rounded-xl">
+                        <div className="flex items-center gap-2 shrink-0 w-20">
+                          <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">Lien {n}</span>
+                        </div>
+                        <div className="flex flex-1 gap-2 flex-wrap sm:flex-nowrap">
+                          <div className="flex-1 min-w-[140px]">
+                            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Libellé</label>
+                            <Input
+                              value={getVal(labelKey)}
+                              onChange={e => setContentEdits(p => ({ ...p, [labelKey]: e.target.value }))}
+                              className="h-8 text-sm mt-0.5"
+                              placeholder="Accueil"
+                              data-testid={`input-nav-label-${n}`}
+                            />
+                          </div>
+                          <div className="flex-1 min-w-[140px]">
+                            <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">URL</label>
+                            <Input
+                              value={getVal(hrefKey)}
+                              onChange={e => setContentEdits(p => ({ ...p, [hrefKey]: e.target.value }))}
+                              className="h-8 text-sm mt-0.5 font-mono"
+                              placeholder="/page"
+                              data-testid={`input-nav-href-${n}`}
+                            />
+                          </div>
+                          <div className="flex gap-1 items-end">
+                            {contentEdits[labelKey] !== undefined && (
+                              <Button size="sm" onClick={() => saveContent(labelKey)} disabled={savingContent[labelKey]} className="h-8 text-xs bg-auto-red hover:bg-auto-red-dark text-white border-0">
+                                {savingContent[labelKey] ? "..." : <Save className="w-3.5 h-3.5" />}
+                              </Button>
+                            )}
+                            {contentEdits[hrefKey] !== undefined && (
+                              <Button size="sm" onClick={() => saveContent(hrefKey)} disabled={savingContent[hrefKey]} className="h-8 text-xs bg-auto-red hover:bg-auto-red-dark text-white border-0">
+                                {savingContent[hrefKey] ? "..." : <Save className="w-3.5 h-3.5" />}
+                              </Button>
+                            )}
+                            {(contentEdits[labelKey] !== undefined || contentEdits[hrefKey] !== undefined) && (
+                              <Button size="sm" variant="outline" onClick={() => { const n2 = { ...contentEdits }; delete n2[labelKey]; delete n2[hrefKey]; setContentEdits(n2); }} className="h-8 text-xs">
+                                <X className="w-3.5 h-3.5" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* CTA button */}
+            <Card className="border-0 shadow-sm">
+              <CardContent className="p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2"><MousePointerClick className="w-4 h-4 text-auto-red" /> Bouton CTA (appel à l'action)</h2>
+                <p className="text-sm text-gray-500 mb-4">Bouton rouge en haut à droite de la navigation et dans le menu mobile.</p>
+                <div className="flex flex-col sm:flex-row gap-3 p-3 bg-gray-50 rounded-xl">
+                  <div className="flex-1">
+                    <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Texte du bouton</label>
+                    <Input
+                      value={getVal("nav.cta_label")}
+                      onChange={e => setContentEdits(p => ({ ...p, "nav.cta_label": e.target.value }))}
+                      className="h-8 text-sm mt-0.5"
+                      placeholder="Devis gratuit"
+                      data-testid="input-cta-label"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">URL destination</label>
+                    <Input
+                      value={getVal("nav.cta_href")}
+                      onChange={e => setContentEdits(p => ({ ...p, "nav.cta_href": e.target.value }))}
+                      className="h-8 text-sm mt-0.5 font-mono"
+                      placeholder="/contact"
+                      data-testid="input-cta-href"
+                    />
+                  </div>
+                  <div className="flex items-end gap-1">
+                    {contentEdits["nav.cta_label"] !== undefined && (
+                      <Button size="sm" onClick={() => saveContent("nav.cta_label")} className="h-8 text-xs bg-auto-red hover:bg-auto-red-dark text-white border-0">
+                        {savingContent["nav.cta_label"] ? "..." : <><Save className="w-3.5 h-3.5 mr-1" />Sauvegarder</>}
+                      </Button>
+                    )}
+                    {contentEdits["nav.cta_href"] !== undefined && (
+                      <Button size="sm" onClick={() => saveContent("nav.cta_href")} className="h-8 text-xs bg-auto-red hover:bg-auto-red-dark text-white border-0">
+                        {savingContent["nav.cta_href"] ? "..." : <><Save className="w-3.5 h-3.5 mr-1" />URL</>}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Social & contact quick links */}
+            <Card className="border-0 shadow-sm">
+              <CardContent className="p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2"><Globe className="w-4 h-4 text-auto-red" /> Liens rapides — Réseaux & Contact</h2>
+                <p className="text-sm text-gray-500 mb-4">Ces liens s'affichent dans le footer et les boutons WhatsApp/téléphone du site.</p>
+                <div className="space-y-3">
+                  {[
+                    { key: "contact.phone_href", label: "Téléphone (href)", placeholder: "tel:+33321408053" },
+                    { key: "contact.whatsapp_href", label: "WhatsApp (lien complet)", placeholder: "https://wa.me/33..." },
+                    { key: "footer.social_instagram", label: "Instagram", placeholder: "https://instagram.com/..." },
+                    { key: "footer.social_facebook", label: "Facebook", placeholder: "https://facebook.com/..." },
+                    { key: "footer.social_tiktok", label: "TikTok", placeholder: "https://tiktok.com/..." },
+                    { key: "footer.social_snapchat", label: "Snapchat", placeholder: "https://snapchat.com/..." },
+                    { key: "footer.social_google", label: "Avis Google (lien)", placeholder: "https://g.page/..." },
+                  ].map(field => (
+                    <div key={field.key} className="flex flex-col sm:flex-row gap-2 items-end">
+                      <div className="flex-1">
+                        <label className="text-xs font-semibold text-gray-500">{field.label}</label>
+                        <Input
+                          value={getVal(field.key)}
+                          onChange={e => setContentEdits(p => ({ ...p, [field.key]: e.target.value }))}
+                          className="h-8 text-sm mt-0.5 font-mono text-xs"
+                          placeholder={field.placeholder}
+                          data-testid={`input-link-${field.key}`}
+                        />
+                      </div>
+                      {contentEdits[field.key] !== undefined && (
+                        <div className="flex gap-1">
+                          <Button size="sm" onClick={() => saveContent(field.key)} disabled={savingContent[field.key]} className="h-8 text-xs bg-auto-red hover:bg-auto-red-dark text-white border-0">
+                            {savingContent[field.key] ? "..." : <><Save className="w-3.5 h-3.5 mr-1" />Sauv.</>}
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => { const n = { ...contentEdits }; delete n[field.key]; setContentEdits(n); }} className="h-8 text-xs">
+                            <X className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Preview current nav state */}
+            <Card className="border-0 shadow-sm bg-auto-dark">
+              <CardContent className="p-6">
+                <h3 className="text-sm font-bold text-white/60 uppercase tracking-widest mb-4">Aperçu de la navigation actuelle</h3>
+                <div className="flex flex-wrap gap-2 items-center">
+                  {[1, 2, 3, 4, 5].map(n => {
+                    const lbl = getVal(`nav.link_${n}_label`);
+                    const href = getVal(`nav.link_${n}_href`);
+                    if (!lbl) return null;
+                    return (
+                      <span key={n} className="px-3 py-1.5 bg-white/10 text-white text-sm rounded-lg font-medium">
+                        {lbl} <span className="text-white/40 text-xs">({href})</span>
+                      </span>
+                    );
+                  })}
+                  <span className="px-3 py-1.5 bg-auto-red text-white text-sm rounded-lg font-bold">
+                    {getVal("nav.cta_label") || "Devis gratuit"}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
 

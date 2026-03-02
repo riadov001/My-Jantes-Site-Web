@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { eq, desc, asc, sql, count } from "drizzle-orm";
+import { eq, desc, asc, sql, count, gte } from "drizzle-orm";
 import {
   users, contactRequests, blogPosts, galleryItems, testimonials, faqItems, siteServices, siteContent, pageViews, mediaFiles,
   type User, type InsertUser, type ContactRequest, type InsertContact,
@@ -279,9 +279,27 @@ export class DatabaseStorage implements IStorage {
 
       const recent = await db.select().from(pageViews).orderBy(desc(pageViews.createdAt)).limit(50);
 
-      return { totalViews, viewsByPage: byPage.map(r => ({ path: r.path, views: Number(r.views) })), recentViews: recent };
+      // Last 30 days by date
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const byDay = await db
+        .select({
+          date: sql<string>`TO_CHAR(${pageViews.createdAt}, 'YYYY-MM-DD')`,
+          views: count(),
+        })
+        .from(pageViews)
+        .where(gte(pageViews.createdAt, thirtyDaysAgo))
+        .groupBy(sql`TO_CHAR(${pageViews.createdAt}, 'YYYY-MM-DD')`)
+        .orderBy(sql`TO_CHAR(${pageViews.createdAt}, 'YYYY-MM-DD')`);
+
+      return {
+        totalViews,
+        viewsByPage: byPage.map(r => ({ path: r.path, views: Number(r.views) })),
+        recentViews: recent,
+        viewsByDay: byDay.map(r => ({ date: r.date, views: Number(r.views) })),
+      };
     } catch {
-      return { totalViews: 0, viewsByPage: [], recentViews: [] };
+      return { totalViews: 0, viewsByPage: [], recentViews: [], viewsByDay: [] };
     }
   }
 

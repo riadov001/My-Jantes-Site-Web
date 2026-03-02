@@ -384,12 +384,18 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     const contacts = await storage.getContactRequests();
     const gallery = await storage.getGalleryItems(false);
     const testimonials = await storage.getTestimonials(false);
+    const services = await storage.getSiteServices(false);
+    const faq = await storage.getFaqItems(false);
     return res.json({
       ...analytics,
       totalContacts: contacts.length,
       newContacts: contacts.filter(c => c.status === "nouveau").length,
+      pendingContacts: contacts.filter(c => c.status === "en_cours").length,
+      treatedContacts: contacts.filter(c => c.status === "traite").length,
       totalGallery: gallery.length,
       totalTestimonials: testimonials.length,
+      totalServices: services.length,
+      totalFaq: faq.length,
     });
   });
 

@@ -76,9 +76,13 @@ export default function Home() {
     try { return JSON.parse(c("stats")) || DEFAULT_STATS; } catch { return DEFAULT_STATS; }
   })();
 
-  const trustItems: string[] = (() => {
-    try { return JSON.parse(c("trust_items")) || DEFAULT_TRUST; } catch { return DEFAULT_TRUST; }
-  })();
+  const trustItems: string[] = [
+    c("trust_item_1", "Peinture certifiée OEM"),
+    c("trust_item_2", "Diamantage sur tour numérique"),
+    c("trust_item_3", "Garantie*"),
+    c("trust_item_4", "Devis gratuit sous 24h"),
+    c("trust_item_5", "Liévin — Hauts-de-France"),
+  ].filter(Boolean);
 
   const fontFamily = c("typography.font", "Montserrat");
 

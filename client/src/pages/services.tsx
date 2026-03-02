@@ -38,7 +38,7 @@ export default function Services() {
         <div className="absolute inset-0 bg-auto-dark/80" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Badge className="mb-4 bg-auto-red/20 text-auto-red-light border-auto-red/30 text-xs uppercase tracking-wider">
-            Nos prestations
+            {content["pages.services.badge"] || "Nos prestations"}
           </Badge>
           <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4" data-testid="heading-services-page" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
             {content["sections.services.title"] || "Services professionnels"}
