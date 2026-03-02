@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { SEO } from "@/components/seo";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Phone, Mail, MapPin, Clock, CheckCircle2, Send, Smartphone, ArrowRight, MessageCircle, Upload, X, LayoutDashboard, Monitor, Globe, Zap } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, CheckCircle2, Send, Smartphone, ArrowRight, MessageCircle, Upload, X, LayoutDashboard, Monitor, Globe, Zap, ScanSearch, Sparkles, Loader2, FileText } from "lucide-react";
 import { Link } from "wouter";
 import type { Service } from "@shared/schema";
 
@@ -46,6 +46,9 @@ export default function Contact() {
   const { data: services = [] } = useQuery<Service[]>({ queryKey: ["/api/services"] });
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [ocrAnalyzing, setOcrAnalyzing] = useState(false);
+  const [ocrResult, setOcrResult] = useState<{ vehicle?: string; plate?: string; wheelInfo?: string; details?: string } | null>(null);
+  const [showOcrConsent, setShowOcrConsent] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -97,6 +100,37 @@ export default function Contact() {
       toast({ title: "Erreur d'envoi de l'image", variant: "destructive" });
     } finally {
       setUploading(false);
+    }
+  };
+
+  const runOcrAnalysis = async () => {
+    if (!uploadedImage) return;
+    setOcrAnalyzing(true);
+    try {
+      const res = await fetch("/api/ocr", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl: uploadedImage }),
+      });
+      const json = await res.json();
+      if (res.ok && json.data) {
+        const data = json.data;
+        setOcrResult(data);
+        if (data.vehicle) form.setValue("vehicle", data.vehicle);
+        if (data.wheelInfo || data.details) {
+          const current = form.getValues("message");
+          const ocrInfo = [data.wheelInfo, data.details].filter(Boolean).join(" — ");
+          form.setValue("message", current ? `${current}\n\n[IA] ${ocrInfo}` : `[IA] ${ocrInfo}`);
+        }
+        toast({ title: "Analyse terminée", description: "Les informations détectées ont été ajoutées au formulaire." });
+      } else {
+        toast({ title: "Erreur d'analyse", description: json.error || "L'analyse n'a pas pu aboutir. Veuillez remplir manuellement.", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Erreur d'analyse", description: "L'analyse IA n'a pas pu aboutir. Veuillez remplir les champs manuellement.", variant: "destructive" });
+    } finally {
+      setOcrAnalyzing(false);
+      setShowOcrConsent(false);
     }
   };
 
@@ -418,6 +452,44 @@ export default function Contact() {
                       </div>
                     )}
                   </div>
+
+                  {uploadedImage && !ocrResult && (
+                    <button
+                      type="button"
+                      onClick={() => setShowOcrConsent(true)}
+                      disabled={ocrAnalyzing}
+                      className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-bold rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50"
+                      data-testid="button-ocr-analyze"
+                    >
+                      {ocrAnalyzing ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Analyse IA en cours...
+                        </>
+                      ) : (
+                        <>
+                          <ScanSearch className="w-4 h-4" />
+                          <Sparkles className="w-3.5 h-3.5" />
+                          Analyser avec l'IA (carte grise / jante)
+                        </>
+                      )}
+                    </button>
+                  )}
+
+                  {ocrResult && (
+                    <div className="mt-3 bg-purple-50 border border-purple-200 rounded-xl p-4" data-testid="ocr-results">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Sparkles className="w-4 h-4 text-purple-600" />
+                        <span className="text-xs font-bold text-purple-700 uppercase tracking-wider">Résultat de l'analyse IA</span>
+                      </div>
+                      <div className="space-y-1 text-sm text-purple-900">
+                        {ocrResult.vehicle && <p><strong>Véhicule :</strong> {ocrResult.vehicle}</p>}
+                        {ocrResult.plate && <p><strong>Immatriculation :</strong> {ocrResult.plate}</p>}
+                        {ocrResult.wheelInfo && <p><strong>Jantes :</strong> {ocrResult.wheelInfo}</p>}
+                        {ocrResult.details && <p><strong>Détails :</strong> {ocrResult.details}</p>}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <FormField
@@ -614,6 +686,48 @@ export default function Contact() {
           </div>
         </div>
       </div>
+
+      {showOcrConsent && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" data-testid="modal-ocr-consent">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md mx-4 p-6 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
+                <ScanSearch className="w-6 h-6 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-gray-900">Analyse IA de votre image</h3>
+                <p className="text-xs text-gray-400">Powered by Google Gemini</p>
+              </div>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4 mb-4 text-sm text-gray-600 leading-relaxed">
+              <p className="mb-2">En cliquant sur <strong>"Analyser"</strong>, vous acceptez que :</p>
+              <ul className="space-y-1 text-xs text-gray-500">
+                <li className="flex items-start gap-2"><span className="text-purple-500 mt-0.5">•</span> Votre image soit envoyée à un service d'intelligence artificielle pour analyse</li>
+                <li className="flex items-start gap-2"><span className="text-purple-500 mt-0.5">•</span> Les données extraites (véhicule, immatriculation) seront pré-remplies dans le formulaire</li>
+                <li className="flex items-start gap-2"><span className="text-purple-500 mt-0.5">•</span> Aucune donnée n'est conservée après l'analyse</li>
+              </ul>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowOcrConsent(false)}
+                className="flex-1 px-4 py-2.5 text-sm font-bold text-gray-500 hover:text-gray-700 border border-gray-200 hover:border-gray-300 rounded-xl transition-colors"
+                data-testid="button-ocr-cancel"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={runOcrAnalysis}
+                disabled={ocrAnalyzing}
+                className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-xl transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2"
+                data-testid="button-ocr-confirm"
+              >
+                {ocrAnalyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                {ocrAnalyzing ? "Analyse..." : "Analyser"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -20,6 +20,7 @@ import {
 import { seedDatabase } from "./seed";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
 
 const PgSession = connectPgSimple(session);
@@ -524,6 +525,80 @@ RÈGLES:
       } else {
         res.status(500).json({ error: "Erreur du chatbot" });
       }
+    }
+  });
+
+  app.post("/api/ocr", async (req, res) => {
+    try {
+      const { imageUrl } = req.body;
+      if (!imageUrl) return res.status(400).json({ error: "URL d'image requise" });
+
+      if (!imageUrl.startsWith("/objects/") && !imageUrl.startsWith("/uploads/")) {
+        return res.status(400).json({ error: "Seules les images uploadées sur le site sont acceptées" });
+      }
+
+      const genai = new GoogleGenAI({
+        apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
+        httpOptions: { baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL },
+      });
+
+      const localUrl = `${req.protocol}://${req.get("host")}${imageUrl}`;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+      const imageResponse = await fetch(localUrl, { signal: controller.signal });
+      clearTimeout(timeout);
+
+      if (!imageResponse.ok) return res.status(400).json({ error: "Image introuvable" });
+
+      const contentType = imageResponse.headers.get("content-type") || "";
+      if (!contentType.startsWith("image/")) return res.status(400).json({ error: "Le fichier n'est pas une image" });
+
+      const imageBuffer = await imageResponse.arrayBuffer();
+      if (imageBuffer.byteLength > 10 * 1024 * 1024) return res.status(400).json({ error: "Image trop volumineuse (max 10 Mo)" });
+
+      const base64Image = Buffer.from(imageBuffer).toString("base64");
+      const mimeType = contentType;
+
+      const response = await genai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: [{
+          role: "user",
+          parts: [
+            { inlineData: { mimeType, data: base64Image } },
+            { text: `Analyse cette image de carte grise ou de jante/roue de véhicule. Extrais les informations suivantes si visibles:
+- Marque du véhicule
+- Modèle du véhicule
+- Immatriculation
+- Type de jante (taille, matériau si visible)
+- Tout autre détail pertinent pour une demande de rénovation de jantes
+
+Réponds en JSON avec ces champs (laisse vide si non trouvé):
+{"vehicle": "Marque Modèle", "plate": "Immatriculation", "wheelInfo": "Infos jante", "details": "Autres détails"}` },
+          ],
+        }],
+      });
+
+      const text = response?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      let parsed: Record<string, string> = {};
+      try {
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) parsed = JSON.parse(jsonMatch[0]);
+      } catch {
+        parsed = {};
+      }
+
+      res.json({
+        success: true,
+        data: {
+          vehicle: parsed.vehicle || "",
+          plate: parsed.plate || "",
+          wheelInfo: parsed.wheelInfo || "",
+          details: parsed.details || "",
+        },
+      });
+    } catch (error) {
+      console.error("OCR error:", error);
+      res.status(500).json({ error: "Erreur lors de l'analyse de l'image" });
     }
   });
 

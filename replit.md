@@ -7,7 +7,7 @@ Stack : Express + Vite + React + PostgreSQL + Drizzle ORM + TailwindCSS + shadcn
 ## Architecture
 - `client/` — Frontend React (Vite, wouter, TanStack Query)
 - `server/` — Backend Express (routes, storage, seed, vite dev server)
-- `shared/schema.ts` — Modèles Drizzle + Zod (users, contactRequests, blogPosts, galleryItems, testimonials, faqItems, siteServices, siteContent)
+- `shared/schema.ts` — Modèles Drizzle + Zod (users, contactRequests, blogPosts, galleryItems, testimonials, faqItems, siteServices, siteContent, conversations, messages)
 
 ## Accès Admin
 - Route : `/admin`
@@ -26,24 +26,35 @@ Stack : Express + Vite + React + PostgreSQL + Drizzle ORM + TailwindCSS + shadcn
 Categories et clés gérées dynamiquement :
 - **Header & Logo** : `header.logo_url`, `header.logo_size` (sm/md/lg/xl)
 - **Couleur du site** : `theme.color` (8 presets : red, blue, green, orange, purple, pink, teal, gold) — appliqué via CSS variables `--auto-red`, `--auto-red-dark`, `--auto-red-light`
-- **Typographie** : `typography.font` (14 polices Google Fonts : Montserrat, Open Sans, Poppins, Raleway, Inter, Roboto, Lato, Nunito, Oswald, Playfair Display, Bebas Neue, Quicksand, Rubik, Work Sans)
+- **Typographie** : `typography.font`, `typography.heading_font`, `typography.font_size`, `typography.heading_scale`
 - **Hero** : badge, titre (2 lignes), sous-titre, CTA boutons, `hero.bg_video` (MP4), `hero.bg_image` (fallback)
 - **Statistiques** : 4 blocs JSON `stats`
-- **Bande de confiance** : `trust_items` JSON array
+- **Bande de confiance** : `trust_items` JSON array (3 items)
 - **Contact** : phone, whatsapp, adresse, email
 - **Sections** : titres et sous-titres de chaque section
-- **Footer & Réseaux sociaux** : tagline, horaires (3 formats), liens Instagram/Facebook/Snapchat/TikTok/Google
+- **Footer & Réseaux sociaux** : tagline, horaires, liens Instagram/Facebook/Snapchat/TikTok/Google
 
 ## Composants globaux (App.tsx)
 - `ThemeApplier` : applique police + couleur CSS variables sur `document.documentElement` à chaque changement de siteContent
-- `WhatsAppButton` : bouton flottant WhatsApp sur toutes les pages publiques (pas sur /admin)
+- `FloatingButtons` : boutons flottants WhatsApp + Chatbot IA sur toutes les pages publiques
+- `CookieConsent` : bannière RGPD cookies (accepter/refuser, stocké en localStorage)
+
+## IA Integrations
+- **Chatbot IA** (OpenAI gpt-4o-mini) : POST `/api/chatbot` — streaming SSE, contexte services/FAQ/contact, liens markdown, questions rapides
+- **OCR Gemini** : POST `/api/ocr` — analyse carte grise/photo jante via Google Gemini 2.5 Flash, pré-remplit le formulaire contact (véhicule, immatriculation, infos jantes)
+- Env vars : `AI_INTEGRATIONS_OPENAI_API_KEY`, `AI_INTEGRATIONS_OPENAI_BASE_URL`, `AI_INTEGRATIONS_GEMINI_API_KEY`, `AI_INTEGRATIONS_GEMINI_BASE_URL`
 
 ## Intégration externe (CORS)
 - `appmyjantes.mytoolsgroup.eu` autorisé via CORS
 - POST `/api/contact` accepte les demandes cross-origin depuis l'espace client
 
-## Services affichés
-Soudure, Sablage, Devoilage, Rénovation, Personnalisation, Hydrodipping (coming soon)
+## SEO
+- Schema.org LocalBusiness (AutoRepair) structuré dans index.html
+- Open Graph + Twitter Cards configurés
+- Canonical URL, robots.txt (bloque /admin et /api/), sitemap.xml
+- Geo-tags (FR-62, Liévin, coordonnées GPS)
+- Keywords et meta descriptions optimisées par page
+- Composant `<SEO>` réutilisable sur chaque page
 
 ## Pages
 - `/` Accueil (hero dynamique, services, comment ça marche, atelier, galerie, avis, app promo, CTA)
@@ -51,7 +62,7 @@ Soudure, Sablage, Devoilage, Rénovation, Personnalisation, Hydrodipping (coming
 - `/galerie` Réalisations avant/après
 - `/a-propos` À propos
 - `/garanties` Garanties
-- `/contact` Formulaire + coordonnées
+- `/contact` Formulaire + coordonnées + OCR IA (carte grise)
 - `/faq` FAQ dynamique
 - `/admin` Panel admin sécurisé avec CRUD complet
 - `/mentions-legales`, `/politique-confidentialite`
@@ -59,8 +70,8 @@ Soudure, Sablage, Devoilage, Rénovation, Personnalisation, Hydrodipping (coming
 ## Notes techniques
 - Seed auto (server/seed.ts) : crée admin + données démo si vide, ajoute les clés manquantes à chaque redémarrage (idempotent)
 - Logo hero supprimé (seul le navbar affiche le logo)
-- WhatsApp géré par le bouton flottant global (plus dans Step 1)
 - "garantie*" partout (pas de "Garantie 12 mois")
 - "diamantage sur tour numérique" partout (pas de "Diamond cut")
 - Lien espace client → appmyjantes.mytoolsgroup.eu
 - Tailwind `auto-red/dark/light` utilisent des CSS variables pour le theming dynamique
+- Object storage configuré via Replit (bucket par défaut)

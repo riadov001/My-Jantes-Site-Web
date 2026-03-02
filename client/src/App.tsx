@@ -6,7 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import { WhatsAppButton } from "@/components/whatsapp-button";
+import { FloatingButtons } from "@/components/floating-buttons";
+import { CookieConsent } from "@/components/cookie-consent";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Services from "@/pages/services";
@@ -88,7 +89,8 @@ function PublicLayout() {
         </Switch>
       </main>
       <Footer />
-      <WhatsAppButton />
+      <FloatingButtons />
+      <CookieConsent />
     </div>
   );
 }
