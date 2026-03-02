@@ -194,6 +194,7 @@ const CONTENT_FIELDS: { key: string; label: string; category: string; multiline?
   { key: "hero.cta_gallery", label: "Bouton galerie", category: "hero" },
   { key: "hero.bg_video", label: "Vidéo fond hero (MP4) — laisser vide pour image", category: "hero" },
   { key: "hero.bg_image", label: "Image fond hero", category: "hero", type: "image-picker" },
+  { key: "sections.workshop.media", label: "Image/Vidéo — Section Atelier", category: "sections", type: "image-picker" },
   { key: "contact.phone", label: "Numéro de téléphone", category: "contact" },
   { key: "contact.phone_href", label: "Lien téléphone (tel:+33...)", category: "contact" },
   { key: "contact.whatsapp_number", label: "Numéro WhatsApp", category: "contact" },
@@ -257,6 +258,9 @@ export default function Admin() {
   const [tab, setTab] = useState<Tab>("contacts");
   const { toast } = useToast();
   const qc = useQueryClient();
+
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [showAddGallery, setShowAddGallery] = useState(false);
   const [showAddTestimonial, setShowAddTestimonial] = useState(false);
@@ -404,6 +408,34 @@ export default function Admin() {
     navigator.clipboard.writeText(url);
     setCopiedUrl(url);
     setTimeout(() => setCopiedUrl(null), 2000);
+  };
+
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    try {
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        toast({ title: "Fichier ajouté", description: data.url });
+        qc.invalidateQueries({ queryKey: ["/api/admin/site-content"] });
+      } else {
+        toast({ title: "Erreur d'envoi", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Erreur réseau", variant: "destructive" });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   if (authenticated === null) return <div className="min-h-screen bg-auto-dark flex items-center justify-center"><div className="w-8 h-8 border-2 border-auto-red border-t-transparent rounded-full animate-spin" /></div>;

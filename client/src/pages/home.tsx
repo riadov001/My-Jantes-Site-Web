@@ -123,7 +123,7 @@ export default function Home() {
           <div className="flex justify-center mb-5">
             <span className="inline-flex items-center gap-2 bg-auto-red/20 border border-auto-red/40 text-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full backdrop-blur-sm">
               <span className="w-2 h-2 rounded-full bg-auto-red animate-pulse" />
-              {c("hero.badge", "")}
+              {c("hero.badge", "Liévin - 62800")}
             </span>
           </div>
 
@@ -283,9 +283,17 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video">
-              <video autoPlay muted loop playsInline className="w-full h-full object-cover" title="Atelier MyJantes à Liévin">
-                <source src="/attached_assets/generated_videos/automotive_workshop_illustration.mp4" type="video/mp4" />
-              </video>
+              {c("sections.workshop.media")?.endsWith(".mp4") ? (
+                <video autoPlay muted loop playsInline className="w-full h-full object-cover">
+                  <source src={c("sections.workshop.media")} type="video/mp4" />
+                </video>
+              ) : (
+                <img 
+                  src={c("sections.workshop.media", "/attached_assets/generated_videos/automotive_workshop_illustration.mp4")} 
+                  alt="Atelier MyJantes" 
+                  className="w-full h-full object-cover" 
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
               <div className="absolute bottom-5 left-5 sm:bottom-6 sm:left-6 text-white">
                 <p className="text-xs font-bold uppercase tracking-widest text-auto-red mb-1">Atelier MyJantes</p>

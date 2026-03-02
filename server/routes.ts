@@ -33,6 +33,23 @@ function requireAdmin(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+const storage_multer = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = "./uploads";
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage: storage_multer });
+
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
@@ -318,6 +335,21 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.delete("/api/admin/site-content/:key", requireAdmin, async (req, res) => {
     await storage.deleteSiteContent(req.params.key);
     return res.json({ message: "Contenu supprimé" });
+  });
+
+  app.post("/api/admin/upload", requireAdmin, upload.single("file"), (req, res) => {
+    if (!req.file) return res.status(400).json({ message: "Fichier requis" });
+    const url = `/uploads/${req.file.filename}`;
+    return res.json({ url });
+  });
+
+  app.use("/uploads", (req, res, next) => {
+    // Basic static serving for uploads
+    const filePath = path.join(process.cwd(), "uploads", req.path);
+    if (fs.existsSync(filePath)) {
+      return res.sendFile(filePath);
+    }
+    next();
   });
 
   return httpServer;
