@@ -4,6 +4,9 @@ import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import cors from "cors";
 import { Pool } from "pg";
+import path from "path";
+import fs from "fs";
+import multer from "multer";
 import { storage } from "./storage";
 import { sendContactNotification } from "./email";
 import {
@@ -33,22 +36,26 @@ function requireAdmin(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-import multer from "multer";
-import path from "path";
-import fs from "fs";
+const uploadDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-const storage_multer = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const dir = "./uploads";
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-    cb(null, dir);
-  },
-  filename: function (req, file, cb) {
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
   }
 });
-const upload = multer({ storage: storage_multer });
+
+const upload = multer({
+  storage: multerStorage,
+  limits: { fileSize: 15 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = /image\/(jpeg|jpg|png|gif|webp|heic)|video\/(mp4|webm|mov)/i;
+    if (allowed.test(file.mimetype)) cb(null, true);
+    else cb(new Error("Type de fichier non supporté"));
+  }
+});
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
@@ -75,42 +82,48 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     })
   );
 
+  // Serve uploaded files
+  app.use("/uploads", (req, res, next) => {
+    const filePath = path.join(uploadDir, req.path);
+    if (fs.existsSync(filePath)) return res.sendFile(filePath);
+    next();
+  });
+
   await seedDatabase();
 
   // Auth routes
   app.post("/api/auth/login", async (req, res) => {
     const { username, password } = req.body;
-    if (!username || !password) {
-      return res.status(400).json({ message: "Identifiants requis" });
-    }
+    if (!username || !password) return res.status(400).json({ message: "Identifiants requis" });
     const user = await storage.validatePassword(username, password);
-    if (!user || !user.isAdmin) {
-      return res.status(401).json({ message: "Identifiants invalides" });
-    }
+    if (!user || !user.isAdmin) return res.status(401).json({ message: "Identifiants invalides" });
     req.session.userId = user.id;
     req.session.isAdmin = true;
     return res.json({ message: "Connecté", user: { id: user.id, username: user.username } });
   });
 
   app.post("/api/auth/logout", (req, res) => {
-    req.session.destroy(() => {
-      res.json({ message: "Déconnecté" });
-    });
+    req.session.destroy(() => res.json({ message: "Déconnecté" }));
   });
 
   app.get("/api/auth/me", (req, res) => {
-    if (req.session.userId && req.session.isAdmin) {
-      return res.json({ authenticated: true, userId: req.session.userId });
-    }
+    if (req.session.userId && req.session.isAdmin) return res.json({ authenticated: true, userId: req.session.userId });
     return res.json({ authenticated: false });
+  });
+
+  // Page view tracking (public)
+  app.post("/api/track", async (req, res) => {
+    const { path: pagePath } = req.body;
+    if (pagePath && typeof pagePath === "string") {
+      await storage.trackPageView(pagePath, req.headers.referer, req.headers["user-agent"]);
+    }
+    return res.json({ ok: true });
   });
 
   // Contact routes
   app.post("/api/contact", async (req, res) => {
     const result = insertContactSchema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ message: "Données invalides", errors: result.error.errors });
-    }
+    if (!result.success) return res.status(400).json({ message: "Données invalides", errors: result.error.errors });
     const contact = await storage.createContactRequest(result.data);
     sendContactNotification({
       name: result.data.name,
@@ -118,7 +131,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       phone: result.data.phone,
       vehicle: result.data.vehicle,
       message: result.data.message,
-      service: result.data.service,
+      service: result.data.requestType || result.data.service,
     }).catch(err => console.error("[email] sendContactNotification failed:", err));
     return res.status(201).json(contact);
   });
@@ -152,7 +165,6 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.json(post);
   });
 
-  // Blog routes (admin)
   app.get("/api/admin/blog", requireAdmin, async (req, res) => {
     const posts = await storage.getBlogPosts(false);
     return res.json(posts);
@@ -178,13 +190,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.json({ message: "Article supprimé" });
   });
 
-  // Gallery routes (public)
+  // Gallery routes
   app.get("/api/gallery", async (req, res) => {
     const items = await storage.getGalleryItems(true);
     return res.json(items);
   });
 
-  // Gallery routes (admin)
   app.get("/api/admin/gallery", requireAdmin, async (req, res) => {
     const items = await storage.getGalleryItems(false);
     return res.json(items);
@@ -210,13 +221,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.json({ message: "Élément supprimé" });
   });
 
-  // Testimonials routes (public)
+  // Testimonials routes
   app.get("/api/testimonials", async (req, res) => {
     const items = await storage.getTestimonials(true);
     return res.json(items);
   });
 
-  // Testimonials routes (admin)
   app.get("/api/admin/testimonials", requireAdmin, async (req, res) => {
     const items = await storage.getTestimonials(false);
     return res.json(items);
@@ -242,13 +252,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.json({ message: "Témoignage supprimé" });
   });
 
-  // FAQ routes (public)
+  // FAQ routes
   app.get("/api/faq", async (req, res) => {
     const items = await storage.getFaqItems(true);
     return res.json(items);
   });
 
-  // FAQ routes (admin)
   app.get("/api/admin/faq", requireAdmin, async (req, res) => {
     const items = await storage.getFaqItems(false);
     return res.json(items);
@@ -274,13 +283,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.json({ message: "FAQ supprimée" });
   });
 
-  // Site Services routes (public)
+  // Services routes
   app.get("/api/services", async (req, res) => {
     const items = await storage.getSiteServices(true);
     return res.json(items);
   });
 
-  // Site Services routes (admin)
   app.get("/api/admin/services", requireAdmin, async (req, res) => {
     const items = await storage.getSiteServices(false);
     return res.json(items);
@@ -306,13 +314,14 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.json({ message: "Prestation supprimée" });
   });
 
-  // Site Content routes (public)
+  // Site Content routes
   app.get("/api/site-content", async (req, res) => {
     const items = await storage.getAllSiteContent();
-    return res.json(items);
+    const map: Record<string, string> = {};
+    for (const item of items) map[item.key] = item.value;
+    return res.json(map);
   });
 
-  // Site Content routes (admin)
   app.get("/api/admin/site-content", requireAdmin, async (req, res) => {
     const items = await storage.getAllSiteContent();
     return res.json(items);
@@ -337,19 +346,51 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.json({ message: "Contenu supprimé" });
   });
 
-  app.post("/api/admin/upload", requireAdmin, upload.single("file"), (req, res) => {
+  // Upload — admin (for media library)
+  app.post("/api/admin/upload", requireAdmin, upload.single("file"), async (req, res) => {
+    if (!req.file) return res.status(400).json({ message: "Fichier requis" });
+    const url = `/uploads/${req.file.filename}`;
+    await storage.createMediaFile({
+      filename: req.file.filename,
+      originalName: req.file.originalname,
+      url,
+      mimeType: req.file.mimetype,
+      size: req.file.size,
+    });
+    return res.json({ url, filename: req.file.filename, mimeType: req.file.mimetype });
+  });
+
+  // Upload — public (for contact form image)
+  app.post("/api/admin/upload-public", upload.single("file"), async (req, res) => {
     if (!req.file) return res.status(400).json({ message: "Fichier requis" });
     const url = `/uploads/${req.file.filename}`;
     return res.json({ url });
   });
 
-  app.use("/uploads", (req, res, next) => {
-    // Basic static serving for uploads
-    const filePath = path.join(process.cwd(), "uploads", req.path);
-    if (fs.existsSync(filePath)) {
-      return res.sendFile(filePath);
-    }
-    next();
+  // Media library
+  app.get("/api/admin/media", requireAdmin, async (req, res) => {
+    const files = await storage.getMediaFiles();
+    return res.json(files);
+  });
+
+  app.delete("/api/admin/media/:id", requireAdmin, async (req, res) => {
+    await storage.deleteMediaFile(req.params.id);
+    return res.json({ message: "Fichier supprimé" });
+  });
+
+  // Analytics
+  app.get("/api/admin/analytics", requireAdmin, async (req, res) => {
+    const analytics = await storage.getAnalytics();
+    const contacts = await storage.getContactRequests();
+    const gallery = await storage.getGalleryItems(false);
+    const testimonials = await storage.getTestimonials(false);
+    return res.json({
+      ...analytics,
+      totalContacts: contacts.length,
+      newContacts: contacts.filter(c => c.status === "nouveau").length,
+      totalGallery: gallery.length,
+      totalTestimonials: testimonials.length,
+    });
   });
 
   return httpServer;

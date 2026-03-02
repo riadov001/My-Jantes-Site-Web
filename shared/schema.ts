@@ -14,9 +14,14 @@ export const users = pgTable("users", {
 export const contactRequests = pgTable("contact_requests", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
+  firstName: text("first_name"),
   email: text("email").notNull(),
   phone: text("phone"),
+  vehicle: text("vehicle"),
   service: text("service"),
+  requestType: text("request_type"),
+  nbWheels: text("nb_wheels"),
+  imageUrl: text("image_url"),
   message: text("message").notNull(),
   status: text("status").notNull().default("nouveau"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -54,6 +59,7 @@ export const testimonials = pgTable("testimonials", {
   rating: integer("rating").notNull().default(5),
   content: text("content").notNull(),
   vehicle: text("vehicle"),
+  googleReviewUrl: text("google_review_url"),
   published: boolean("published").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -87,6 +93,24 @@ export const siteContent = pgTable("site_content", {
   label: text("label").notNull().default(""),
   category: text("category").notNull().default("general"),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const pageViews = pgTable("page_views", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  path: text("path").notNull(),
+  referrer: text("referrer"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const mediaFiles = pgTable("media_files", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  filename: text("filename").notNull(),
+  originalName: text("original_name").notNull(),
+  url: text("url").notNull(),
+  mimeType: text("mime_type").notNull(),
+  size: integer("size").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -129,6 +153,11 @@ export const insertSiteContentSchema = createInsertSchema(siteContent).omit({
   updatedAt: true,
 });
 
+export const insertMediaFileSchema = createInsertSchema(mediaFiles).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type ContactRequest = typeof contactRequests.$inferSelect;
@@ -145,3 +174,6 @@ export type SiteService = typeof siteServices.$inferSelect;
 export type InsertSiteService = z.infer<typeof insertSiteServiceSchema>;
 export type SiteContent = typeof siteContent.$inferSelect;
 export type InsertSiteContent = z.infer<typeof insertSiteContentSchema>;
+export type PageView = typeof pageViews.$inferSelect;
+export type MediaFile = typeof mediaFiles.$inferSelect;
+export type InsertMediaFile = z.infer<typeof insertMediaFileSchema>;

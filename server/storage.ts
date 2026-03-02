@@ -1,11 +1,12 @@
 import { db } from "./db";
-import { eq, desc, asc, sql } from "drizzle-orm";
+import { eq, desc, asc, sql, count } from "drizzle-orm";
 import {
-  users, contactRequests, blogPosts, galleryItems, testimonials, faqItems, siteServices, siteContent,
+  users, contactRequests, blogPosts, galleryItems, testimonials, faqItems, siteServices, siteContent, pageViews, mediaFiles,
   type User, type InsertUser, type ContactRequest, type InsertContact,
   type BlogPost, type InsertBlog, type GalleryItem, type InsertGallery,
   type Testimonial, type InsertTestimonial, type FaqItem, type InsertFaq,
   type SiteService, type InsertSiteService, type SiteContent, type InsertSiteContent,
+  type PageView, type MediaFile, type InsertMediaFile,
 } from "@shared/schema";
 import bcrypt from "bcryptjs";
 
@@ -53,6 +54,13 @@ export interface IStorage {
   getSiteContentByKey(key: string): Promise<SiteContent | undefined>;
   setSiteContent(key: string, value: string, label?: string, category?: string): Promise<SiteContent>;
   deleteSiteContent(key: string): Promise<void>;
+
+  trackPageView(path: string, referrer?: string, userAgent?: string): Promise<void>;
+  getAnalytics(): Promise<{ totalViews: number; viewsByPage: { path: string; views: number }[]; recentViews: PageView[] }>;
+
+  getMediaFiles(): Promise<MediaFile[]>;
+  createMediaFile(data: InsertMediaFile): Promise<MediaFile>;
+  deleteMediaFile(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -235,7 +243,7 @@ export class DatabaseStorage implements IStorage {
     const existing = await this.getSiteContentByKey(key);
     if (existing) {
       const [c] = await db.update(siteContent)
-        .set({ value, label, category, updatedAt: new Date() })
+        .set({ value, label: label || existing.label, category: category || existing.category, updatedAt: new Date() })
         .where(eq(siteContent.key, key))
         .returning();
       return c;
@@ -247,6 +255,51 @@ export class DatabaseStorage implements IStorage {
 
   async deleteSiteContent(key: string) {
     await db.delete(siteContent).where(eq(siteContent.key, key));
+  }
+
+  async trackPageView(path: string, referrer?: string, userAgent?: string) {
+    try {
+      await db.insert(pageViews).values({ path, referrer, userAgent });
+    } catch {
+      // silently fail if table doesn't exist yet
+    }
+  }
+
+  async getAnalytics() {
+    try {
+      const total = await db.select({ count: count() }).from(pageViews);
+      const totalViews = Number(total[0]?.count ?? 0);
+
+      const byPage = await db
+        .select({ path: pageViews.path, views: count() })
+        .from(pageViews)
+        .groupBy(pageViews.path)
+        .orderBy(desc(count()))
+        .limit(20);
+
+      const recent = await db.select().from(pageViews).orderBy(desc(pageViews.createdAt)).limit(50);
+
+      return { totalViews, viewsByPage: byPage.map(r => ({ path: r.path, views: Number(r.views) })), recentViews: recent };
+    } catch {
+      return { totalViews: 0, viewsByPage: [], recentViews: [] };
+    }
+  }
+
+  async getMediaFiles() {
+    try {
+      return db.select().from(mediaFiles).orderBy(desc(mediaFiles.createdAt));
+    } catch {
+      return [];
+    }
+  }
+
+  async createMediaFile(data: InsertMediaFile) {
+    const [f] = await db.insert(mediaFiles).values(data).returning();
+    return f;
+  }
+
+  async deleteMediaFile(id: string) {
+    await db.delete(mediaFiles).where(eq(mediaFiles.id, id));
   }
 }
 
