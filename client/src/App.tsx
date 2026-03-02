@@ -41,16 +41,14 @@ function ScrollToTop() {
 }
 
 function ThemeApplier() {
-  const { data: siteContentItems = [] } = useQuery<SiteContent[]>({ queryKey: ["/api/site-content"] });
-  const siteContent = useMemo(() => {
-    const m: Record<string, string> = {};
-    siteContentItems.forEach(i => m[i.key] = i.value);
-    return m;
-  }, [siteContentItems]);
+  const { data: siteContent = {} } = useQuery<Record<string, string>>({ queryKey: ["/api/site-content"] });
 
   useEffect(() => {
     const font = siteContent["typography.font"] || "Montserrat";
     document.documentElement.style.setProperty("--font-sans", `'${font}', sans-serif`);
+
+    const headingFont = siteContent["typography.heading_font"] || "Eurostile Extended";
+    document.documentElement.style.setProperty("--font-heading", `'${headingFont}', '${font}', sans-serif`);
 
     const colorKey = siteContent["theme.color"] || "red";
     const preset = COLOR_PRESETS[colorKey] || COLOR_PRESETS.red;

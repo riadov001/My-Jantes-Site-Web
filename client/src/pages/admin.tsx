@@ -13,7 +13,7 @@ import {
   Lock, User, Plus, X, Phone,
   Edit2, Save, Wrench, FileText, Globe, Type, Settings, Monitor, Images
 } from "lucide-react";
-import type { ContactRequest, GalleryItem, Testimonial, FaqItem, SiteService, SiteContent } from "@shared/schema";
+import type { ContactRequest, GalleryItem, Testimonial, FaqItem, SiteService, SiteContent, MediaFile } from "@shared/schema";
 
 type Tab = "contacts" | "galerie" | "avis" | "faq" | "prestations" | "contenu" | "medias";
 
@@ -301,6 +301,7 @@ export default function Admin() {
   const { data: faqItems = [] } = useQuery<FaqItem[]>({ queryKey: ["/api/admin/faq"], enabled: authenticated === true });
   const { data: siteServices = [] } = useQuery<SiteService[]>({ queryKey: ["/api/admin/services"], enabled: authenticated === true });
   const { data: siteContentItems = [] } = useQuery<SiteContent[]>({ queryKey: ["/api/admin/site-content"], enabled: authenticated === true });
+  const { data: mediaFiles = [] } = useQuery<MediaFile[]>({ queryKey: ["/api/admin/media"], enabled: authenticated === true });
 
   const contentMap = useMemo(() => {
     const m: Record<string, string> = {};
@@ -410,32 +411,38 @@ export default function Admin() {
     setTimeout(() => setCopiedUrl(null), 2000);
   };
 
+  const deleteMedia = useMutation({
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/media/${id}`),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/media"] }); toast({ title: "Fichier supprimé" }); },
+  });
+
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
     
     setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    
-    try {
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
-      if (res.ok) {
-        const data = await res.json();
-        toast({ title: "Fichier ajouté", description: data.url });
-        qc.invalidateQueries({ queryKey: ["/api/admin/site-content"] });
-      } else {
-        toast({ title: "Erreur d'envoi", variant: "destructive" });
-      }
-    } catch {
-      toast({ title: "Erreur réseau", variant: "destructive" });
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (let i = 0; i < files.length; i++) {
+      const formData = new FormData();
+      formData.append("file", files[i]);
+      try {
+        const res = await fetch("/api/admin/upload", {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
+        if (res.ok) { successCount++; }
+        else { errorCount++; }
+      } catch { errorCount++; }
     }
+
+    qc.invalidateQueries({ queryKey: ["/api/admin/media"] });
+    if (successCount > 0) toast({ title: `${successCount} fichier(s) ajouté(s)` });
+    if (errorCount > 0) toast({ title: `${errorCount} fichier(s) en erreur`, variant: "destructive" });
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   if (authenticated === null) return <div className="min-h-screen bg-auto-dark flex items-center justify-center"><div className="w-8 h-8 border-2 border-auto-red border-t-transparent rounded-full animate-spin" /></div>;
@@ -776,43 +783,104 @@ export default function Admin() {
         {/* ── MÉDIATHÈQUE ── */}
         {tab === "medias" && (
           <div>
-            <div className="mb-6 bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
-              <strong>Médiathèque</strong> — Cliquez sur une image pour copier son URL. Vous pouvez ensuite coller cette URL dans n'importe quel champ image du site.
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {AVAILABLE_IMAGES.map(img => (
-                <button
-                  key={img.url}
-                  onClick={() => copyUrl(img.url)}
-                  className={`group relative rounded-xl overflow-hidden border-2 aspect-square transition-all hover:shadow-lg ${copiedUrl === img.url ? "border-green-500 scale-95" : "border-transparent hover:border-auto-red"}`}
-                >
-                  <img src={img.url} className="w-full h-full object-cover" alt={img.label} />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
-                    <span className="text-white text-xs font-semibold text-center px-2">{img.label}</span>
-                    <span className="text-white/70 text-[10px]">Cliquer pour copier</span>
-                  </div>
-                  {copiedUrl === img.url && (
-                    <div className="absolute inset-0 bg-green-500/80 flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">✓ Copié !</span>
-                    </div>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-lg font-bold" data-testid="text-media-title">Médiathèque</h2>
+                <p className="text-sm text-gray-500">{mediaFiles.length} fichier(s) importé(s) — Cliquez sur un fichier pour copier son URL</p>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,video/mp4,video/webm,video/quicktime"
+                  multiple
+                  onChange={onFileChange}
+                  className="hidden"
+                  data-testid="input-media-upload"
+                />
+                <Button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-auto-red text-white border-0" data-testid="button-upload-media">
+                  {uploading ? (
+                    <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" /> Envoi...</>
+                  ) : (
+                    <><Plus className="w-4 h-4 mr-1" /> Importer photos / vidéos</>
                   )}
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1">
-                    <p className="text-white text-[9px] truncate">{img.label}</p>
-                  </div>
-                </button>
-              ))}
+                </Button>
+              </div>
             </div>
-            <div className="mt-8 bg-gray-100 rounded-xl p-4">
-              <h3 className="font-bold mb-3 text-sm">Images disponibles dans la galerie DB</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {gallery.map(g => (
-                  <button key={g.id} onClick={() => copyUrl(g.afterImage)} className={`group relative rounded-xl overflow-hidden border-2 aspect-square transition-all hover:shadow-md ${copiedUrl === g.afterImage ? "border-green-500" : "border-transparent hover:border-auto-red"}`}>
-                    <img src={g.afterImage} className="w-full h-full object-cover" alt={g.title} />
+
+            {mediaFiles.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-bold text-sm mb-3 text-gray-700">Fichiers importés</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  {mediaFiles.map(mf => {
+                    const isVideo = mf.mimeType.startsWith("video/");
+                    return (
+                      <div key={mf.id} className={`group relative rounded-xl overflow-hidden border-2 aspect-square transition-all hover:shadow-lg ${copiedUrl === mf.url ? "border-green-500 scale-95" : "border-gray-200 hover:border-auto-red"}`} data-testid={`card-media-${mf.id}`}>
+                        <button onClick={() => copyUrl(mf.url)} className="w-full h-full">
+                          {isVideo ? (
+                            <video src={mf.url} className="w-full h-full object-cover" muted preload="metadata" />
+                          ) : (
+                            <img src={mf.url} className="w-full h-full object-cover" alt={mf.originalName} />
+                          )}
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1">
+                            <span className="text-white text-xs font-semibold text-center px-2">{mf.originalName}</span>
+                            <span className="text-white/70 text-[10px]">Cliquer pour copier l'URL</span>
+                          </div>
+                          {copiedUrl === mf.url && (
+                            <div className="absolute inset-0 bg-green-500/80 flex items-center justify-center">
+                              <span className="text-white font-bold text-sm">URL copiée !</span>
+                            </div>
+                          )}
+                        </button>
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 px-2 py-1.5 flex items-center justify-between">
+                          <div className="min-w-0 flex-1">
+                            <p className="text-white text-[9px] truncate">{mf.originalName}</p>
+                            <p className="text-white/50 text-[8px]">{isVideo ? "Vidéo" : "Image"} — {(mf.size / 1024).toFixed(0)} Ko</p>
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); confirm("Supprimer ce fichier ?") && deleteMedia.mutate(mf.id); }}
+                            className="p-1 rounded bg-red-500/80 hover:bg-red-600 text-white ml-1 shrink-0"
+                            data-testid={`button-delete-media-${mf.id}`}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                        {isVideo && <div className="absolute top-2 left-2 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded font-semibold">VIDEO</div>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {mediaFiles.length === 0 && (
+              <Card className="mb-8 border-dashed border-2 border-gray-300">
+                <CardContent className="p-12 text-center">
+                  <Images className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                  <p className="text-gray-500 font-semibold">Aucun fichier importé</p>
+                  <p className="text-gray-400 text-sm mt-1">Cliquez sur "Importer photos / vidéos" pour ajouter des fichiers depuis votre appareil</p>
+                  <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="mt-4" data-testid="button-upload-empty">
+                    <Plus className="w-4 h-4 mr-1" /> Choisir des fichiers
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            <div className="bg-gray-50 rounded-xl p-4 border">
+              <h3 className="font-bold text-sm mb-3 text-gray-700">Images pré-installées</h3>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+                {AVAILABLE_IMAGES.map(img => (
+                  <button
+                    key={img.url}
+                    onClick={() => copyUrl(img.url)}
+                    className={`group relative rounded-lg overflow-hidden border-2 aspect-square transition-all hover:shadow-md ${copiedUrl === img.url ? "border-green-500 scale-95" : "border-transparent hover:border-auto-red"}`}
+                    data-testid={`button-preinstalled-${img.label}`}
+                  >
+                    <img src={img.url} className="w-full h-full object-cover" alt={img.label} />
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center">
-                      <span className="text-white text-[10px] font-semibold text-center px-1">Copier URL</span>
+                      <span className="text-white text-[9px] font-semibold text-center px-1">{img.label}</span>
                     </div>
-                    {copiedUrl === g.afterImage && <div className="absolute inset-0 bg-green-500/80 flex items-center justify-center"><span className="text-white font-bold text-sm">✓</span></div>}
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1"><p className="text-white text-[9px] truncate">{g.title}</p></div>
+                    {copiedUrl === img.url && <div className="absolute inset-0 bg-green-500/80 flex items-center justify-center"><span className="text-white font-bold text-xs">Copié !</span></div>}
                   </button>
                 ))}
               </div>
