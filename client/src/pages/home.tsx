@@ -48,6 +48,32 @@ export default function Home() {
 
   const c = (key: string, fallback = "") => siteContent[key] || fallback;
 
+  const processItems: { icon: any; step: string; title: string; desc: string }[] = (() => {
+    try {
+      const items = JSON.parse(c("sections.process.items"));
+      const icons: Record<string, any> = { Camera, FileText, Wrench, PartyPopper };
+      return items.map((item: any) => ({
+        ...item,
+        icon: icons[item.icon] || Camera
+      }));
+    } catch {
+      return process;
+    }
+  })();
+
+  const whyUsItems: { icon: any; title: string; desc: string }[] = (() => {
+    try {
+      const items = JSON.parse(c("sections.whyus.items"));
+      const icons: Record<string, any> = { Shield, Zap, Award, Users };
+      return items.map((item: any) => ({
+        ...item,
+        icon: icons[item.icon] || Shield
+      }));
+    } catch {
+      return whyUs;
+    }
+  })();
+
   const stats: { value: string; label: string }[] = (() => {
     try { return JSON.parse(c("stats")) || DEFAULT_STATS; } catch { return DEFAULT_STATS; }
   })();
@@ -178,9 +204,9 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-4">
-            {process.map((step, i) => (
+            {processItems.map((step, i) => (
               <div key={step.step} className="relative">
-                {i < process.length - 1 && (
+                {i < processItems.length - 1 && (
                   <div className="hidden lg:block absolute top-10 left-[calc(100%-1rem)] w-8 text-gray-200 z-10">
                     <ChevronRight className="w-6 h-6" />
                   </div>
@@ -285,7 +311,7 @@ export default function Home() {
                 Basés à Liévin, nous investissons dans les meilleures technologies pour des résultats d'usine. Chaque jante est traitée avec une rigueur absolue et repart avec une garantie complète.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {whyUs.map((item) => (
+                {whyUsItems.map((item) => (
                   <div key={item.title} className="flex gap-4">
                     <div className="w-11 h-11 rounded-xl bg-white border border-gray-100 shadow-sm flex items-center justify-center shrink-0">
                       <item.icon className="w-5 h-5 text-auto-red" />
