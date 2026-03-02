@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
@@ -19,7 +19,6 @@ import Garanties from "@/pages/garanties";
 import Admin from "@/pages/admin";
 import MentionsLegales from "@/pages/mentions-legales";
 import PolitiqueConfidentialite from "@/pages/politique-confidentialite";
-import type { SiteContent } from "@shared/schema";
 
 const COLOR_PRESETS: Record<string, { red: string; dark: string; light: string }> = {
   red: { red: "0 84% 50%", dark: "0 77% 42%", light: "0 93% 82%" },
