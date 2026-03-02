@@ -487,57 +487,68 @@ export default function Contact() {
       </div>
 
       {/* ─── ESPACE CLIENT ────────────────────────────────────────────── */}
-      <div className="max-w-3xl mx-auto px-4 pb-10 sm:pb-14">
-        <div className="relative overflow-hidden rounded-3xl bg-auto-dark border border-white/10 p-8 sm:p-10">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-auto-red/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-auto-red/5 rounded-full blur-2xl pointer-events-none translate-y-1/2 -translate-x-1/4" />
+      <div className="max-w-4xl mx-auto px-4 pb-16">
+        <div className="relative overflow-hidden rounded-[2rem] bg-auto-dark border border-white/10 p-8 sm:p-12 shadow-2xl shadow-auto-red/20">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-auto-red/20 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-auto-red/10 rounded-full blur-[80px] pointer-events-none translate-y-1/2 -translate-x-1/4" />
 
-          <div className="relative flex flex-col sm:flex-row gap-8 items-start sm:items-center">
-            <div className="shrink-0">
-              <div className="w-16 h-16 rounded-2xl bg-auto-red/20 border border-auto-red/30 flex items-center justify-center">
-                <Smartphone className="w-8 h-8 text-auto-red" />
+          <div className="relative flex flex-col md:flex-row gap-10 items-center">
+            <div className="shrink-0 relative">
+              <div className="w-20 h-20 rounded-3xl bg-auto-red flex items-center justify-center shadow-lg shadow-auto-red/40">
+                <Smartphone className="w-10 h-10 text-white" />
+              </div>
+              <div className="absolute -bottom-2 -right-2 bg-green-500 w-6 h-6 rounded-full border-4 border-auto-dark flex items-center justify-center">
+                <div className="w-2 h-2 bg-white rounded-full animate-ping" />
               </div>
             </div>
 
-            <div className="flex-1">
-              <Badge className="mb-3 bg-auto-red/20 text-auto-red-light border-auto-red/30 uppercase tracking-[0.18em] text-[10px] font-bold">
-                Espace Client
+            <div className="flex-1 text-center md:text-left">
+              <Badge className="mb-4 bg-auto-red text-white border-0 uppercase tracking-[0.2em] text-[11px] font-black px-4 py-1">
+                EXCLUSIVITÉ MYJANTES
               </Badge>
-              <h3 className="text-2xl sm:text-3xl font-black text-white mb-2 leading-tight">
-                Suivez votre prestation en temps réel
+              <h3 className="text-3xl sm:text-4xl font-black text-white mb-4 leading-tight uppercase tracking-tight">
+                VOTRE ATELIER DANS <span className="text-auto-red">VOTRE POCHE</span>
               </h3>
-              <p className="text-white/55 text-sm sm:text-base mb-6 leading-relaxed">
-                Après votre première intervention, accédez à votre espace personnel pour suivre l'avancement de vos jantes, consulter vos devis, factures et historique d'interventions.
+              <p className="text-white/70 text-base sm:text-lg mb-8 leading-relaxed max-w-2xl">
+                Suivez l'avancement de vos jantes étape par étape. Photos en direct, devis instantanés et historique complet de vos interventions.
               </p>
 
-              <div className="grid grid-cols-2 gap-3 mb-7">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
                 {[
-                  { icon: Zap, label: "Suivi en temps réel", desc: "Chaque étape de votre prestation" },
-                  { icon: LayoutDashboard, label: "Devis & factures", desc: "Tous vos documents en ligne" },
-                  { icon: Clock, label: "Prise de RDV", desc: "Réservez en 24h/24" },
-                  { icon: Globe, label: "Historique complet", desc: "Toutes vos interventions" },
+                  { icon: Zap, label: "SUIVI EN DIRECT", desc: "Photos à chaque étape" },
+                  { icon: FileText, label: "DEVIS & FACTURES", desc: "Documents archivés" },
+                  { icon: Clock, label: "PRISE DE RDV", desc: "Disponible 24h/24" },
+                  { icon: Monitor, label: "ACCÈS ILLIMITÉ", desc: "Web & Mobile" },
                 ].map(item => (
-                  <div key={item.label} className="flex items-start gap-2.5 bg-white/5 rounded-xl p-3">
-                    <item.icon className="w-4 h-4 text-auto-red shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-white text-xs font-bold leading-tight">{item.label}</p>
-                      <p className="text-white/40 text-[11px] leading-snug mt-0.5">{item.desc}</p>
+                  <div key={item.label} className="flex items-start gap-4 bg-white/5 border border-white/5 rounded-2xl p-4 hover:bg-white/10 transition-colors">
+                    <item.icon className="w-6 h-6 text-auto-red shrink-0" />
+                    <div className="text-left">
+                      <p className="text-white text-sm font-black uppercase tracking-wider">{item.label}</p>
+                      <p className="text-white/40 text-xs mt-1">{item.desc}</p>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <Button
-                asChild
-                className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black h-11 px-7"
-                data-testid="button-espace-client"
-              >
-                <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">
-                  <Smartphone className="w-4 h-4 mr-2" />
-                  Accéder à l'espace client
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </a>
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button
+                  asChild
+                  className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black h-14 px-10 text-lg group"
+                  data-testid="button-espace-client-main"
+                >
+                  <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">
+                    OUVRIR MON ESPACE
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </a>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="border-white/20 text-white hover:bg-white/10 h-14 px-8 font-bold"
+                >
+                  <a href="#form-contact">Nouveau client ? Demander un devis</a>
+                </Button>
+              </div>
             </div>
           </div>
         </div>

@@ -18,6 +18,7 @@ import {
   insertSiteServiceSchema,
 } from "@shared/schema";
 import { seedDatabase } from "./seed";
+import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { z } from "zod";
 
 const PgSession = connectPgSimple(session);
@@ -88,6 +89,8 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     if (fs.existsSync(filePath)) return res.sendFile(filePath);
     next();
   });
+
+  registerObjectStorageRoutes(app);
 
   await seedDatabase();
 
@@ -346,10 +349,24 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.json({ message: "Contenu supprimé" });
   });
 
-  // Upload — admin (for media library)
+  // Upload — admin (for media library) — stores to Object Storage + local
   app.post("/api/admin/upload", requireAdmin, upload.single("file"), async (req, res) => {
     if (!req.file) return res.status(400).json({ message: "Fichier requis" });
-    const url = `/uploads/${req.file.filename}`;
+    let url = `/uploads/${req.file.filename}`;
+
+    try {
+      const { ObjectStorageService, objectStorageClient } = await import("./replit_integrations/object_storage");
+      const oss = new ObjectStorageService();
+      const privateDir = oss.getPrivateObjectDir();
+      const { bucketName, objectName } = parseObjPath(`${privateDir}/uploads/${req.file.filename}`);
+      const bucket = objectStorageClient.bucket(bucketName);
+      const file = bucket.file(objectName);
+      await file.save(fs.readFileSync(req.file.path), { contentType: req.file.mimetype });
+      url = `/objects/uploads/${req.file.filename}`;
+    } catch (e) {
+      console.log("Object storage upload fallback to local:", (e as Error).message);
+    }
+
     await storage.createMediaFile({
       filename: req.file.filename,
       originalName: req.file.originalname,
@@ -360,10 +377,24 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.json({ url, filename: req.file.filename, mimeType: req.file.mimetype });
   });
 
-  // Upload — public (for contact form image)
+  // Upload — public (for contact form image) — stores to Object Storage + local
   app.post("/api/admin/upload-public", upload.single("file"), async (req, res) => {
     if (!req.file) return res.status(400).json({ message: "Fichier requis" });
-    const url = `/uploads/${req.file.filename}`;
+    let url = `/uploads/${req.file.filename}`;
+
+    try {
+      const { ObjectStorageService, objectStorageClient } = await import("./replit_integrations/object_storage");
+      const oss = new ObjectStorageService();
+      const privateDir = oss.getPrivateObjectDir();
+      const { bucketName, objectName } = parseObjPath(`${privateDir}/uploads/${req.file.filename}`);
+      const bucket = objectStorageClient.bucket(bucketName);
+      const file = bucket.file(objectName);
+      await file.save(fs.readFileSync(req.file.path), { contentType: req.file.mimetype });
+      url = `/objects/uploads/${req.file.filename}`;
+    } catch (e) {
+      console.log("Object storage upload-public fallback to local:", (e as Error).message);
+    }
+
     return res.json({ url });
   });
 
@@ -400,4 +431,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   });
 
   return httpServer;
+}
+
+function parseObjPath(p: string): { bucketName: string; objectName: string } {
+  if (!p.startsWith("/")) p = `/${p}`;
+  const parts = p.split("/");
+  return { bucketName: parts[1], objectName: parts.slice(2).join("/") };
 }
