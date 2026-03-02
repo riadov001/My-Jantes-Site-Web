@@ -146,7 +146,7 @@ export function Footer() {
                   <a href={phoneHref} data-testid="link-footer-phone" className="text-white/70 hover:text-white text-sm transition-colors">
                     {phone}
                   </a>
-                  <span className="block text-white/35 text-xs">{hoursShort}</span>
+                  
                 </div>
               </li>
               <li className="flex items-start gap-3">

@@ -19,6 +19,7 @@ import {
 } from "@shared/schema";
 import { seedDatabase } from "./seed";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
+import OpenAI from "openai";
 import { z } from "zod";
 
 const PgSession = connectPgSimple(session);
@@ -428,6 +429,102 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       totalServices: services.length,
       totalFaq: faq.length,
     });
+  });
+
+  app.post("/api/chatbot", async (req, res) => {
+    try {
+      const { message, history = [] } = req.body;
+      if (!message) return res.status(400).json({ error: "Message requis" });
+
+      const services = await storage.getSiteServices(true);
+      const faqItems = await storage.getFaqItems(true);
+      const contentItems = await storage.getAllSiteContent();
+      const contentMap: Record<string, string> = {};
+      for (const item of contentItems) contentMap[item.key] = item.value;
+
+      const servicesContext = services.map(s =>
+        `- ${s.title}: ${s.description} | Prix: ${s.price} | Lien: /services/${s.slug}`
+      ).join("\n");
+
+      const faqContext = faqItems.map(f =>
+        `Q: ${f.question}\nR: ${f.answer}`
+      ).join("\n\n");
+
+      const systemPrompt = `Tu es l'assistant virtuel de MyJantes, expert en rénovation de jantes alu situé à Liévin (62800), Hauts-de-France.
+
+INFORMATIONS CLÉS:
+- Adresse: ${contentMap["contact.address"] || "46 rue de la Convention, 62800 Liévin"}
+- Téléphone: ${contentMap["contact.phone"] || "03 21 40 80 53"}
+- Email: ${contentMap["contact.email"] || "contact@myjantes.com"}
+- WhatsApp: ${contentMap["contact.whatsapp_number"] || "06 71 37 04 18"}
+- Horaires: ${contentMap["footer.hours_line1"] || "Lun-Ven 9h-12h30"}, ${contentMap["footer.hours_line2"] || "13h30-18h00"}
+
+NOS PRESTATIONS:
+${servicesContext}
+
+FAQ:
+${faqContext}
+
+PAGES DU SITE:
+- Accueil: /
+- Services: /services
+- Galerie de réalisations: /galerie
+- Contact & Devis: /contact
+- À propos: /a-propos
+- FAQ: /faq
+- Garanties: /garanties
+
+RÈGLES:
+1. Réponds TOUJOURS en français, de manière professionnelle mais chaleureuse.
+2. Fournis des liens de redirection quand c'est pertinent (format markdown: [texte](/chemin)).
+3. Pour les demandes de devis, redirige vers la page contact: [Demander un devis gratuit](/contact).
+4. Tu ne connais QUE les informations ci-dessus. Ne fabrique pas de prix ou d'informations.
+5. Sois concis mais utile. Maximum 3-4 phrases par réponse.
+6. Mets en avant la qualité, le professionnalisme et la proximité de l'atelier.`;
+
+      const openai = new OpenAI({
+        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+      });
+
+      const chatMessages: { role: "system" | "user" | "assistant"; content: string }[] = [
+        { role: "system", content: systemPrompt },
+        ...history.slice(-10).map((m: any) => ({ role: m.role as "user" | "assistant", content: m.content })),
+        { role: "user", content: message },
+      ];
+
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+
+      const stream = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: chatMessages,
+        stream: true,
+        max_tokens: 500,
+        temperature: 0.7,
+      });
+
+      let fullResponse = "";
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content || "";
+        if (content) {
+          fullResponse += content;
+          res.write(`data: ${JSON.stringify({ content })}\n\n`);
+        }
+      }
+
+      res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+      res.end();
+    } catch (error) {
+      console.error("Chatbot error:", error);
+      if (res.headersSent) {
+        res.write(`data: ${JSON.stringify({ error: "Erreur du chatbot" })}\n\n`);
+        res.end();
+      } else {
+        res.status(500).json({ error: "Erreur du chatbot" });
+      }
+    }
   });
 
   return httpServer;

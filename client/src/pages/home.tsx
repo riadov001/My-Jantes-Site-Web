@@ -80,8 +80,6 @@ export default function Home() {
     c("trust_item_1"),
     c("trust_item_2"),
     c("trust_item_3"),
-    c("trust_item_4"),
-    c("trust_item_5"),
   ].filter(item => item.trim() !== "");
 
   const fontFamily = c("typography.font", "Montserrat");

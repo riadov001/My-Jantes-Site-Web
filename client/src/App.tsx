@@ -49,6 +49,13 @@ function ThemeApplier() {
     const headingFont = siteContent["typography.heading_font"] || "Eurostile Extended";
     document.documentElement.style.setProperty("--font-heading", `'${headingFont}', '${font}', sans-serif`);
 
+    const fontSize = siteContent["typography.font_size"] || "16";
+    document.documentElement.style.setProperty("--base-font-size", `${fontSize}px`);
+    document.documentElement.style.fontSize = `${fontSize}px`;
+
+    const headingScale = parseFloat(siteContent["typography.heading_scale"] || "1.25");
+    document.documentElement.style.setProperty("--heading-scale", String(headingScale));
+
     const colorKey = siteContent["theme.color"] || "red";
     const preset = COLOR_PRESETS[colorKey] || COLOR_PRESETS.red;
     document.documentElement.style.setProperty("--auto-red", preset.red);
