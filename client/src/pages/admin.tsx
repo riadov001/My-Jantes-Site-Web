@@ -166,8 +166,14 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.E
 
 const AVAILABLE_FONTS = [
   "Eurostile Extended",
+  "Orbitron", "Michroma", "Rajdhani", "Chakra Petch", "Audiowide",
+  "Exo 2", "Teko", "Russo One", "Oxanium", "Tektur", "Bruno Ace", "Bruno Ace SC",
+  "Electrolize", "Share Tech Mono", "Syncopate", "Aldrich", "Quantico", "Jura",
+  "Iceberg", "Megrim", "Poiret One",
+  "Bebas Neue", "Barlow Condensed", "Saira", "Saira Condensed", "Titillium Web",
+  "Bai Jamjuree", "Oswald",
   "Montserrat", "Open Sans", "Poppins", "Raleway", "Inter", "Roboto",
-  "Lato", "Nunito", "Oswald", "Playfair Display", "Bebas Neue", "Quicksand", "Rubik", "Work Sans",
+  "Lato", "Nunito", "Playfair Display", "Quicksand", "Rubik", "Work Sans",
 ];
 
 const COLOR_PRESETS = [

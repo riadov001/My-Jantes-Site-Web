@@ -77,12 +77,12 @@ export default function Home() {
   })();
 
   const trustItems: string[] = [
-    c("trust_item_1", "Peinture certifiée OEM"),
-    c("trust_item_2", "Diamantage sur tour numérique"),
-    c("trust_item_3", "Garantie*"),
-    c("trust_item_4", "Devis gratuit sous 24h"),
-    c("trust_item_5", "Liévin — Hauts-de-France"),
-  ].filter(Boolean);
+    c("trust_item_1"),
+    c("trust_item_2"),
+    c("trust_item_3"),
+    c("trust_item_4"),
+    c("trust_item_5"),
+  ].filter(item => item.trim() !== "");
 
   const fontFamily = c("typography.font", "Montserrat");
 
@@ -132,12 +132,12 @@ export default function Home() {
           </div>
 
           <h1
-            className="text-center text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-black text-white leading-[1.05] tracking-tight mb-4"
+            className="text-center text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-white leading-[0.95] tracking-wider mb-4 uppercase"
             style={{ fontFamily: `'${fontFamily}', sans-serif` }}
             data-testid="heading-hero-main"
           >
             {c("hero.title_line1", "L'expert de la")}
-            <span className="block text-auto-red drop-shadow-[0_4px_20px_rgba(220,38,38,0.5)]">
+            <span className="block text-auto-red drop-shadow-[0_4px_30px_rgba(220,38,38,0.6)]">
               {c("hero.title_line2", "jante alu")}
             </span>
           </h1>
@@ -174,25 +174,32 @@ export default function Home() {
       </section>
 
       {/* ─── BANDE DE CONFIANCE ───────────────────────────────────── */}
-      <div className="bg-auto-dark border-b border-white/5 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-white/50 text-xs uppercase tracking-widest font-semibold">
-            {trustItems.map(item => (
-              <span key={item} className="flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-auto-red shrink-0" />
-                {item}
-              </span>
-            ))}
+      {trustItems.length > 0 && (
+        <div className="relative bg-auto-dark overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-auto-red to-transparent" />
+          <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white/5" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12">
+              {trustItems.map((item, i) => (
+                <span key={item} className="flex items-center gap-2.5 group">
+                  {i > 0 && <span className="hidden sm:block w-px h-4 bg-white/10" />}
+                  <CheckCircle2 className="w-4 h-4 text-auto-red shrink-0" />
+                  <span className="text-white/70 text-[11px] uppercase tracking-[0.18em] font-bold group-hover:text-white transition-colors">
+                    {item}
+                  </span>
+                </span>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* ─── COMMENT ÇA MARCHE ────────────────────────────────────── */}
       <section className="py-16 sm:py-20 lg:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10 md:mb-12">
             <Badge className="mb-4 bg-auto-red/10 text-auto-red border-auto-red/20 text-xs uppercase tracking-widest">Simple & rapide</Badge>
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
+            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 uppercase tracking-wide" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
               {c("sections.process.title", "Comment ça marche ?")}
             </h2>
             <p className="text-gray-500 mt-3 max-w-xl mx-auto">
@@ -236,7 +243,7 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-10 md:mb-12">
               <Badge className="mb-4 bg-auto-red/10 text-auto-red border-auto-red/20 text-xs uppercase tracking-widest">Nos prestations</Badge>
-              <h2 className="text-3xl sm:text-4xl font-black text-gray-900" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
+              <h2 className="text-4xl sm:text-5xl font-black text-gray-900 uppercase tracking-wide" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
                 {c("sections.services.title", "Expertise complète")}
               </h2>
               <p className="text-gray-500 mt-3 max-w-xl mx-auto">
@@ -309,7 +316,7 @@ export default function Home() {
             </div>
             <div>
               <Badge className="mb-4 bg-auto-red/10 text-auto-red border-auto-red/20 uppercase tracking-widest text-xs">Technologie OEM</Badge>
-              <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-5" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
+              <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mb-5 uppercase tracking-wide" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
                 {c("sections.whyus.title", "Pourquoi choisir MyJantes ?")}
               </h2>
               <p className="text-gray-600 mb-8 leading-relaxed">
@@ -348,7 +355,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 md:mb-12">
               <div>
                 <Badge className="mb-4 bg-auto-red/10 text-auto-red border-auto-red/20 text-xs uppercase tracking-widest">Galerie</Badge>
-                <h2 className="text-3xl sm:text-4xl font-black text-gray-900" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
+                <h2 className="text-4xl sm:text-5xl font-black text-gray-900 uppercase tracking-wide" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
                   {c("sections.gallery.title", "Nos réalisations")}
                 </h2>
               </div>
@@ -383,7 +390,7 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-10 md:mb-12">
               <Badge className="mb-4 bg-auto-red/10 text-auto-red border-auto-red/20 text-xs uppercase tracking-widest">Avis vérifiés</Badge>
-              <h2 className="text-3xl sm:text-4xl font-black text-gray-900" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
+              <h2 className="text-4xl sm:text-5xl font-black text-gray-900 uppercase tracking-wide" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
                 {c("sections.testimonials.title", "Ce que disent nos clients")}
               </h2>
               <div className="flex items-center justify-center gap-1 mt-3">
@@ -425,7 +432,7 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="order-2 lg:order-1">
               <Badge className="mb-5 bg-auto-red/20 text-auto-red-light border-auto-red/30 uppercase tracking-[0.2em] text-xs font-bold">Espace Client</Badge>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-5 leading-tight" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-5 leading-tight uppercase tracking-wide" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
                 Gérez tout depuis votre <span className="text-auto-red">smartphone</span>
               </h2>
               <p className="text-white/60 text-base sm:text-lg mb-8 leading-relaxed">
@@ -481,7 +488,7 @@ export default function Home() {
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-white blur-2xl" />
         </div>
         <div className="relative max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl sm:text-5xl font-black text-white mb-5" style={{ fontFamily: `'${fontFamily}', sans-serif` }} id="heading-cta">
+          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-5 uppercase tracking-wider" style={{ fontFamily: `'${fontFamily}', sans-serif` }} id="heading-cta">
             Redonnez vie à vos jantes
           </h2>
           <p className="text-white/80 text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">

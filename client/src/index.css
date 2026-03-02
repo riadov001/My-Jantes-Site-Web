@@ -26,6 +26,16 @@
   font-display: swap;
 }
 
+/* ─── BEBAS NEUE GLOBAL ──────────────────────────────────────────────────── */
+/* Bebas Neue renders best uppercase with slight letter-spacing */
+.bebas-heading {
+  font-family: 'Bebas Neue', 'Eurostile Extended', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  font-weight: 400;
+}
+
 /* LIGHT MODE */
 :root {
   --button-outline: rgba(0,0,0, .10);
