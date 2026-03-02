@@ -4,6 +4,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
@@ -252,8 +253,26 @@ export default function Admin() {
   const [uploading, setUploading] = useState(false);
   const [contentEdits, setContentEdits] = useState<Record<string, string>>({});
   const [savingContent, setSavingContent] = useState<Record<string, boolean>>({});
+  const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
+
+  const [showAddGallery, setShowAddGallery] = useState(false);
+  const [showAddTestimonial, setShowAddTestimonial] = useState(false);
+  const [showAddFaq, setShowAddFaq] = useState(false);
+  const [showAddService, setShowAddService] = useState(false);
+  const [editingGalleryId, setEditingGalleryId] = useState<string | null>(null);
+  const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
+
+  const [galleryForm, setGalleryForm] = useState({ title: "", serviceType: "renovation", afterImage: "", beforeImage: "", description: "" });
+  const [testimonialForm, setTestimonialForm] = useState({ name: "", location: "", rating: 5, content: "", vehicle: "" });
+  const [faqForm, setFaqForm] = useState({ question: "", answer: "", category: "general", sortOrder: 0 });
+  const defaultServiceForm = { title: "", description: "", image: "/images/service-renovation.png", badge: "", features: [] as string[], price: "", slug: "", sortOrder: 0, published: true };
+  const [serviceForm, setServiceForm] = useState(defaultServiceForm);
 
   const { data: contacts = [] } = useQuery<ContactRequest[]>({ queryKey: ["/api/admin/contacts"], enabled: authenticated === true });
+  const { data: gallery = [] } = useQuery<GalleryItem[]>({ queryKey: ["/api/admin/gallery"], enabled: authenticated === true });
+  const { data: testimonials = [] } = useQuery<Testimonial[]>({ queryKey: ["/api/admin/testimonials"], enabled: authenticated === true });
+  const { data: faqItems = [] } = useQuery<FaqItem[]>({ queryKey: ["/api/admin/faq"], enabled: authenticated === true });
+  const { data: siteServices = [] } = useQuery<SiteService[]>({ queryKey: ["/api/admin/services"], enabled: authenticated === true });
   const { data: siteContentItems = [] } = useQuery<SiteContent[]>({ queryKey: ["/api/admin/site-content"], enabled: authenticated === true });
   const { data: mediaFiles = [] } = useQuery<MediaFile[]>({ queryKey: ["/api/admin/media"], enabled: authenticated === true });
   const { data: analytics } = useQuery<any>({ queryKey: ["/api/admin/analytics"], enabled: authenticated === true });
@@ -275,6 +294,87 @@ export default function Admin() {
       toast({ title: "Sauvegardé ✓" });
     } catch { toast({ title: "Erreur", variant: "destructive" }); }
     finally { setSavingContent(p => ({ ...p, [key]: false })); }
+  };
+
+  const deleteContactMut = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/admin/contacts/${id}`),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/contacts"] }); toast({ title: "Contact supprimé" }); },
+  });
+  const updateContactStatusMut = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: string }) => apiRequest("PATCH", `/api/admin/contacts/${id}/status`, { status }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/contacts"] }); toast({ title: "Statut mis à jour" }); },
+  });
+
+  const addGalleryMut = useMutation({
+    mutationFn: (data: any) => apiRequest("POST", "/api/admin/gallery", data),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/gallery"] }); setShowAddGallery(false); setGalleryForm({ title: "", serviceType: "renovation", afterImage: "", beforeImage: "", description: "" }); toast({ title: "Réalisation ajoutée" }); },
+  });
+  const updateGalleryMut = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) => apiRequest("PUT", `/api/admin/gallery/${id}`, data),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/gallery"] }); setEditingGalleryId(null); toast({ title: "Réalisation modifiée" }); },
+  });
+  const deleteGalleryMut = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/admin/gallery/${id}`),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/gallery"] }); toast({ title: "Réalisation supprimée" }); },
+  });
+
+  const addTestimonialMut = useMutation({
+    mutationFn: (data: any) => apiRequest("POST", "/api/admin/testimonials", data),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/testimonials"] }); setShowAddTestimonial(false); setTestimonialForm({ name: "", location: "", rating: 5, content: "", vehicle: "" }); toast({ title: "Avis ajouté" }); },
+  });
+  const deleteTestimonialMut = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/admin/testimonials/${id}`),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/testimonials"] }); toast({ title: "Avis supprimé" }); },
+  });
+
+  const addFaqMut = useMutation({
+    mutationFn: (data: any) => apiRequest("POST", "/api/admin/faq", data),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/faq"] }); setShowAddFaq(false); setFaqForm({ question: "", answer: "", category: "general", sortOrder: 0 }); toast({ title: "FAQ ajoutée" }); },
+  });
+  const deleteFaqMut = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/admin/faq/${id}`),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/faq"] }); toast({ title: "FAQ supprimée" }); },
+  });
+
+  const addServiceMut = useMutation({
+    mutationFn: (data: any) => apiRequest("POST", "/api/admin/services", data),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/services"] }); setShowAddService(false); setServiceForm(defaultServiceForm); toast({ title: "Prestation ajoutée" }); },
+  });
+  const updateServiceMut = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) => apiRequest("PUT", `/api/admin/services/${id}`, data),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/services"] }); setEditingServiceId(null); toast({ title: "Prestation modifiée" }); },
+  });
+  const deleteServiceMut = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/admin/services/${id}`),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/services"] }); toast({ title: "Prestation supprimée" }); },
+  });
+
+  const deleteMediaMut = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/admin/media/${id}`),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/media"] }); toast({ title: "Fichier supprimé" }); },
+  });
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/admin/upload", { method: "POST", body: formData, credentials: "include" });
+      if (res.ok) {
+        qc.invalidateQueries({ queryKey: ["/api/admin/media"] });
+        toast({ title: "Fichier uploadé" });
+      } else { toast({ title: "Erreur d'upload", variant: "destructive" }); }
+    } catch { toast({ title: "Erreur d'upload", variant: "destructive" }); }
+    finally { setUploading(false); if (fileInputRef.current) fileInputRef.current.value = ""; }
+  };
+
+  const copyToClipboard = (url: string) => {
+    navigator.clipboard.writeText(url);
+    setCopiedUrl(url);
+    setTimeout(() => setCopiedUrl(null), 2000);
+    toast({ title: "URL copiée" });
   };
 
   const logoutMutation = useMutation({
@@ -301,6 +401,7 @@ export default function Admin() {
     { id: "galerie", label: "Réalisations", icon: Image },
     { id: "prestations", label: "Prestations", icon: Wrench },
     { id: "avis", label: "Avis Clients", icon: Star },
+    { id: "faq", label: "FAQ", icon: HelpCircle },
     { id: "contenu", label: "Configuration", icon: Settings },
     { id: "liens", label: "Navigation", icon: Link2 },
     { id: "medias", label: "Médiathèque", icon: Images },
@@ -461,6 +562,21 @@ export default function Admin() {
                           <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 italic text-sm text-gray-700">
                             "{c.message}"
                           </div>
+                          <div className="flex gap-2 pt-2">
+                            {c.status === "nouveau" && (
+                              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-[10px] font-black uppercase h-8" onClick={() => updateContactStatusMut.mutate({ id: c.id, status: "traité" })} data-testid={`button-treat-contact-${c.id}`}>
+                                <CheckCircle2 className="w-3 h-3 mr-1" /> Marquer traité
+                              </Button>
+                            )}
+                            {c.status === "traité" && (
+                              <Button size="sm" variant="outline" className="text-[10px] font-black uppercase h-8" onClick={() => updateContactStatusMut.mutate({ id: c.id, status: "nouveau" })} data-testid={`button-untreat-contact-${c.id}`}>
+                                <Clock className="w-3 h-3 mr-1" /> Remettre nouveau
+                              </Button>
+                            )}
+                            <Button size="sm" variant="outline" className="text-[10px] font-bold h-8 text-red-500 hover:bg-red-50" onClick={() => deleteContactMut.mutate(c.id)} data-testid={`button-delete-contact-${c.id}`}>
+                              <Trash2 className="w-3 h-3 mr-1" /> Supprimer
+                            </Button>
+                          </div>
                         </div>
                         {c.imageUrl && (
                           <div className="w-full md:w-48 aspect-square rounded-2xl overflow-hidden border-4 border-white shadow-lg shrink-0">
@@ -531,16 +647,310 @@ export default function Admin() {
               </div>
             )}
 
-            {/* Fallback for other tabs */}
-            {tab !== "dashboard" && tab !== "contacts" && tab !== "contenu" && (
-              <Card className="border-0 shadow-sm p-12 text-center">
-                <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                  <Wrench className="w-10 h-10 text-gray-200" />
+            {/* ── GALERIE ── */}
+            {tab === "galerie" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-gray-400 font-bold">{gallery.length} réalisation{gallery.length > 1 ? "s" : ""}</p>
+                  <Button onClick={() => setShowAddGallery(true)} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase tracking-widest" data-testid="button-add-gallery">
+                    <Plus className="w-4 h-4 mr-2" /> Ajouter
+                  </Button>
                 </div>
-                <h3 className="text-xl font-black uppercase tracking-tight mb-2">Interface en maintenance</h3>
-                <p className="text-gray-400 text-sm font-medium">Cette section est en cours de refonte vers le nouveau design.</p>
-                <Button variant="outline" className="mt-6 border-gray-200" onClick={() => setTab("dashboard")}>Retour au tableau de bord</Button>
-              </Card>
+
+                {showAddGallery && (
+                  <Card className="border-2 border-auto-red/20 shadow-lg">
+                    <CardContent className="p-6 space-y-4">
+                      <div className="flex justify-between items-center"><h3 className="font-black uppercase text-sm">Nouvelle réalisation</h3><Button variant="ghost" size="sm" onClick={() => setShowAddGallery(false)}><X className="w-4 h-4" /></Button></div>
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Titre</label><Input value={galleryForm.title} onChange={e => setGalleryForm(p => ({ ...p, title: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-gallery-title" /></div>
+                        <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Type de service</label>
+                          <select value={galleryForm.serviceType} onChange={e => setGalleryForm(p => ({ ...p, serviceType: e.target.value }))} className="w-full h-10 bg-gray-50 border border-gray-200 rounded-md px-3 text-sm" data-testid="select-gallery-type">
+                            <option value="renovation">Rénovation</option><option value="peinture">Peinture</option><option value="soudure">Soudure</option><option value="reparation">Réparation</option><option value="polish">Polish</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Image Après (URL)</label><Input value={galleryForm.afterImage} onChange={e => setGalleryForm(p => ({ ...p, afterImage: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-gallery-after" /></div>
+                        <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Image Avant (URL)</label><Input value={galleryForm.beforeImage} onChange={e => setGalleryForm(p => ({ ...p, beforeImage: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-gallery-before" /></div>
+                      </div>
+                      <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Description</label><Textarea value={galleryForm.description} onChange={e => setGalleryForm(p => ({ ...p, description: e.target.value }))} className="bg-gray-50 border-gray-200 min-h-[80px]" data-testid="input-gallery-desc" /></div>
+                      <Button onClick={() => addGalleryMut.mutate(galleryForm)} disabled={!galleryForm.title || !galleryForm.afterImage || addGalleryMut.isPending} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase" data-testid="button-submit-gallery">
+                        {addGalleryMut.isPending ? "Ajout..." : "Ajouter la réalisation"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {gallery.map(item => (
+                    <Card key={item.id} className="border-0 shadow-sm overflow-hidden group" data-testid={`card-gallery-${item.id}`}>
+                      <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
+                        <img src={item.afterImage} alt={item.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                        <div className="absolute top-3 left-3"><Badge className="bg-auto-red text-white text-[10px] font-black">{item.serviceType}</Badge></div>
+                      </div>
+                      <CardContent className="p-4">
+                        <h4 className="font-black text-sm uppercase truncate">{item.title}</h4>
+                        {item.description && <p className="text-xs text-gray-400 mt-1 line-clamp-2">{item.description}</p>}
+                        <div className="flex gap-2 mt-3">
+                          <Button variant="outline" size="sm" className="flex-1 text-[10px] font-bold h-8" onClick={() => deleteGalleryMut.mutate(item.id)} data-testid={`button-delete-gallery-${item.id}`}>
+                            <Trash2 className="w-3 h-3 mr-1" /> Supprimer
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── PRESTATIONS ── */}
+            {tab === "prestations" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-gray-400 font-bold">{siteServices.length} prestation{siteServices.length > 1 ? "s" : ""}</p>
+                  <Button onClick={() => setShowAddService(true)} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase tracking-widest" data-testid="button-add-service">
+                    <Plus className="w-4 h-4 mr-2" /> Ajouter
+                  </Button>
+                </div>
+
+                {showAddService && (
+                  <Card className="border-2 border-auto-red/20 shadow-lg">
+                    <CardContent className="p-6 space-y-4">
+                      <div className="flex justify-between items-center"><h3 className="font-black uppercase text-sm">Nouvelle prestation</h3><Button variant="ghost" size="sm" onClick={() => setShowAddService(false)}><X className="w-4 h-4" /></Button></div>
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Titre</label><Input value={serviceForm.title} onChange={e => setServiceForm(p => ({ ...p, title: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-service-title" /></div>
+                        <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Slug</label><Input value={serviceForm.slug} onChange={e => setServiceForm(p => ({ ...p, slug: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-service-slug" /></div>
+                      </div>
+                      <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Description</label><Textarea value={serviceForm.description} onChange={e => setServiceForm(p => ({ ...p, description: e.target.value }))} className="bg-gray-50 border-gray-200 min-h-[80px]" data-testid="input-service-desc" /></div>
+                      <div className="grid sm:grid-cols-3 gap-4">
+                        <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Image (URL)</label><Input value={serviceForm.image} onChange={e => setServiceForm(p => ({ ...p, image: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-service-image" /></div>
+                        <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Badge</label><Input value={serviceForm.badge} onChange={e => setServiceForm(p => ({ ...p, badge: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-service-badge" /></div>
+                        <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Prix</label><Input value={serviceForm.price} onChange={e => setServiceForm(p => ({ ...p, price: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-service-price" /></div>
+                      </div>
+                      <Button onClick={() => addServiceMut.mutate(serviceForm)} disabled={!serviceForm.title || addServiceMut.isPending} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase" data-testid="button-submit-service">
+                        {addServiceMut.isPending ? "Ajout..." : "Ajouter la prestation"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+
+                <div className="space-y-4">
+                  {siteServices.map(svc => (
+                    <Card key={svc.id} className="border-0 shadow-sm" data-testid={`card-service-${svc.id}`}>
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-6">
+                          {svc.image && <img src={svc.image} alt={svc.title} className="w-20 h-20 rounded-2xl object-cover bg-gray-100 shrink-0" />}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h4 className="font-black text-base uppercase">{svc.title}</h4>
+                              {svc.badge && <Badge className="bg-auto-red text-white text-[10px]">{svc.badge}</Badge>}
+                              {svc.price && <span className="text-xs font-bold text-gray-400">{svc.price}</span>}
+                            </div>
+                            <p className="text-sm text-gray-500 line-clamp-2">{svc.description}</p>
+                          </div>
+                          <div className="flex gap-2 shrink-0">
+                            <Button variant="outline" size="sm" className="text-[10px] font-bold h-8" onClick={() => deleteServiceMut.mutate(svc.id)} data-testid={`button-delete-service-${svc.id}`}>
+                              <Trash2 className="w-3 h-3 mr-1" /> Supprimer
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── AVIS ── */}
+            {tab === "avis" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-gray-400 font-bold">{testimonials.length} avis client{testimonials.length > 1 ? "s" : ""}</p>
+                  <Button onClick={() => setShowAddTestimonial(true)} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase tracking-widest" data-testid="button-add-testimonial">
+                    <Plus className="w-4 h-4 mr-2" /> Ajouter
+                  </Button>
+                </div>
+
+                {showAddTestimonial && (
+                  <Card className="border-2 border-auto-red/20 shadow-lg">
+                    <CardContent className="p-6 space-y-4">
+                      <div className="flex justify-between items-center"><h3 className="font-black uppercase text-sm">Nouvel avis</h3><Button variant="ghost" size="sm" onClick={() => setShowAddTestimonial(false)}><X className="w-4 h-4" /></Button></div>
+                      <div className="grid sm:grid-cols-3 gap-4">
+                        <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Nom</label><Input value={testimonialForm.name} onChange={e => setTestimonialForm(p => ({ ...p, name: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-testimonial-name" /></div>
+                        <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Ville</label><Input value={testimonialForm.location} onChange={e => setTestimonialForm(p => ({ ...p, location: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-testimonial-location" /></div>
+                        <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Note (1-5)</label><Input type="number" min={1} max={5} value={testimonialForm.rating} onChange={e => setTestimonialForm(p => ({ ...p, rating: parseInt(e.target.value) || 5 }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-testimonial-rating" /></div>
+                      </div>
+                      <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Véhicule</label><Input value={testimonialForm.vehicle} onChange={e => setTestimonialForm(p => ({ ...p, vehicle: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-testimonial-vehicle" /></div>
+                      <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Commentaire</label><Textarea value={testimonialForm.content} onChange={e => setTestimonialForm(p => ({ ...p, content: e.target.value }))} className="bg-gray-50 border-gray-200 min-h-[80px]" data-testid="input-testimonial-content" /></div>
+                      <Button onClick={() => addTestimonialMut.mutate(testimonialForm)} disabled={!testimonialForm.name || !testimonialForm.content || addTestimonialMut.isPending} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase" data-testid="button-submit-testimonial">
+                        {addTestimonialMut.isPending ? "Ajout..." : "Ajouter l'avis"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+
+                <div className="space-y-4">
+                  {testimonials.map(t => (
+                    <Card key={t.id} className="border-0 shadow-sm" data-testid={`card-testimonial-${t.id}`}>
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h4 className="font-black text-sm uppercase">{t.name}</h4>
+                              <span className="text-xs text-gray-400 font-bold">{t.location}</span>
+                              <div className="flex gap-0.5">{Array.from({ length: t.rating }).map((_, i) => <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />)}</div>
+                            </div>
+                            {t.vehicle && <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">{t.vehicle}</p>}
+                            <p className="text-sm text-gray-600 italic">"{t.content}"</p>
+                          </div>
+                          <Button variant="ghost" size="sm" onClick={() => deleteTestimonialMut.mutate(t.id)} className="text-gray-300 hover:text-red-500 shrink-0" data-testid={`button-delete-testimonial-${t.id}`}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── FAQ (hidden from sidebar but accessible) ── */}
+            {tab === "faq" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-gray-400 font-bold">{faqItems.length} question{faqItems.length > 1 ? "s" : ""}</p>
+                  <Button onClick={() => setShowAddFaq(true)} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase tracking-widest" data-testid="button-add-faq">
+                    <Plus className="w-4 h-4 mr-2" /> Ajouter
+                  </Button>
+                </div>
+
+                {showAddFaq && (
+                  <Card className="border-2 border-auto-red/20 shadow-lg">
+                    <CardContent className="p-6 space-y-4">
+                      <div className="flex justify-between items-center"><h3 className="font-black uppercase text-sm">Nouvelle FAQ</h3><Button variant="ghost" size="sm" onClick={() => setShowAddFaq(false)}><X className="w-4 h-4" /></Button></div>
+                      <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Question</label><Input value={faqForm.question} onChange={e => setFaqForm(p => ({ ...p, question: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-faq-question" /></div>
+                      <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Réponse</label><Textarea value={faqForm.answer} onChange={e => setFaqForm(p => ({ ...p, answer: e.target.value }))} className="bg-gray-50 border-gray-200 min-h-[100px]" data-testid="input-faq-answer" /></div>
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Catégorie</label>
+                          <select value={faqForm.category} onChange={e => setFaqForm(p => ({ ...p, category: e.target.value }))} className="w-full h-10 bg-gray-50 border border-gray-200 rounded-md px-3 text-sm" data-testid="select-faq-category">
+                            <option value="general">Général</option><option value="services">Services</option><option value="tarifs">Tarifs</option><option value="livraison">Livraison</option>
+                          </select>
+                        </div>
+                        <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Ordre</label><Input type="number" value={faqForm.sortOrder} onChange={e => setFaqForm(p => ({ ...p, sortOrder: parseInt(e.target.value) || 0 }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-faq-order" /></div>
+                      </div>
+                      <Button onClick={() => addFaqMut.mutate(faqForm)} disabled={!faqForm.question || !faqForm.answer || addFaqMut.isPending} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase" data-testid="button-submit-faq">
+                        {addFaqMut.isPending ? "Ajout..." : "Ajouter la FAQ"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+
+                <div className="space-y-3">
+                  {faqItems.map(faq => (
+                    <Card key={faq.id} className="border-0 shadow-sm" data-testid={`card-faq-${faq.id}`}>
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <HelpCircle className="w-4 h-4 text-auto-red shrink-0" />
+                              <h4 className="font-black text-sm">{faq.question}</h4>
+                              <Badge variant="outline" className="text-[10px]">{faq.category}</Badge>
+                            </div>
+                            <p className="text-sm text-gray-500 pl-7">{faq.answer}</p>
+                          </div>
+                          <Button variant="ghost" size="sm" onClick={() => deleteFaqMut.mutate(faq.id)} className="text-gray-300 hover:text-red-500 shrink-0" data-testid={`button-delete-faq-${faq.id}`}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── LIENS / NAVIGATION ── */}
+            {tab === "liens" && (
+              <div className="space-y-6">
+                <Card className="border-0 shadow-sm">
+                  <CardHeader className="border-b border-gray-100 p-8">
+                    <CardTitle className="text-lg font-black uppercase tracking-widest text-gray-400 flex items-center gap-3">
+                      <Link2 className="w-5 h-5 text-auto-red" /> Liens de navigation
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-8 space-y-8">
+                    {[
+                      { key: "links.phone", label: "Téléphone" },
+                      { key: "links.email", label: "Email" },
+                      { key: "links.address", label: "Adresse" },
+                      { key: "links.facebook", label: "Facebook" },
+                      { key: "links.instagram", label: "Instagram" },
+                      { key: "links.tiktok", label: "TikTok" },
+                      { key: "links.google_maps", label: "Google Maps" },
+                      { key: "links.booking_url", label: "URL de réservation" },
+                    ].map(field => {
+                      const currentVal = getVal(field.key);
+                      const isDirty = contentEdits[field.key] !== undefined && contentEdits[field.key] !== contentMap[field.key];
+                      return (
+                        <div key={field.key} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label className="text-xs font-black uppercase tracking-[0.1em] text-gray-500">{field.label}</label>
+                            {isDirty && (
+                              <Button size="sm" onClick={() => saveContent(field.key)} disabled={savingContent[field.key]} className="h-7 bg-auto-red text-white text-[10px] font-black uppercase px-4 shadow-lg shadow-auto-red/20">
+                                <Save className="w-3 h-3 mr-2" /> Enregistrer
+                              </Button>
+                            )}
+                          </div>
+                          <Input value={currentVal} onChange={e => setContentEdits(p => ({ ...p, [field.key]: e.target.value }))} className="h-12 bg-gray-50 border-gray-200 rounded-xl px-4 font-medium" data-testid={`input-link-${field.key}`} />
+                        </div>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {/* ── MEDIATHEQUE ── */}
+            {tab === "medias" && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-gray-400 font-bold">{mediaFiles.length} fichier{mediaFiles.length > 1 ? "s" : ""}</p>
+                  <div className="flex gap-3">
+                    <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept="image/*,video/*,.pdf" />
+                    <Button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase tracking-widest" data-testid="button-upload-media">
+                      {uploading ? <span className="animate-pulse">Upload...</span> : <><Plus className="w-4 h-4 mr-2" /> Uploader un fichier</>}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {mediaFiles.map(file => (
+                    <Card key={file.id} className="border-0 shadow-sm overflow-hidden group" data-testid={`card-media-${file.id}`}>
+                      <div className="aspect-square relative overflow-hidden bg-gray-100">
+                        {file.mimeType?.startsWith("image/") ? (
+                          <img src={file.url} alt={file.filename} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-50">
+                            <FileText className="w-12 h-12 text-gray-300" />
+                          </div>
+                        )}
+                      </div>
+                      <CardContent className="p-3">
+                        <p className="text-xs font-bold truncate mb-2" title={file.filename}>{file.filename}</p>
+                        <div className="flex gap-1">
+                          <Button variant="outline" size="sm" className="flex-1 text-[9px] font-bold h-7" onClick={() => copyToClipboard(file.url)} data-testid={`button-copy-media-${file.id}`}>
+                            {copiedUrl === file.url ? <CheckCircle2 className="w-3 h-3 mr-1 text-green-500" /> : <Globe className="w-3 h-3 mr-1" />}
+                            {copiedUrl === file.url ? "Copié" : "URL"}
+                          </Button>
+                          <Button variant="outline" size="sm" className="text-[9px] font-bold h-7 text-red-500 hover:bg-red-50" onClick={() => deleteMediaMut.mutate(file.id)} data-testid={`button-delete-media-${file.id}`}>
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
             )}
 
           </div>
