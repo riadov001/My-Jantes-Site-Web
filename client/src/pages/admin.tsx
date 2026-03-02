@@ -255,6 +255,8 @@ export default function Admin() {
   const [savingContent, setSavingContent] = useState<Record<string, boolean>>({});
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
 
+  const [showAddGallery, setShowAddGallery] = useState(false);
+  const [showAddTestimonial, setShowAddTestimonial] = useState(false);
   const [showAddFaq, setShowAddFaq] = useState(false);
   const [showAddService, setShowAddService] = useState(false);
   const [editingGalleryId, setEditingGalleryId] = useState<string | null>(null);
