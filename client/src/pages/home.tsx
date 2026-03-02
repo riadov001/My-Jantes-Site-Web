@@ -22,8 +22,6 @@ const DEFAULT_TRUST = [
   "Peinture certifiée OEM",
   "Diamantage sur tour numérique",
   "Garantie*",
-  "Devis gratuit sous 24h",
-  "Liévin — Hauts-de-France",
 ];
 
 const process = [
