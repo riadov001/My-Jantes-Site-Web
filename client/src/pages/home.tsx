@@ -125,7 +125,7 @@ export default function Home() {
           <div className="flex justify-center mb-5">
             <span className="inline-flex items-center gap-2 bg-auto-red/20 border border-auto-red/40 text-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full backdrop-blur-sm">
               <span className="w-2 h-2 rounded-full bg-auto-red animate-pulse" />
-              {c("hero.badge", "Atelier à Liévin — 62800")}
+              {c("hero.badge", "")}
             </span>
           </div>
 
@@ -147,11 +147,6 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-8">
-            <Button asChild size="lg" className="w-full sm:w-auto bg-auto-red hover:bg-auto-red-dark text-white border-0 px-8 h-12 text-sm font-black shadow-2xl shadow-auto-red/30" data-testid="button-hero-devis">
-              <Link href="/contact">
-                {c("hero.cta_primary", "Devis gratuit")} <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </Button>
             <Button asChild size="lg" variant="outline" className="w-full sm:w-auto border-white/25 text-white bg-white/10 backdrop-blur-sm hover:bg-white/20 px-8 h-12 font-semibold text-sm" data-testid="button-hero-galerie">
               <Link href="/galerie">{c("hero.cta_gallery", "Voir les réalisations")}</Link>
             </Button>
