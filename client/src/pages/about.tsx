@@ -24,7 +24,7 @@ export default function About() {
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Badge className="mb-6 bg-auto-red/20 text-auto-red-light border-auto-red/30 px-4 py-1 uppercase tracking-widest text-xs font-bold">
-            Depuis 2020
+            Depuis 2022
           </Badge>
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white mb-6 font-['Montserrat',sans-serif] leading-tight">
             Une passion, <br/><span className="text-auto-red">une expertise.</span>
@@ -53,7 +53,7 @@ export default function About() {
                     <History className="w-6 h-6" />
                   </div>
                   <div>
-                    <p className="text-2xl font-black text-gray-900">5+ Ans</p>
+                    <p className="text-2xl font-black text-gray-900">3+ Ans</p>
                     <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">D'expérience</p>
                   </div>
                 </div>
