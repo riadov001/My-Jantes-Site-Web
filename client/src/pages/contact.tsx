@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,8 +13,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { SEO } from "@/components/seo";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Phone, Mail, MapPin, Clock, CheckCircle2, Send, Smartphone, ArrowRight, MessageCircle, Upload, X, Star } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, CheckCircle2, Send, Smartphone, ArrowRight, MessageCircle, Upload, X, LayoutDashboard, Monitor, Globe, Zap } from "lucide-react";
 import { Link } from "wouter";
+import type { Service } from "@shared/schema";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Nom requis"),
@@ -41,9 +43,11 @@ const REQUEST_TYPES = [
 export default function Contact() {
   const { toast } = useToast();
   const { data: content = {} } = useQuery<Record<string, string>>({ queryKey: ["/api/site-content"] });
+  const { data: services = [] } = useQuery<Service[]>({ queryKey: ["/api/services"] });
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   const c = (key: string, fallback = "") => content[key] || fallback;
 
@@ -96,6 +100,12 @@ export default function Contact() {
     }
   };
 
+  const selectService = (svc: Service) => {
+    form.setValue("service", svc.title);
+    form.setValue("requestType", "devis");
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const phone = c("contact.phone", "03 21 40 80 53");
   const phoneHref = c("contact.phone_href", "tel:+33321408053");
   const whatsappHref = c("contact.whatsapp_href", "https://wa.me/33671370418");
@@ -104,6 +114,8 @@ export default function Contact() {
   const email = c("contact.email", "contact@myjantes.com");
   const hoursLine1 = c("footer.hours_line1", "Lun – Ven : 9h – 12h30");
   const hoursLine2 = c("footer.hours_line2", "13h30 – 18h00");
+
+  const selectedService = form.watch("service");
 
   const schema = {
     "@context": "https://schema.org",
@@ -123,6 +135,7 @@ export default function Contact() {
         schema={schema}
       />
 
+      {/* ─── HERO ─────────────────────────────────────────────────────── */}
       <div className="bg-auto-dark pt-32 pb-10">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h1 className="text-4xl sm:text-5xl font-black text-white mb-3" data-testid="heading-contact">
@@ -134,7 +147,72 @@ export default function Contact() {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 py-10 sm:py-14">
+      {/* ─── SERVICES ─────────────────────────────────────────────────── */}
+      {services.length > 0 && (
+        <div className="bg-gray-50 border-b border-gray-100 py-12">
+          <div className="max-w-5xl mx-auto px-4">
+            <div className="text-center mb-8">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-auto-red font-bold mb-2">Nos prestations</p>
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900">
+                Quelle prestation vous intéresse ?
+              </h2>
+              <p className="text-gray-400 text-sm mt-2">Cliquez sur une prestation pour pré-remplir votre demande de devis.</p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              {services.filter(s => s.published).map(svc => (
+                <button
+                  key={svc.id}
+                  type="button"
+                  onClick={() => selectService(svc)}
+                  data-testid={`card-service-${svc.slug}`}
+                  className={`group relative rounded-2xl border-2 p-4 text-left transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer ${
+                    selectedService === svc.title
+                      ? "border-auto-red bg-auto-red/5 shadow-md shadow-auto-red/10"
+                      : "border-gray-200 bg-white hover:border-auto-red/40"
+                  }`}
+                >
+                  {selectedService === svc.title && (
+                    <div className="absolute top-2 right-2">
+                      <CheckCircle2 className="w-4 h-4 text-auto-red" />
+                    </div>
+                  )}
+                  <Badge className={`mb-2.5 text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 ${
+                    svc.badge === "Best-seller"
+                      ? "bg-auto-red/10 text-auto-red border-auto-red/20"
+                      : "bg-gray-100 text-gray-500 border-gray-200"
+                  }`}>
+                    {svc.badge}
+                  </Badge>
+                  <p className={`font-black text-sm leading-tight mb-1 ${selectedService === svc.title ? "text-auto-red" : "text-gray-900"}`}>
+                    {svc.title}
+                  </p>
+                  <p className="text-[11px] text-gray-400 font-medium leading-tight">{svc.price}</p>
+                </button>
+              ))}
+            </div>
+
+            {selectedService && (
+              <div className="mt-4 text-center">
+                <span className="inline-flex items-center gap-2 text-sm text-auto-red font-semibold bg-auto-red/5 border border-auto-red/20 rounded-full px-4 py-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <strong>{selectedService}</strong> sélectionné — votre formulaire est pré-rempli ci-dessous
+                  <button
+                    type="button"
+                    onClick={() => form.setValue("service", "")}
+                    className="ml-1 text-auto-red/60 hover:text-auto-red"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ─── FORM ─────────────────────────────────────────────────────── */}
+      <div ref={formRef} className="max-w-3xl mx-auto px-4 py-10 sm:py-14 scroll-mt-20">
         <div className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mb-2">Demandez Votre Devis Gratuit</h2>
           <p className="text-gray-500 text-sm">Ce devis est une estimation du montant de la prestation.</p>
@@ -201,6 +279,44 @@ export default function Contact() {
                         <FormControl>
                           <Input type="tel" placeholder="06 00 00 00 00" data-testid="input-contact-phone" {...field} />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="vehicle"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Véhicule</FormLabel>
+                        <FormControl>
+                          <Input placeholder="ex : BMW Série 3, Audi A4…" data-testid="input-contact-vehicle" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="service"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Prestation souhaitée</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || ""}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-service" aria-label="Prestation souhaitée">
+                              <SelectValue placeholder="Choisir une prestation" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {services.filter(s => s.published).map(s => (
+                              <SelectItem key={s.id} value={s.title}>{s.title}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -370,6 +486,64 @@ export default function Contact() {
         </Card>
       </div>
 
+      {/* ─── ESPACE CLIENT ────────────────────────────────────────────── */}
+      <div className="max-w-3xl mx-auto px-4 pb-10 sm:pb-14">
+        <div className="relative overflow-hidden rounded-3xl bg-auto-dark border border-white/10 p-8 sm:p-10">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-auto-red/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-auto-red/5 rounded-full blur-2xl pointer-events-none translate-y-1/2 -translate-x-1/4" />
+
+          <div className="relative flex flex-col sm:flex-row gap-8 items-start sm:items-center">
+            <div className="shrink-0">
+              <div className="w-16 h-16 rounded-2xl bg-auto-red/20 border border-auto-red/30 flex items-center justify-center">
+                <Smartphone className="w-8 h-8 text-auto-red" />
+              </div>
+            </div>
+
+            <div className="flex-1">
+              <Badge className="mb-3 bg-auto-red/20 text-auto-red-light border-auto-red/30 uppercase tracking-[0.18em] text-[10px] font-bold">
+                Espace Client
+              </Badge>
+              <h3 className="text-2xl sm:text-3xl font-black text-white mb-2 leading-tight">
+                Suivez votre prestation en temps réel
+              </h3>
+              <p className="text-white/55 text-sm sm:text-base mb-6 leading-relaxed">
+                Après votre première intervention, accédez à votre espace personnel pour suivre l'avancement de vos jantes, consulter vos devis, factures et historique d'interventions.
+              </p>
+
+              <div className="grid grid-cols-2 gap-3 mb-7">
+                {[
+                  { icon: Zap, label: "Suivi en temps réel", desc: "Chaque étape de votre prestation" },
+                  { icon: LayoutDashboard, label: "Devis & factures", desc: "Tous vos documents en ligne" },
+                  { icon: Clock, label: "Prise de RDV", desc: "Réservez en 24h/24" },
+                  { icon: Globe, label: "Historique complet", desc: "Toutes vos interventions" },
+                ].map(item => (
+                  <div key={item.label} className="flex items-start gap-2.5 bg-white/5 rounded-xl p-3">
+                    <item.icon className="w-4 h-4 text-auto-red shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-white text-xs font-bold leading-tight">{item.label}</p>
+                      <p className="text-white/40 text-[11px] leading-snug mt-0.5">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                asChild
+                className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black h-11 px-7"
+                data-testid="button-espace-client"
+              >
+                <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">
+                  <Smartphone className="w-4 h-4 mr-2" />
+                  Accéder à l'espace client
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </a>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ─── CONTACT INFO ─────────────────────────────────────────────── */}
       <div className="bg-auto-dark py-14">
         <div className="max-w-4xl mx-auto px-4">
           <h2 className="text-2xl sm:text-3xl font-black text-white text-center mb-10">
