@@ -787,7 +787,7 @@ export default function Admin() {
                       </div>
                       <Button onClick={() => {
                         if (editingServiceId) {
-                          updateServiceMut.mutate({ id: parseInt(editingServiceId), data: serviceForm });
+                          updateServiceMut.mutate({ id: editingServiceId, data: serviceForm });
                         } else {
                           addServiceMut.mutate(serviceForm);
                         }
@@ -802,9 +802,13 @@ export default function Admin() {
                   {siteServices.map(svc => (
                     <Card key={svc.id} className="border-0 shadow-sm" data-testid={`card-service-${svc.id}`}>
                       <CardContent className="p-6">
-                        <div className="flex items-start gap-6">
-                          {svc.image && <img src={svc.image} alt={svc.title} className="w-20 h-20 rounded-2xl object-cover bg-gray-100 shrink-0" />}
-                          <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+                        {svc.image && (
+                          <div className="w-full sm:w-20 h-40 sm:h-20 rounded-2xl overflow-hidden bg-gray-100 shrink-0">
+                            <img src={svc.image} alt={svc.title} className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0 w-full">
                             <div className="flex items-center gap-3 mb-2">
                               <h4 className="font-black text-base uppercase">{svc.title}</h4>
                               {svc.badge && <Badge className="bg-auto-red text-white text-[10px]">{svc.badge}</Badge>}
@@ -812,8 +816,8 @@ export default function Admin() {
                             </div>
                             <p className="text-sm text-gray-500 line-clamp-2">{svc.description}</p>
                           </div>
-                            <div className="flex gap-2 shrink-0">
-                              <Button variant="outline" size="sm" className="text-[10px] font-bold h-8" onClick={() => {
+                            <div className="flex flex-col sm:flex-row gap-2 shrink-0 w-full sm:w-auto mt-4 sm:mt-0">
+                              <Button variant="outline" size="sm" className="text-[10px] font-bold h-8 flex-1 sm:flex-none" onClick={() => {
                                 setServiceForm({
                                   title: svc.title,
                                   description: svc.description,
@@ -830,7 +834,7 @@ export default function Admin() {
                               }} data-testid={`button-edit-service-${svc.id}`}>
                                 <Edit2 className="w-3 h-3 mr-1" /> Modifier
                               </Button>
-                              <Button variant="outline" size="sm" className="text-[10px] font-bold h-8 text-red-500 hover:bg-red-50" onClick={() => deleteServiceMut.mutate(svc.id)} data-testid={`button-delete-service-${svc.id}`}>
+                              <Button variant="outline" size="sm" className="text-[10px] font-bold h-8 text-red-500 hover:bg-red-50 flex-1 sm:flex-none" onClick={() => deleteServiceMut.mutate(svc.id)} data-testid={`button-delete-service-${svc.id}`}>
                                 <Trash2 className="w-3 h-3 mr-1" /> Supprimer
                               </Button>
                             </div>
@@ -996,10 +1000,27 @@ export default function Admin() {
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-gray-400 font-bold">{mediaFiles.length} fichier{mediaFiles.length > 1 ? "s" : ""}</p>
-                  <div className="flex gap-3">
-                    <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept="image/*,video/*,.pdf" />
-                    <Button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase tracking-widest" data-testid="button-upload-media">
-                      {uploading ? <span className="animate-pulse">Upload...</span> : <><Plus className="w-4 h-4 mr-2" /> Uploader un fichier</>}
+                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <input
+                      type="file"
+                      id="media-upload"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const formData = new FormData();
+                        formData.append("file", file);
+                        try {
+                          await apiRequest("POST", "/api/admin/upload", formData);
+                          queryClient.invalidateQueries({ queryKey: ["/api/admin/media"] });
+                          toast({ title: "Fichier ajouté" });
+                        } catch (err) {
+                          toast({ title: "Erreur d'upload", variant: "destructive" });
+                        }
+                      }}
+                    />
+                    <Button onClick={() => document.getElementById("media-upload")?.click()} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase tracking-widest w-full sm:w-auto">
+                      <Plus className="w-4 h-4 mr-2" /> Téléverser
                     </Button>
                   </div>
                 </div>

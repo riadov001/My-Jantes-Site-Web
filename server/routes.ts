@@ -60,6 +60,14 @@ const upload = multer({
   }
 });
 
+function parseObjPath(path: string) {
+  const p = path.startsWith("/") ? path : `/${path}`;
+  const parts = p.split("/");
+  const bucketName = parts[1];
+  const objectName = parts.slice(2).join("/");
+  return { bucketName, objectName };
+}
+
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
@@ -603,10 +611,4 @@ Réponds en JSON avec ces champs (laisse vide si non trouvé):
   });
 
   return httpServer;
-}
-
-function parseObjPath(p: string): { bucketName: string; objectName: string } {
-  if (!p.startsWith("/")) p = `/${p}`;
-  const parts = p.split("/");
-  return { bucketName: parts[1], objectName: parts.slice(2).join("/") };
 }
