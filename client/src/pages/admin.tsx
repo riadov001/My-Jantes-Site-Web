@@ -1145,22 +1145,36 @@ function AdminApp() {
                       type="file"
                       id="media-upload"
                       className="hidden"
+                      accept="image/*,video/mp4,video/webm,video/mov"
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (!file) return;
+                        e.target.value = "";
+                        setUploading(true);
                         const formData = new FormData();
                         formData.append("file", file);
                         try {
                           await apiRequest("POST", "/api/admin/upload", formData);
                           queryClient.invalidateQueries({ queryKey: ["/api/admin/media"] });
-                          toast({ title: "Fichier ajouté" });
-                        } catch (err) {
-                          toast({ title: "Erreur d'upload", variant: "destructive" });
+                          toast({ title: "Fichier ajouté avec succès" });
+                        } catch (err: any) {
+                          toast({ title: err?.message || "Erreur d'upload", variant: "destructive" });
+                        } finally {
+                          setUploading(false);
                         }
                       }}
                     />
-                    <Button onClick={() => document.getElementById("media-upload")?.click()} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase tracking-widest w-full sm:w-auto">
-                      <Plus className="w-4 h-4 mr-2" /> Téléverser
+                    <Button
+                      onClick={() => !uploading && document.getElementById("media-upload")?.click()}
+                      disabled={uploading}
+                      className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase tracking-widest w-full sm:w-auto"
+                      data-testid="button-upload-media"
+                    >
+                      {uploading ? (
+                        <><span className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" /> Envoi...</>
+                      ) : (
+                        <><Plus className="w-4 h-4 mr-2" /> Téléverser</>
+                      )}
                     </Button>
                   </div>
                 </div>
