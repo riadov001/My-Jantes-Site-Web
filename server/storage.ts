@@ -1,20 +1,27 @@
 import { db } from "./db";
 import { eq, desc, asc, sql, count, gte } from "drizzle-orm";
 import {
-  users, contactRequests, blogPosts, galleryItems, testimonials, faqItems, siteServices, siteContent, pageViews, mediaFiles,
+  users, contactRequests, blogPosts, galleryItems, testimonials, faqItems, siteServices, siteContent, pageViews, mediaFiles, activityLogs,
   type User, type InsertUser, type ContactRequest, type InsertContact,
   type BlogPost, type InsertBlog, type GalleryItem, type InsertGallery,
   type Testimonial, type InsertTestimonial, type FaqItem, type InsertFaq,
   type SiteService, type InsertSiteService, type SiteContent, type InsertSiteContent,
-  type PageView, type MediaFile, type InsertMediaFile,
+  type PageView, type MediaFile, type InsertMediaFile, type ActivityLog,
 } from "@shared/schema";
 import bcrypt from "bcryptjs";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getAllUsers(): Promise<User[]>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserPassword(id: string, newPassword: string): Promise<User | undefined>;
+  updateUserEmail(id: string, email: string): Promise<User | undefined>;
+  deleteUser(id: string): Promise<void>;
   validatePassword(username: string, password: string): Promise<User | null>;
+
+  createActivityLog(userId: string, action: string, category: string, details?: string): Promise<ActivityLog>;
+  getActivityLogs(limit?: number): Promise<ActivityLog[]>;
 
   getContactRequests(): Promise<ContactRequest[]>;
   createContactRequest(data: InsertContact): Promise<ContactRequest>;
@@ -80,11 +87,39 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async getAllUsers() {
+    return db.select().from(users).orderBy(asc(users.createdAt));
+  }
+
+  async updateUserPassword(id: string, newPassword: string) {
+    const hash = await bcrypt.hash(newPassword, 10);
+    const [user] = await db.update(users).set({ password: hash }).where(eq(users.id, id)).returning();
+    return user;
+  }
+
+  async updateUserEmail(id: string, email: string) {
+    const [user] = await db.update(users).set({ email }).where(eq(users.id, id)).returning();
+    return user;
+  }
+
+  async deleteUser(id: string) {
+    await db.delete(users).where(eq(users.id, id));
+  }
+
   async validatePassword(username: string, password: string): Promise<User | null> {
     const user = await this.getUserByUsername(username);
     if (!user) return null;
     const valid = await bcrypt.compare(password, user.password);
     return valid ? user : null;
+  }
+
+  async createActivityLog(userId: string, action: string, category: string, details?: string) {
+    const [log] = await db.insert(activityLogs).values({ userId, action, category, details }).returning();
+    return log;
+  }
+
+  async getActivityLogs(limit = 100) {
+    return db.select().from(activityLogs).orderBy(desc(activityLogs.createdAt)).limit(limit);
   }
 
   async getContactRequests() {

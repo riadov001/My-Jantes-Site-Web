@@ -7,7 +7,17 @@ export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  email: text("email"),
   isAdmin: boolean("is_admin").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const activityLogs = pgTable("activity_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  action: text("action").notNull(),
+  category: text("category").notNull().default("general"),
+  details: text("details"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -116,6 +126,13 @@ export const mediaFiles = pgTable("media_files", {
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
+  email: true,
+  isAdmin: true,
+});
+
+export const insertActivityLogSchema = createInsertSchema(activityLogs).omit({
+  id: true,
+  createdAt: true,
 });
 
 export const insertContactSchema = createInsertSchema(contactRequests).omit({
@@ -177,6 +194,8 @@ export type InsertSiteContent = z.infer<typeof insertSiteContentSchema>;
 export type PageView = typeof pageViews.$inferSelect;
 export type MediaFile = typeof mediaFiles.$inferSelect;
 export type InsertMediaFile = z.infer<typeof insertMediaFileSchema>;
+export type ActivityLog = typeof activityLogs.$inferSelect;
+export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
 
 export const conversations = pgTable("conversations", {
   id: serial("id").primaryKey(),

@@ -8,7 +8,7 @@ import path from "path";
 import fs from "fs";
 import multer from "multer";
 import { storage } from "./storage";
-import { sendContactNotification } from "./email";
+import { sendContactNotification, sendPasswordResetEmail } from "./email";
 import {
   insertContactSchema,
   insertBlogSchema,
@@ -124,6 +124,91 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     return res.json({ authenticated: false });
   });
 
+  const resetTokenStore = new Map<string, { userId: string; expires: number }>();
+
+  app.post("/api/admin/forgot-password", async (req, res) => {
+    const { username } = req.body;
+    if (!username) return res.status(400).json({ message: "Identifiant requis" });
+    const user = await storage.getUserByUsername(username);
+    if (!user || !user.email) return res.json({ message: "Si un compte avec cet identifiant et un email associé existe, un lien de réinitialisation a été envoyé." });
+    const token = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    resetTokenStore.set(token, { userId: user.id, expires: Date.now() + 3600 * 1000 });
+    sendPasswordResetEmail(user.email, token, user.username).catch(err => console.error("[email] reset error:", err));
+    return res.json({ message: "Si un compte avec cet identifiant et un email associé existe, un lien de réinitialisation a été envoyé." });
+  });
+
+  app.post("/api/admin/reset-password", async (req, res) => {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) return res.status(400).json({ message: "Token et nouveau mot de passe requis" });
+    const record = resetTokenStore.get(token);
+    if (!record || record.expires < Date.now()) return res.status(400).json({ message: "Lien expiré ou invalide" });
+    await storage.updateUserPassword(record.userId, newPassword);
+    resetTokenStore.delete(token);
+    return res.json({ message: "Mot de passe réinitialisé" });
+  });
+
+  app.get("/api/admin/profile", requireAdmin, async (req, res) => {
+    const user = await storage.getUser(req.session.userId!);
+    if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });
+    const { password: _, ...safeUser } = user;
+    return res.json(safeUser);
+  });
+
+  app.put("/api/admin/profile/password", requireAdmin, async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) return res.status(400).json({ message: "Champs requis" });
+    if (newPassword.length < 8) return res.status(400).json({ message: "Le mot de passe doit contenir au moins 8 caractères" });
+    const user = await storage.getUser(req.session.userId!);
+    if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });
+    const valid = await storage.validatePassword(user.username, currentPassword);
+    if (!valid) return res.status(401).json({ message: "Mot de passe actuel incorrect" });
+    await storage.updateUserPassword(user.id, newPassword);
+    await storage.createActivityLog(user.id, "Changement de mot de passe", "sécurité");
+    return res.json({ message: "Mot de passe modifié" });
+  });
+
+  app.put("/api/admin/profile/email", requireAdmin, async (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Email requis" });
+    const user = await storage.updateUserEmail(req.session.userId!, email);
+    if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });
+    await storage.createActivityLog(req.session.userId!, `Email modifié: ${email}`, "sécurité");
+    const { password: _, ...safeUser } = user;
+    return res.json(safeUser);
+  });
+
+  app.get("/api/admin/users", requireAdmin, async (req, res) => {
+    const allUsers = await storage.getAllUsers();
+    return res.json(allUsers.map(({ password: _, ...u }) => u));
+  });
+
+  app.post("/api/admin/users", requireAdmin, async (req, res) => {
+    const { username, password, email, isAdmin } = req.body;
+    if (!username || !password) return res.status(400).json({ message: "Identifiant et mot de passe requis" });
+    if (password.length < 8) return res.status(400).json({ message: "Le mot de passe doit contenir au moins 8 caractères" });
+    try {
+      const user = await storage.createUser({ username, password, email, isAdmin: !!isAdmin });
+      await storage.createActivityLog(req.session.userId!, `Utilisateur créé: ${username}`, "utilisateurs");
+      const { password: _, ...safeUser } = user;
+      return res.status(201).json(safeUser);
+    } catch {
+      return res.status(409).json({ message: "Cet identifiant existe déjà" });
+    }
+  });
+
+  app.delete("/api/admin/users/:id", requireAdmin, async (req, res) => {
+    if (req.params.id === req.session.userId) return res.status(400).json({ message: "Vous ne pouvez pas supprimer votre propre compte" });
+    const user = await storage.getUser(req.params.id);
+    await storage.deleteUser(req.params.id);
+    await storage.createActivityLog(req.session.userId!, `Utilisateur supprimé: ${user?.username}`, "utilisateurs");
+    return res.json({ message: "Utilisateur supprimé" });
+  });
+
+  app.get("/api/admin/activity-logs", requireAdmin, async (req, res) => {
+    const logs = await storage.getActivityLogs(200);
+    return res.json(logs);
+  });
+
   // Page view tracking (public)
   app.post("/api/track", async (req, res) => {
     const { path: pagePath } = req.body;
@@ -138,6 +223,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     const result = insertContactSchema.safeParse(req.body);
     if (!result.success) return res.status(400).json({ message: "Données invalides", errors: result.error.errors });
     const contact = await storage.createContactRequest(result.data);
+    const adminEmailContent = await storage.getSiteContentByKey("contact.email");
     sendContactNotification({
       name: result.data.name,
       email: result.data.email,
@@ -145,6 +231,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       vehicle: result.data.vehicle,
       message: result.data.message,
       service: result.data.requestType || result.data.service,
+      adminEmail: adminEmailContent?.value || "contact@myjantes.com",
     }).catch(err => console.error("[email] sendContactNotification failed:", err));
     return res.status(201).json(contact);
   });

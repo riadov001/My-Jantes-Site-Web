@@ -14,6 +14,7 @@ import {
   Lock, User, Plus, X, Phone,
   Edit2, Save, Wrench, FileText, Globe, Type, Settings, Monitor, Images,
   TrendingUp, Link2, MousePointerClick, Users, Activity, ChevronRight, Menu,
+  EyeOff, Shield, UserPlus, KeyRound, History,
 } from "lucide-react";
 import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid,
@@ -21,7 +22,7 @@ import {
 } from "recharts";
 import type { ContactRequest, GalleryItem, Testimonial, FaqItem, SiteService, SiteContent, MediaFile } from "@shared/schema";
 
-type Tab = "dashboard" | "contacts" | "galerie" | "avis" | "faq" | "prestations" | "contenu" | "liens" | "medias";
+type Tab = "dashboard" | "contacts" | "galerie" | "avis" | "faq" | "prestations" | "contenu" | "liens" | "medias" | "profil";
 
 const AVAILABLE_IMAGES = [
   { url: "/images/atelier-soudure.jpg", label: "Service Soudure" },
@@ -181,11 +182,76 @@ function ImagePicker({ value, onChange, label = "Image" }: { value: string; onCh
   );
 }
 
+function ResetPasswordForm({ token, onDone }: { token: string; onDone: () => void }) {
+  const [pw, setPw] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pw !== confirm) { setErr("Les mots de passe ne correspondent pas"); return; }
+    if (pw.length < 8) { setErr("Min. 8 caractères requis"); return; }
+    setErr(""); setLoading(true);
+    try {
+      const res = await fetch("/api/admin/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, newPassword: pw }),
+      });
+      const d = await res.json();
+      if (res.ok) { setMsg(d.message); setTimeout(() => { window.history.replaceState({}, "", "/admin"); onDone(); }, 2500); }
+      else { setErr(d.message || "Erreur"); }
+    } catch { setErr("Erreur réseau."); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <div className="min-h-screen bg-auto-dark flex items-center justify-center px-4 font-sans">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-10">
+          <img src="/images/logo-myjantes.png" alt="MyJantes" className="h-16 mx-auto mb-6 brightness-0 invert" />
+          <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Nouveau mot de passe</h1>
+        </div>
+        <Card className="border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl">
+          <CardContent className="p-8">
+            {msg ? (
+              <div className="bg-green-500/10 border border-green-500/20 rounded-xl px-5 py-5 text-green-400 text-sm font-bold text-center">{msg}<br /><span className="text-green-300/50 text-xs">Redirection...</span></div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="relative">
+                  <label className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-black mb-2 block">Nouveau mot de passe</label>
+                  <Input type={showPw ? "text" : "password"} value={pw} onChange={e => setPw(e.target.value)} className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 pr-12" placeholder="Min. 8 caractères" required />
+                  <button type="button" onClick={() => setShowPw(v => !v)} className="absolute right-3 top-[36px] text-white/30 hover:text-white/70">{showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}</button>
+                </div>
+                <div>
+                  <label className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-black mb-2 block">Confirmer</label>
+                  <Input type="password" value={confirm} onChange={e => setConfirm(e.target.value)} className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20" placeholder="••••••••" required />
+                </div>
+                {err && <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-xs font-bold flex items-center gap-2"><XCircle className="w-4 h-4" /> {err}</div>}
+                <Button type="submit" disabled={loading} className="w-full bg-auto-red hover:bg-auto-red-dark text-white font-black h-12 text-sm uppercase tracking-widest">
+                  {loading ? "Enregistrement..." : "Définir le mot de passe"}
+                </Button>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 function LoginForm({ onLogin }: { onLogin: () => void }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotUsername, setForgotUsername] = useState("");
+  const [forgotMsg, setForgotMsg] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -204,6 +270,22 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
     finally { setLoading(false); }
   };
 
+  const handleForgot = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotLoading(true);
+    setForgotMsg("");
+    try {
+      const res = await fetch("/api/admin/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: forgotUsername }),
+      });
+      const d = await res.json();
+      setForgotMsg(d.message);
+    } catch { setForgotMsg("Erreur lors de l'envoi. Réessayez."); }
+    finally { setForgotLoading(false); }
+  };
+
   return (
     <div className="min-h-screen bg-auto-dark flex items-center justify-center px-4 font-sans">
       <div className="w-full max-w-md">
@@ -214,26 +296,50 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
         </div>
         <Card className="border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl">
           <CardContent className="p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-black mb-2 block">Identifiant</label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                  <Input type="email" value={username} onChange={e => setUsername(e.target.value)} className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-auto-red/50" placeholder="contact@myjantes.com" required />
+            {!showForgot ? (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-black mb-2 block">Identifiant</label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                    <Input type="email" value={username} onChange={e => setUsername(e.target.value)} className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-auto-red/50" placeholder="contact@myjantes.com" required data-testid="input-login-username" />
+                  </div>
                 </div>
-              </div>
-              <div>
-                <label className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-black mb-2 block">Mot de passe</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                  <Input type="password" value={password} onChange={e => setPassword(e.target.value)} className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-auto-red/50" placeholder="••••••••" required />
+                <div>
+                  <label className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-black mb-2 block">Mot de passe</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                    <Input type="password" value={password} onChange={e => setPassword(e.target.value)} className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-auto-red/50" placeholder="••••••••" required data-testid="input-login-password" />
+                  </div>
                 </div>
-              </div>
-              {error && <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-xs font-bold flex items-center gap-2"><XCircle className="w-4 h-4" /> {error}</div>}
-              <Button type="submit" className="w-full bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black h-12 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]" disabled={loading}>
-                {loading ? <span className="animate-pulse">Connexion...</span> : "Accéder au panel"}
-              </Button>
-            </form>
+                {error && <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-xs font-bold flex items-center gap-2"><XCircle className="w-4 h-4" /> {error}</div>}
+                <Button type="submit" className="w-full bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black h-12 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]" disabled={loading} data-testid="button-login-submit">
+                  {loading ? <span className="animate-pulse">Connexion...</span> : "Accéder au panel"}
+                </Button>
+                <button type="button" onClick={() => setShowForgot(true)} className="w-full text-center text-white/30 hover:text-white/60 text-xs font-bold transition-colors mt-2" data-testid="button-forgot-password">
+                  Mot de passe oublié ?
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleForgot} className="space-y-6">
+                <div>
+                  <h3 className="text-white font-black uppercase tracking-widest text-sm mb-1">Réinitialiser le mot de passe</h3>
+                  <p className="text-white/30 text-xs mb-5">Entrez votre identifiant pour recevoir un lien par email.</p>
+                  <label className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-black mb-2 block">Identifiant</label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                    <Input type="email" value={forgotUsername} onChange={e => setForgotUsername(e.target.value)} className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-auto-red/50" placeholder="contact@myjantes.com" required data-testid="input-forgot-username" />
+                  </div>
+                </div>
+                {forgotMsg && <div className="bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3 text-green-400 text-xs font-bold">{forgotMsg}</div>}
+                <Button type="submit" className="w-full bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black h-12 text-sm uppercase tracking-widest" disabled={forgotLoading} data-testid="button-forgot-submit">
+                  {forgotLoading ? "Envoi..." : "Envoyer le lien"}
+                </Button>
+                <button type="button" onClick={() => { setShowForgot(false); setForgotMsg(""); }} className="w-full text-center text-white/30 hover:text-white/60 text-xs font-bold transition-colors" data-testid="button-back-login">
+                  ← Retour à la connexion
+                </button>
+              </form>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -241,7 +347,7 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
   );
 }
 
-export default function Admin() {
+function AdminApp() {
   const [, setLocation] = useLocation();
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -259,8 +365,14 @@ export default function Admin() {
   const [showAddTestimonial, setShowAddTestimonial] = useState(false);
   const [showAddFaq, setShowAddFaq] = useState(false);
   const [showAddService, setShowAddService] = useState(false);
+  const [showAddUser, setShowAddUser] = useState(false);
   const [editingGalleryId, setEditingGalleryId] = useState<string | null>(null);
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
+
+  const [pwForm, setPwForm] = useState({ current: "", next: "", confirm: "" });
+  const [showPw, setShowPw] = useState({ current: false, next: false, confirm: false });
+  const [newUserForm, setNewUserForm] = useState({ username: "", password: "", email: "", isAdmin: false });
+  const [profileEmail, setProfileEmail] = useState("");
 
   const [galleryForm, setGalleryForm] = useState({ title: "", serviceType: "renovation", afterImage: "", beforeImage: "", description: "" });
   const [testimonialForm, setTestimonialForm] = useState({ name: "", location: "", rating: 5, content: "", vehicle: "" });
@@ -341,17 +453,44 @@ export default function Admin() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/services"] }); setShowAddService(false); setServiceForm(defaultServiceForm); toast({ title: "Prestation ajoutée" }); },
   });
   const updateServiceMut = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) => apiRequest("PUT", `/api/admin/services/${id}`, data),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/services"] }); setEditingServiceId(null); toast({ title: "Prestation modifiée" }); },
+    mutationFn: ({ id, data }: { id: string; data: any }) => apiRequest("PUT", `/api/admin/services/${id}`, data),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/services"] }); setEditingServiceId(null); setShowAddService(false); setServiceForm(defaultServiceForm); toast({ title: "Prestation modifiée" }); },
   });
   const deleteServiceMut = useMutation({
-    mutationFn: (id: number) => apiRequest("DELETE", `/api/admin/services/${id}`),
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/services/${id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/services"] }); toast({ title: "Prestation supprimée" }); },
   });
 
   const deleteMediaMut = useMutation({
-    mutationFn: (id: number) => apiRequest("DELETE", `/api/admin/media/${id}`),
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/media/${id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/media"] }); toast({ title: "Fichier supprimé" }); },
+  });
+
+  const { data: profile } = useQuery<any>({ queryKey: ["/api/admin/profile"], enabled: authenticated === true });
+  useEffect(() => { if (profile?.email) setProfileEmail(profile.email); }, [profile]);
+  const { data: adminUsers = [] } = useQuery<any[]>({ queryKey: ["/api/admin/users"], enabled: tab === "profil" && authenticated === true });
+  const { data: activityLogs = [] } = useQuery<any[]>({ queryKey: ["/api/admin/activity-logs"], enabled: tab === "profil" && authenticated === true });
+
+  const changePasswordMut = useMutation({
+    mutationFn: (data: { currentPassword: string; newPassword: string }) => apiRequest("PUT", "/api/admin/profile/password", data),
+    onSuccess: () => { setPwForm({ current: "", next: "", confirm: "" }); toast({ title: "Mot de passe modifié ✓" }); },
+    onError: (err: any) => toast({ title: err.message || "Erreur", variant: "destructive" }),
+  });
+
+  const changeEmailMut = useMutation({
+    mutationFn: (email: string) => apiRequest("PUT", "/api/admin/profile/email", { email }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/profile"] }); toast({ title: "Email modifié ✓" }); },
+  });
+
+  const createUserMut = useMutation({
+    mutationFn: (data: any) => apiRequest("POST", "/api/admin/users", data),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/users"] }); setShowAddUser(false); setNewUserForm({ username: "", password: "", email: "", isAdmin: false }); toast({ title: "Utilisateur créé ✓" }); },
+    onError: (err: any) => toast({ title: err.message || "Erreur", variant: "destructive" }),
+  });
+
+  const deleteUserMut = useMutation({
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/users/${id}`),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/users"] }); toast({ title: "Utilisateur supprimé" }); },
   });
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -405,6 +544,7 @@ export default function Admin() {
     { id: "contenu", label: "Configuration", icon: Settings },
     { id: "liens", label: "Navigation", icon: Link2 },
     { id: "medias", label: "Médiathèque", icon: Images },
+    { id: "profil", label: "Profil & Sécurité", icon: Shield },
   ];
 
   return (
@@ -1055,9 +1195,191 @@ export default function Admin() {
               </div>
             )}
 
+            {/* ── PROFIL & SÉCURITÉ ── */}
+            {tab === "profil" && (
+              <div className="space-y-6">
+
+                {/* Profile card */}
+                <Card className="border-0 shadow-sm">
+                  <CardHeader className="border-b border-gray-100 p-8">
+                    <CardTitle className="text-lg font-black uppercase tracking-widest text-gray-400 flex items-center gap-3">
+                      <User className="w-5 h-5 text-auto-red" /> Mon Profil
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-8">
+                    <div className="flex items-center gap-6 mb-8">
+                      <div className="w-16 h-16 rounded-2xl bg-auto-red flex items-center justify-center text-white font-black text-2xl uppercase">
+                        {profile?.username?.[0] || "A"}
+                      </div>
+                      <div>
+                        <p className="font-black text-xl text-gray-900">{profile?.username || "—"}</p>
+                        <p className="text-sm text-gray-400">{profile?.isAdmin ? "Administrateur" : "Utilisateur"}</p>
+                        <p className="text-xs text-gray-400 mt-1">{profile?.email || "Aucun email associé"}</p>
+                      </div>
+                    </div>
+
+                    {/* Change email */}
+                    <div className="space-y-3 mb-8 pb-8 border-b border-gray-100">
+                      <h4 className="text-xs font-black uppercase tracking-[0.15em] text-gray-500">Adresse email (pour reset mot de passe)</h4>
+                      <div className="flex gap-3">
+                        <Input
+                          type="email"
+                          value={profileEmail}
+                          onChange={e => setProfileEmail(e.target.value)}
+                          placeholder="votre@email.com"
+                          className="h-11 bg-gray-50 border-gray-200"
+                          data-testid="input-profile-email"
+                        />
+                        <Button
+                          onClick={() => { if (profileEmail) changeEmailMut.mutate(profileEmail); }}
+                          disabled={!profileEmail || changeEmailMut.isPending}
+                          className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase shrink-0 px-4"
+                          data-testid="button-save-email"
+                        >
+                          <Save className="w-4 h-4 mr-2" /> Enregistrer
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Change password */}
+                    <div className="space-y-4">
+                      <h4 className="text-xs font-black uppercase tracking-[0.15em] text-gray-500 flex items-center gap-2"><KeyRound className="w-4 h-4 text-auto-red" /> Changer le mot de passe</h4>
+                      <div className="space-y-3">
+                        {(["current", "next", "confirm"] as const).map(field => (
+                          <div key={field} className="relative">
+                            <Input
+                              type={showPw[field] ? "text" : "password"}
+                              placeholder={field === "current" ? "Mot de passe actuel" : field === "next" ? "Nouveau mot de passe (min. 8 car.)" : "Confirmer le nouveau mot de passe"}
+                              value={pwForm[field]}
+                              onChange={e => setPwForm(p => ({ ...p, [field]: e.target.value }))}
+                              className="h-11 bg-gray-50 border-gray-200 pr-12"
+                              data-testid={`input-pw-${field}`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPw(p => ({ ...p, [field]: !p[field] }))}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+                            >
+                              {showPw[field] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <Button
+                        onClick={() => {
+                          if (pwForm.next !== pwForm.confirm) { toast({ title: "Les mots de passe ne correspondent pas", variant: "destructive" }); return; }
+                          if (pwForm.next.length < 8) { toast({ title: "Le mot de passe doit faire au moins 8 caractères", variant: "destructive" }); return; }
+                          changePasswordMut.mutate({ currentPassword: pwForm.current, newPassword: pwForm.next });
+                        }}
+                        disabled={!pwForm.current || !pwForm.next || !pwForm.confirm || changePasswordMut.isPending}
+                        className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase"
+                        data-testid="button-change-password"
+                      >
+                        {changePasswordMut.isPending ? "Modification..." : "Modifier le mot de passe"}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* User management */}
+                <Card className="border-0 shadow-sm">
+                  <CardHeader className="border-b border-gray-100 p-8">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg font-black uppercase tracking-widest text-gray-400 flex items-center gap-3">
+                        <Users className="w-5 h-5 text-auto-red" /> Gestion des utilisateurs
+                      </CardTitle>
+                      <Button onClick={() => setShowAddUser(true)} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase" data-testid="button-add-user">
+                        <UserPlus className="w-4 h-4 mr-2" /> Ajouter
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-8 space-y-4">
+                    {showAddUser && (
+                      <Card className="border-2 border-auto-red/20 shadow-lg">
+                        <CardContent className="p-6 space-y-4">
+                          <div className="flex justify-between items-center">
+                            <h3 className="font-black uppercase text-sm">Nouvel utilisateur</h3>
+                            <Button variant="ghost" size="sm" onClick={() => setShowAddUser(false)}><X className="w-4 h-4" /></Button>
+                          </div>
+                          <div className="grid sm:grid-cols-2 gap-4">
+                            <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Identifiant</label><Input value={newUserForm.username} onChange={e => setNewUserForm(p => ({ ...p, username: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" placeholder="ex: contact@myjantes.com" data-testid="input-user-username" /></div>
+                            <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Email (pour reset MDP)</label><Input type="email" value={newUserForm.email} onChange={e => setNewUserForm(p => ({ ...p, email: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-user-email" /></div>
+                          </div>
+                          <div className="relative">
+                            <label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Mot de passe (min. 8 car.)</label>
+                            <Input type={showPw.next ? "text" : "password"} value={newUserForm.password} onChange={e => setNewUserForm(p => ({ ...p, password: e.target.value }))} className="h-10 bg-gray-50 border-gray-200 pr-12" data-testid="input-user-password" />
+                            <button type="button" onClick={() => setShowPw(p => ({ ...p, next: !p.next }))} className="absolute right-3 top-[30px] text-gray-400 hover:text-gray-700">{showPw.next ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}</button>
+                          </div>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" checked={newUserForm.isAdmin} onChange={e => setNewUserForm(p => ({ ...p, isAdmin: e.target.checked }))} className="w-4 h-4 accent-auto-red" />
+                            <span className="text-sm font-bold text-gray-700">Accès administrateur</span>
+                          </label>
+                          <Button onClick={() => createUserMut.mutate(newUserForm)} disabled={!newUserForm.username || !newUserForm.password || createUserMut.isPending} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase" data-testid="button-submit-user">
+                            {createUserMut.isPending ? "Création..." : "Créer l'utilisateur"}
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {adminUsers.map((u: any) => (
+                      <div key={u.id} className="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-xl" data-testid={`row-user-${u.id}`}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-gray-200 flex items-center justify-center font-black text-gray-500 uppercase">{u.username[0]}</div>
+                          <div>
+                            <p className="text-sm font-black">{u.username}</p>
+                            <p className="text-xs text-gray-400">{u.email || "Sans email"} · {u.isAdmin ? "Admin" : "Utilisateur"}</p>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="sm" onClick={() => deleteUserMut.mutate(u.id)} className="text-gray-300 hover:text-red-500" data-testid={`button-delete-user-${u.id}`}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {/* Activity logs */}
+                <Card className="border-0 shadow-sm">
+                  <CardHeader className="border-b border-gray-100 p-8">
+                    <CardTitle className="text-lg font-black uppercase tracking-widest text-gray-400 flex items-center gap-3">
+                      <History className="w-5 h-5 text-auto-red" /> Historique des modifications
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-8">
+                    {activityLogs.length === 0 ? (
+                      <p className="text-sm text-gray-400 text-center py-8">Aucun événement enregistré</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {activityLogs.slice(0, 100).map((log: any) => (
+                          <div key={log.id} className="flex items-start gap-4 py-3 border-b border-gray-50 last:border-0" data-testid={`row-log-${log.id}`}>
+                            <div className="w-2 h-2 rounded-full bg-auto-red mt-2 shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-bold text-gray-800">{log.action}</p>
+                              {log.details && <p className="text-xs text-gray-400 mt-0.5">{log.details}</p>}
+                              <p className="text-[10px] text-gray-300 mt-1 uppercase tracking-widest">{log.category}</p>
+                            </div>
+                            <span className="text-[10px] text-gray-300 shrink-0 mt-0.5">
+                              {new Date(log.createdAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
           </div>
         </div>
       </main>
     </div>
   );
+}
+
+export default function Admin() {
+  const [, setLocation] = useLocation();
+  const resetToken = new URLSearchParams(window.location.search).get("reset");
+  if (resetToken) return <ResetPasswordForm token={resetToken} onDone={() => { window.history.replaceState({}, "", "/admin"); setLocation("/admin"); }} />;
+  return <AdminApp />;
 }

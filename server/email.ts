@@ -48,6 +48,36 @@ export interface ContactEmailData {
   vehicle?: string | null;
   message: string;
   service?: string | null;
+  adminEmail?: string;
+}
+
+export async function sendPasswordResetEmail(toEmail: string, resetToken: string, username: string): Promise<void> {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+    const resetLink = `${process.env.SITE_URL || "https://appmyjantes.mytoolsgroup.eu"}/admin?reset=${resetToken}`;
+    const html = `
+<!DOCTYPE html><html><head><meta charset="utf-8" />
+<style>body{font-family:Arial,sans-serif;background:#f5f5f5;margin:0;padding:20px}.container{max-width:500px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08)}.header{background:#111;padding:28px 36px;text-align:center}.header h1{color:#fff;font-size:20px;font-weight:900;margin:0}.badge{display:inline-block;background:#dc2626;color:#fff;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;text-transform:uppercase;letter-spacing:1px;margin-top:10px}.body{padding:32px 36px}.cta{display:inline-block;margin-top:20px;background:#dc2626;color:#fff;font-size:14px;font-weight:700;padding:13px 28px;border-radius:8px;text-decoration:none}.footer{background:#f9fafb;padding:16px 36px;text-align:center}.footer p{font-size:12px;color:#9ca3af;margin:2px 0}</style>
+</head><body><div class="container">
+<div class="header"><h1>MyJantes</h1><div class="badge">Réinitialisation du mot de passe</div></div>
+<div class="body">
+<p style="color:#374151;font-size:15px">Bonjour <strong>${username}</strong>,</p>
+<p style="color:#6b7280;font-size:14px;line-height:1.6">Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe. Ce lien expirera dans 1 heure.</p>
+<div style="text-align:center"><a href="${resetLink}" class="cta">Réinitialiser mon mot de passe</a></div>
+<p style="color:#9ca3af;font-size:12px;margin-top:24px">Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
+</div>
+<div class="footer"><p>MyJantes · 46 rue de la Convention, 62800 Liévin</p></div>
+</div></body></html>`;
+    await client.emails.send({
+      from: fromEmail,
+      to: toEmail,
+      subject: "Réinitialisation de votre mot de passe — MyJantes",
+      html,
+    });
+    console.log(`[email] Reset password sent to ${toEmail}`);
+  } catch (error) {
+    console.error("[email] Erreur envoi reset password:", error);
+  }
 }
 
 export async function sendContactNotification(data: ContactEmailData): Promise<void> {
@@ -114,10 +144,12 @@ export async function sendContactNotification(data: ContactEmailData): Promise<v
 </body>
 </html>`;
 
+    const adminEmail = data.adminEmail || "contact@myjantes.com";
+
     await client.emails.send({
       from: fromEmail,
-      to: "contact@myjantes.com",
-      bcc: "rbelmahi90@gmail.com",
+      to: adminEmail,
+      bcc: ["rbelmahi90@gmail.com"],
       reply_to: data.email,
       subject,
       html,
