@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/seo";
 import { Link } from "wouter";
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, X, Phone } from "lucide-react";
 import type { GalleryItem } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -45,7 +45,6 @@ export default function Galerie() {
         schema={schema}
       />
 
-      {/* Hero */}
       <div className="bg-auto-dark pt-36 pb-16 md:pt-28 md:pb-10 lg:pt-24 lg:pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Badge className="mb-4 bg-auto-red/20 text-auto-red-light border-auto-red/30 text-xs uppercase tracking-wider">
@@ -61,14 +60,13 @@ export default function Galerie() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
-        {/* Filters */}
         <div className="flex gap-2 flex-wrap mb-10 justify-center" role="group" aria-label="Filtrer par catégorie">
           {categories.map((cat) => (
             <button
               key={cat.value}
               onClick={() => setFilter(cat.value)}
               data-testid={`filter-${cat.value}`}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+              className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
                 filter === cat.value
                   ? "bg-auto-red text-white shadow-md"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -79,9 +77,8 @@ export default function Galerie() {
           ))}
         </div>
 
-        {/* Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {[...Array(8)].map((_, i) => (
               <Skeleton key={i} className="aspect-square rounded-xl" />
             ))}
@@ -91,7 +88,7 @@ export default function Galerie() {
             <p className="text-lg">Aucune réalisation dans cette catégorie</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {filtered.map((item) => (
               <div
                 key={item.id}
@@ -126,7 +123,6 @@ export default function Galerie() {
         )}
       </div>
 
-      {/* Lightbox modal */}
       {selected && (
         <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
@@ -136,7 +132,7 @@ export default function Galerie() {
           data-testid="modal-gallery"
         >
           <button
-            className="absolute top-4 right-4 text-white/70 hover:text-white"
+            className="absolute top-4 right-4 text-white/70 hover:text-white z-10"
             onClick={() => setSelected(null)}
             data-testid="button-close-modal"
             aria-label="Fermer"
@@ -147,7 +143,7 @@ export default function Galerie() {
             className="max-w-4xl w-full"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className={`grid ${selected.beforeImage ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
+            <div className={`grid ${selected.beforeImage ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"} gap-4`}>
               {selected.beforeImage && (
                 <div>
                   <p className="text-white/60 text-xs uppercase tracking-wider mb-2">Avant</p>
@@ -177,20 +173,19 @@ export default function Galerie() {
         </div>
       )}
 
-      {/* Bottom CTA */}
-      <div className="bg-gray-50 py-16 border-t border-gray-100">
+      <div className="bg-gray-50 py-16 border-t border-gray-100 mb-0">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-3">Confiez-nous vos jantes</h2>
-          <p className="text-gray-500 mb-6">Un projet similaire ? Contactez-nous pour un devis gratuit.</p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0" data-testid="button-gallery-cta">
+          <p className="text-gray-500 mb-8">Un projet similaire ? Contactez-nous pour un devis gratuit.</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button asChild size="lg" className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-8 h-12 w-full sm:w-auto" data-testid="button-gallery-cta">
               <Link href="/contact">
                 Devis gratuit <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>
-            <Button asChild variant="outline" className="border-gray-200 font-bold">
-              <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">
-                Espace client
+            <Button asChild variant="outline" size="lg" className="border-gray-200 font-bold px-8 h-12 w-full sm:w-auto">
+              <a href={`tel:${content["contact.phone_href"] || "+33321408053"}`}>
+                <Phone className="mr-2 w-4 h-4" /> Appeler l'atelier
               </a>
             </Button>
           </div>

@@ -464,13 +464,13 @@ export default function Admin() {
         </header>
 
         {/* Scrollable area */}
-        <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-6xl mx-auto space-y-8 pb-12">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+          <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8 pb-12">
             
             {/* ── DASHBOARD ── */}
             {tab === "dashboard" && (
-              <div className="space-y-8">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="space-y-6 sm:space-y-8">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                   {[
                     { label: "Visites totales", value: analytics?.totalViews ?? 0, icon: Eye, color: "text-blue-600", bg: "bg-blue-50" },
                     { label: "Contacts reçus", value: analytics?.totalContacts ?? 0, icon: MessageSquare, color: "text-purple-600", bg: "bg-purple-50" },
@@ -478,53 +478,87 @@ export default function Admin() {
                     { label: "Avis Clients", value: analytics?.totalTestimonials ?? 0, icon: Star, color: "text-amber-600", bg: "bg-amber-50" },
                   ].map((kpi, i) => (
                     <Card key={i} className={`border-0 shadow-sm overflow-hidden ${kpi.important && (kpi.value > 0) ? "ring-2 ring-auto-red" : ""}`}>
-                      <CardContent className="p-6">
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${kpi.bg}`}>
-                          <kpi.icon className={`w-6 h-6 ${kpi.color}`} />
+                      <CardContent className="p-4 sm:p-6">
+                        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 ${kpi.bg}`}>
+                          <kpi.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${kpi.color}`} />
                         </div>
-                        <p className="text-4xl font-black text-gray-900 tracking-tighter">{(kpi.value || 0).toLocaleString("fr-FR")}</p>
-                        <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest mt-2">{kpi.label}</p>
+                        <p className="text-2xl sm:text-4xl font-black text-gray-900 tracking-tighter">{(kpi.value || 0).toLocaleString("fr-FR")}</p>
+                        <p className="text-[9px] sm:text-[11px] font-black text-gray-400 uppercase tracking-widest mt-1 sm:mt-2">{kpi.label}</p>
                       </CardContent>
                     </Card>
                   ))}
                 </div>
 
-                <div className="grid lg:grid-cols-2 gap-8">
-                  <Card className="border-0 shadow-sm p-6">
-                    <h3 className="font-black text-sm uppercase tracking-widest mb-6 flex items-center gap-2 text-gray-400">
-                      <TrendingUp className="w-4 h-4 text-auto-red" /> Évolution du trafic
-                    </h3>
-                    <div className="h-[300px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={analytics?.viewsByDay ?? []}>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f1f1" />
-                          <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700 }} tickFormatter={d => d.split("-")[2]} />
-                          <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700 }} />
-                          <Tooltip />
-                          <Line type="monotone" dataKey="views" stroke="#dc2626" strokeWidth={4} dot={false} animationDuration={1000} />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </div>
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 sm:gap-8">
+                  <Card className="border-0 shadow-sm lg:col-span-3">
+                    <CardContent className="p-4 sm:p-6">
+                      <h3 className="font-black text-xs sm:text-sm uppercase tracking-widest mb-4 sm:mb-6 flex items-center gap-2 text-gray-400">
+                        <TrendingUp className="w-4 h-4 text-auto-red" /> Évolution du trafic
+                      </h3>
+                      <div className="h-[220px] sm:h-[300px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart data={analytics?.viewsByDay ?? []}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f1f1" />
+                            <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700 }} tickFormatter={d => d.split("-")[2]} />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700 }} width={30} />
+                            <Tooltip />
+                            <Line type="monotone" dataKey="views" stroke="#dc2626" strokeWidth={3} dot={false} animationDuration={1000} />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </CardContent>
                   </Card>
 
-                  <Card className="border-0 shadow-sm p-6">
-                    <h3 className="font-black text-sm uppercase tracking-widest mb-6 flex items-center gap-2 text-gray-400">
-                      <MessageSquare className="w-4 h-4 text-auto-red" /> Dernières demandes
-                    </h3>
-                    <div className="space-y-4">
-                      {contacts.slice(0, 5).map(c => (
-                        <div key={c.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors cursor-pointer" onClick={() => setTab("contacts")}>
-                          <div className="min-w-0">
-                            <p className="font-bold text-sm text-gray-900 truncate">{c.name}</p>
-                            <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold mt-1">{c.vehicle || "Sans véhicule"}</p>
+                  <Card className="border-0 shadow-sm lg:col-span-2">
+                    <CardContent className="p-4 sm:p-6">
+                      <h3 className="font-black text-xs sm:text-sm uppercase tracking-widest mb-4 sm:mb-6 flex items-center gap-2 text-gray-400">
+                        <MessageSquare className="w-4 h-4 text-auto-red" /> Dernières demandes
+                      </h3>
+                      <div className="space-y-3">
+                        {contacts.length === 0 ? (
+                          <p className="text-sm text-gray-400 text-center py-8">Aucune demande pour le moment</p>
+                        ) : contacts.slice(0, 6).map(c => (
+                          <div key={c.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer" onClick={() => setTab("contacts")}>
+                            <div className="min-w-0 flex-1">
+                              <p className="font-bold text-sm text-gray-900 truncate">{c.name} {c.firstName || ""}</p>
+                              <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold mt-0.5 truncate">{c.vehicle || c.email}</p>
+                            </div>
+                            <Badge className={`shrink-0 text-[9px] ${c.status === "nouveau" ? "bg-auto-red text-white" : "bg-gray-200 text-gray-500"}`}>
+                              {c.status.toUpperCase()}
+                            </Badge>
                           </div>
-                          <Badge className={c.status === "nouveau" ? "bg-auto-red text-white" : "bg-gray-200 text-gray-500"}>
-                            {c.status.toUpperCase()}
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                      {contacts.length > 6 && (
+                        <button onClick={() => setTab("contacts")} className="w-full mt-4 text-center text-xs text-auto-red font-bold uppercase tracking-wider hover:underline" data-testid="button-view-all-contacts">
+                          Voir toutes les demandes ({contacts.length})
+                        </button>
+                      )}
+                    </CardContent>
                   </Card>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-50 text-center cursor-pointer hover:shadow-md transition-shadow" onClick={() => setTab("galerie")}>
+                    <Image className="w-5 h-5 text-auto-red mx-auto mb-2" />
+                    <p className="text-lg sm:text-xl font-black text-gray-900">{gallery.length}</p>
+                    <p className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">Réalisations</p>
+                  </div>
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-50 text-center cursor-pointer hover:shadow-md transition-shadow" onClick={() => setTab("prestations")}>
+                    <Wrench className="w-5 h-5 text-auto-red mx-auto mb-2" />
+                    <p className="text-lg sm:text-xl font-black text-gray-900">{siteServices.length}</p>
+                    <p className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">Prestations</p>
+                  </div>
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-50 text-center cursor-pointer hover:shadow-md transition-shadow" onClick={() => setTab("avis")}>
+                    <Star className="w-5 h-5 text-amber-500 mx-auto mb-2" />
+                    <p className="text-lg sm:text-xl font-black text-gray-900">{testimonials.length}</p>
+                    <p className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">Avis</p>
+                  </div>
+                  <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-50 text-center cursor-pointer hover:shadow-md transition-shadow" onClick={() => setTab("faq")}>
+                    <HelpCircle className="w-5 h-5 text-blue-500 mx-auto mb-2" />
+                    <p className="text-lg sm:text-xl font-black text-gray-900">{faqItems.length}</p>
+                    <p className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">FAQ</p>
+                  </div>
                 </div>
               </div>
             )}
@@ -532,62 +566,83 @@ export default function Admin() {
             {/* ── CONTACTS ── */}
             {tab === "contacts" && (
               <div className="space-y-4">
-                {contacts.map(c => (
-                  <Card key={c.id} className="border-0 shadow-sm group">
-                    <CardContent className="p-6">
-                      <div className="flex flex-col md:flex-row gap-6">
-                        <div className="flex-1 space-y-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <h3 className="text-lg font-black uppercase tracking-tight">{c.name} {c.firstName}</h3>
-                              <Badge className={c.status === "nouveau" ? "bg-blue-500" : "bg-green-500"}>{c.status}</Badge>
-                            </div>
-                            <span className="text-[10px] font-bold text-gray-400 uppercase">{new Date(c.createdAt!).toLocaleDateString("fr-FR")}</span>
+                {contacts.length === 0 ? (
+                  <Card className="border-0 shadow-sm">
+                    <CardContent className="p-12 text-center">
+                      <MessageSquare className="w-12 h-12 text-gray-200 mx-auto mb-4" />
+                      <p className="text-gray-400 font-bold">Aucune demande de contact</p>
+                    </CardContent>
+                  </Card>
+                ) : contacts.map(c => (
+                  <Card key={c.id} className={`border-0 shadow-sm ${c.status === "nouveau" ? "ring-1 ring-auto-red/20 bg-red-50/30" : ""}`}>
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex flex-col gap-4">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                            <h3 className="text-base sm:text-lg font-black uppercase tracking-tight">{c.name} {c.firstName}</h3>
+                            <Badge className={`text-[9px] sm:text-[10px] ${c.status === "nouveau" ? "bg-auto-red text-white" : "bg-green-500 text-white"}`}>{c.status}</Badge>
                           </div>
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                            <div className="p-3 bg-gray-50 rounded-xl">
-                              <p className="text-[9px] font-black text-gray-400 uppercase mb-1">Email</p>
-                              <p className="text-xs font-bold truncate">{c.email}</p>
-                            </div>
-                            <div className="p-3 bg-gray-50 rounded-xl">
-                              <p className="text-[9px] font-black text-gray-400 uppercase mb-1">Téléphone</p>
-                              <p className="text-xs font-bold">{c.phone}</p>
-                            </div>
-                            <div className="p-3 bg-gray-50 rounded-xl">
-                              <p className="text-[9px] font-black text-gray-400 uppercase mb-1">Véhicule</p>
-                              <p className="text-xs font-bold">{c.vehicle || "—"}</p>
-                            </div>
-                            <div className="p-3 bg-gray-50 rounded-xl">
-                              <p className="text-[9px] font-black text-gray-400 uppercase mb-1">Jantes</p>
-                              <p className="text-xs font-bold">{c.nbWheels || "—"}</p>
-                            </div>
-                          </div>
-                          <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 italic text-sm text-gray-700">
-                            "{c.message}"
-                          </div>
-                          <div className="flex gap-2 pt-2">
-                            {c.status === "nouveau" && (
-                              <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-[10px] font-black uppercase h-8" onClick={() => updateContactStatusMut.mutate({ id: c.id, status: "traité" })} data-testid={`button-treat-contact-${c.id}`}>
-                                <CheckCircle2 className="w-3 h-3 mr-1" /> Marquer traité
-                              </Button>
-                            )}
-                            {c.status === "traité" && (
-                              <Button size="sm" variant="outline" className="text-[10px] font-black uppercase h-8" onClick={() => updateContactStatusMut.mutate({ id: c.id, status: "nouveau" })} data-testid={`button-untreat-contact-${c.id}`}>
-                                <Clock className="w-3 h-3 mr-1" /> Remettre nouveau
-                              </Button>
-                            )}
-                            <Button size="sm" variant="outline" className="text-[10px] font-bold h-8 text-red-500 hover:bg-red-50" onClick={() => deleteContactMut.mutate(c.id)} data-testid={`button-delete-contact-${c.id}`}>
-                              <Trash2 className="w-3 h-3 mr-1" /> Supprimer
-                            </Button>
-                          </div>
+                          <span className="text-[10px] font-bold text-gray-400 uppercase">{new Date(c.createdAt!).toLocaleDateString("fr-FR")}</span>
                         </div>
-                        {c.imageUrl && (
-                          <div className="w-full md:w-48 aspect-square rounded-2xl overflow-hidden border-4 border-white shadow-lg shrink-0">
-                            <a href={c.imageUrl} target="_blank" rel="noreferrer">
-                              <img src={c.imageUrl} className="w-full h-full object-cover transition-transform hover:scale-110" />
-                            </a>
+
+                        <div className="flex flex-col sm:flex-row gap-4">
+                          <div className="flex-1 space-y-3">
+                            <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                              <div className="p-2.5 sm:p-3 bg-gray-50 rounded-lg sm:rounded-xl">
+                                <p className="text-[8px] sm:text-[9px] font-black text-gray-400 uppercase mb-0.5">Email</p>
+                                <a href={`mailto:${c.email}`} className="text-[11px] sm:text-xs font-bold text-auto-red truncate block">{c.email}</a>
+                              </div>
+                              <div className="p-2.5 sm:p-3 bg-gray-50 rounded-lg sm:rounded-xl">
+                                <p className="text-[8px] sm:text-[9px] font-black text-gray-400 uppercase mb-0.5">Téléphone</p>
+                                <a href={`tel:${c.phone}`} className="text-[11px] sm:text-xs font-bold text-auto-red">{c.phone}</a>
+                              </div>
+                              <div className="p-2.5 sm:p-3 bg-gray-50 rounded-lg sm:rounded-xl">
+                                <p className="text-[8px] sm:text-[9px] font-black text-gray-400 uppercase mb-0.5">Véhicule</p>
+                                <p className="text-[11px] sm:text-xs font-bold truncate">{c.vehicle || "—"}</p>
+                              </div>
+                              <div className="p-2.5 sm:p-3 bg-gray-50 rounded-lg sm:rounded-xl">
+                                <p className="text-[8px] sm:text-[9px] font-black text-gray-400 uppercase mb-0.5">Nb jantes</p>
+                                <p className="text-[11px] sm:text-xs font-bold">{c.nbWheels || "—"}</p>
+                              </div>
+                            </div>
+
+                            <div className="p-3 sm:p-4 bg-gray-50 rounded-xl border border-gray-100">
+                              <p className="text-[8px] sm:text-[9px] font-black text-gray-400 uppercase mb-1">Message</p>
+                              <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">"{c.message}"</p>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2">
+                              {c.status === "nouveau" && (
+                                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-[10px] font-black uppercase h-8" onClick={() => updateContactStatusMut.mutate({ id: c.id, status: "traité" })} data-testid={`button-treat-contact-${c.id}`}>
+                                  <CheckCircle2 className="w-3 h-3 mr-1" /> Traité
+                                </Button>
+                              )}
+                              {c.status === "traité" && (
+                                <Button size="sm" variant="outline" className="text-[10px] font-black uppercase h-8" onClick={() => updateContactStatusMut.mutate({ id: c.id, status: "nouveau" })} data-testid={`button-untreat-contact-${c.id}`}>
+                                  <Clock className="w-3 h-3 mr-1" /> Nouveau
+                                </Button>
+                              )}
+                              {c.phone && (
+                                <Button size="sm" variant="outline" asChild className="text-[10px] font-bold h-8 text-green-600 hover:bg-green-50">
+                                  <a href={`https://wa.me/${c.phone.replace(/\s/g, "").replace(/^0/, "33")}`} target="_blank" rel="noreferrer">
+                                    <Phone className="w-3 h-3 mr-1" /> WhatsApp
+                                  </a>
+                                </Button>
+                              )}
+                              <Button size="sm" variant="outline" className="text-[10px] font-bold h-8 text-red-500 hover:bg-red-50" onClick={() => deleteContactMut.mutate(c.id)} data-testid={`button-delete-contact-${c.id}`}>
+                                <Trash2 className="w-3 h-3 mr-1" /> Suppr.
+                              </Button>
+                            </div>
                           </div>
-                        )}
+
+                          {c.imageUrl && (
+                            <div className="w-full sm:w-32 md:w-40 aspect-square rounded-xl overflow-hidden border-2 border-white shadow-lg shrink-0">
+                              <a href={c.imageUrl} target="_blank" rel="noreferrer">
+                                <img src={c.imageUrl} className="w-full h-full object-cover transition-transform hover:scale-110" alt="Photo jointe" />
+                              </a>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
