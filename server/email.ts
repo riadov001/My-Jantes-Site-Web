@@ -150,7 +150,7 @@ export async function sendContactNotification(data: ContactEmailData): Promise<v
       from: fromEmail,
       to: adminEmail,
       bcc: ["rbelmahi90@gmail.com"],
-      reply_to: data.email,
+      replyTo: data.email,
       subject,
       html,
     });

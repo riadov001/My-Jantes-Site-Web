@@ -103,7 +103,7 @@ export default function ServiceDetail() {
         <img src={service.image} alt={service.title} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-auto-dark/60 backdrop-blur-sm" />
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
-          <Button asChild variant="link" className="text-white/60 hover:text-white mb-8">
+          <Button asChild variant="ghost" className="text-white/60 hover:text-white mb-8">
             <Link href="/services" className="flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" /> Retour aux services
             </Link>

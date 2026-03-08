@@ -197,9 +197,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   });
 
   app.delete("/api/admin/users/:id", requireAdmin, async (req, res) => {
-    if (req.params.id === req.session.userId) return res.status(400).json({ message: "Vous ne pouvez pas supprimer votre propre compte" });
-    const user = await storage.getUser(req.params.id);
-    await storage.deleteUser(req.params.id);
+    const userId = req.params.id as string;
+    if (userId === req.session.userId) return res.status(400).json({ message: "Vous ne pouvez pas supprimer votre propre compte" });
+    const user = await storage.getUser(userId);
+    await storage.deleteUser(userId);
     await storage.createActivityLog(req.session.userId!, `Utilisateur supprimé: ${user?.username}`, "utilisateurs");
     return res.json({ message: "Utilisateur supprimé" });
   });
@@ -243,13 +244,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   app.patch("/api/admin/contacts/:id/status", requireAdmin, async (req, res) => {
     const { status } = req.body;
-    const contact = await storage.updateContactStatus(req.params.id, status);
+    const contact = await storage.updateContactStatus(req.params.id as string, status);
     if (!contact) return res.status(404).json({ message: "Contact non trouvé" });
     return res.json(contact);
   });
 
   app.delete("/api/admin/contacts/:id", requireAdmin, async (req, res) => {
-    await storage.deleteContactRequest(req.params.id);
+    await storage.deleteContactRequest(req.params.id as string);
     return res.json({ message: "Contact supprimé" });
   });
 
@@ -280,13 +281,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.put("/api/admin/blog/:id", requireAdmin, async (req, res) => {
     const result = insertBlogSchema.partial().safeParse(req.body);
     if (!result.success) return res.status(400).json({ errors: result.error.errors });
-    const post = await storage.updateBlogPost(req.params.id, result.data);
+    const post = await storage.updateBlogPost(req.params.id as string, result.data);
     if (!post) return res.status(404).json({ message: "Article non trouvé" });
     return res.json(post);
   });
 
   app.delete("/api/admin/blog/:id", requireAdmin, async (req, res) => {
-    await storage.deleteBlogPost(req.params.id);
+    await storage.deleteBlogPost(req.params.id as string);
     return res.json({ message: "Article supprimé" });
   });
 
@@ -311,13 +312,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.put("/api/admin/gallery/:id", requireAdmin, async (req, res) => {
     const result = insertGallerySchema.partial().safeParse(req.body);
     if (!result.success) return res.status(400).json({ errors: result.error.errors });
-    const item = await storage.updateGalleryItem(req.params.id, result.data);
+    const item = await storage.updateGalleryItem(req.params.id as string, result.data);
     if (!item) return res.status(404).json({ message: "Élément non trouvé" });
     return res.json(item);
   });
 
   app.delete("/api/admin/gallery/:id", requireAdmin, async (req, res) => {
-    await storage.deleteGalleryItem(req.params.id);
+    await storage.deleteGalleryItem(req.params.id as string);
     return res.json({ message: "Élément supprimé" });
   });
 
@@ -342,13 +343,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.put("/api/admin/testimonials/:id", requireAdmin, async (req, res) => {
     const result = insertTestimonialSchema.partial().safeParse(req.body);
     if (!result.success) return res.status(400).json({ errors: result.error.errors });
-    const t = await storage.updateTestimonial(req.params.id, result.data);
+    const t = await storage.updateTestimonial(req.params.id as string, result.data);
     if (!t) return res.status(404).json({ message: "Témoignage non trouvé" });
     return res.json(t);
   });
 
   app.delete("/api/admin/testimonials/:id", requireAdmin, async (req, res) => {
-    await storage.deleteTestimonial(req.params.id);
+    await storage.deleteTestimonial(req.params.id as string);
     return res.json({ message: "Témoignage supprimé" });
   });
 
@@ -373,13 +374,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.put("/api/admin/faq/:id", requireAdmin, async (req, res) => {
     const result = insertFaqSchema.partial().safeParse(req.body);
     if (!result.success) return res.status(400).json({ errors: result.error.errors });
-    const f = await storage.updateFaqItem(req.params.id, result.data);
+    const f = await storage.updateFaqItem(req.params.id as string, result.data);
     if (!f) return res.status(404).json({ message: "FAQ non trouvée" });
     return res.json(f);
   });
 
   app.delete("/api/admin/faq/:id", requireAdmin, async (req, res) => {
-    await storage.deleteFaqItem(req.params.id);
+    await storage.deleteFaqItem(req.params.id as string);
     return res.json({ message: "FAQ supprimée" });
   });
 
@@ -404,13 +405,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.put("/api/admin/services/:id", requireAdmin, async (req, res) => {
     const result = insertSiteServiceSchema.partial().safeParse(req.body);
     if (!result.success) return res.status(400).json({ errors: result.error.errors });
-    const s = await storage.updateSiteService(req.params.id, result.data);
+    const s = await storage.updateSiteService(req.params.id as string, result.data);
     if (!s) return res.status(404).json({ message: "Prestation non trouvée" });
     return res.json(s);
   });
 
   app.delete("/api/admin/services/:id", requireAdmin, async (req, res) => {
-    await storage.deleteSiteService(req.params.id);
+    await storage.deleteSiteService(req.params.id as string);
     return res.json({ message: "Prestation supprimée" });
   });
 
@@ -430,19 +431,19 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.put("/api/admin/site-content/:key", requireAdmin, async (req, res) => {
     const { value, label, category } = req.body;
     if (value === undefined) return res.status(400).json({ message: "Valeur requise" });
-    const c = await storage.setSiteContent(req.params.key, String(value), label, category);
+    const c = await storage.setSiteContent(req.params.key as string, String(value), label, category);
     return res.json(c);
   });
 
   app.patch("/api/admin/site-content/:key", requireAdmin, async (req, res) => {
     const { value } = req.body;
     if (value === undefined) return res.status(400).json({ message: "Valeur requise" });
-    const c = await storage.setSiteContent(req.params.key, String(value));
+    const c = await storage.setSiteContent(req.params.key as string, String(value));
     return res.json(c);
   });
 
   app.delete("/api/admin/site-content/:key", requireAdmin, async (req, res) => {
-    await storage.deleteSiteContent(req.params.key);
+    await storage.deleteSiteContent(req.params.key as string);
     return res.json({ message: "Contenu supprimé" });
   });
 
@@ -502,7 +503,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   });
 
   app.delete("/api/admin/media/:id", requireAdmin, async (req, res) => {
-    await storage.deleteMediaFile(req.params.id);
+    await storage.deleteMediaFile(req.params.id as string);
     return res.json({ message: "Fichier supprimé" });
   });
 

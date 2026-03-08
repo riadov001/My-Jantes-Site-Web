@@ -409,11 +409,11 @@ function AdminApp() {
   };
 
   const deleteContactMut = useMutation({
-    mutationFn: (id: number) => apiRequest("DELETE", `/api/admin/contacts/${id}`),
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/contacts/${id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/contacts"] }); toast({ title: "Contact supprimé" }); },
   });
   const updateContactStatusMut = useMutation({
-    mutationFn: ({ id, status }: { id: number; status: string }) => apiRequest("PATCH", `/api/admin/contacts/${id}/status`, { status }),
+    mutationFn: ({ id, status }: { id: string; status: string }) => apiRequest("PATCH", `/api/admin/contacts/${id}/status`, { status }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/contacts"] }); toast({ title: "Statut mis à jour" }); },
   });
 
@@ -422,11 +422,11 @@ function AdminApp() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/gallery"] }); setShowAddGallery(false); setGalleryForm({ title: "", serviceType: "renovation", afterImage: "", beforeImage: "", description: "" }); toast({ title: "Réalisation ajoutée" }); },
   });
   const updateGalleryMut = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) => apiRequest("PUT", `/api/admin/gallery/${id}`, data),
+    mutationFn: ({ id, data }: { id: string; data: any }) => apiRequest("PUT", `/api/admin/gallery/${id}`, data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/gallery"] }); setEditingGalleryId(null); toast({ title: "Réalisation modifiée" }); },
   });
   const deleteGalleryMut = useMutation({
-    mutationFn: (id: number) => apiRequest("DELETE", `/api/admin/gallery/${id}`),
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/gallery/${id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/gallery"] }); toast({ title: "Réalisation supprimée" }); },
   });
 
@@ -435,7 +435,7 @@ function AdminApp() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/testimonials"] }); setShowAddTestimonial(false); setTestimonialForm({ name: "", location: "", rating: 5, content: "", vehicle: "" }); toast({ title: "Avis ajouté" }); },
   });
   const deleteTestimonialMut = useMutation({
-    mutationFn: (id: number) => apiRequest("DELETE", `/api/admin/testimonials/${id}`),
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/testimonials/${id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/testimonials"] }); toast({ title: "Avis supprimé" }); },
   });
 
@@ -444,7 +444,7 @@ function AdminApp() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/faq"] }); setShowAddFaq(false); setFaqForm({ question: "", answer: "", category: "general", sortOrder: 0 }); toast({ title: "FAQ ajoutée" }); },
   });
   const deleteFaqMut = useMutation({
-    mutationFn: (id: number) => apiRequest("DELETE", `/api/admin/faq/${id}`),
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/faq/${id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/faq"] }); toast({ title: "FAQ supprimée" }); },
   });
 
@@ -1155,7 +1155,7 @@ function AdminApp() {
                         formData.append("file", file);
                         try {
                           await apiRequest("POST", "/api/admin/upload", formData);
-                          queryClient.invalidateQueries({ queryKey: ["/api/admin/media"] });
+                          qc.invalidateQueries({ queryKey: ["/api/admin/media"] });
                           toast({ title: "Fichier ajouté avec succès" });
                         } catch (err: any) {
                           toast({ title: err?.message || "Erreur d'upload", variant: "destructive" });

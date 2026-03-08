@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Phone, Mail, MapPin, Clock, CheckCircle2, Send, Smartphone, ArrowRight, MessageCircle, Upload, X, LayoutDashboard, Monitor, Globe, Zap, ScanSearch, Sparkles, Loader2, FileText } from "lucide-react";
 import { Link } from "wouter";
-import type { Service } from "@shared/schema";
+import type { SiteService as Service } from "@shared/schema";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Nom requis"),
