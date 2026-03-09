@@ -80,8 +80,8 @@
   --auto-red: 0 84% 50%;
   --auto-red-dark: 0 77% 42%;
   --auto-red-light: 0 93% 82%;
-  --font-sans: 'Montserrat', sans-serif;
-  --font-heading: 'Eurostile Extended', 'Montserrat', sans-serif;
+  --font-sans: 'Exo 2', 'Montserrat', sans-serif;
+  --font-heading: 'Exo 2', 'Eurostile Extended', sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
   --radius: 0.75rem;

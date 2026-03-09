@@ -146,8 +146,8 @@ async function seedSiteContent() {
     { key: "header.logo_url", value: "/images/logo-myjantes.png", label: "URL du logo", category: "header" },
     { key: "header.logo_size", value: "lg", label: "Taille du logo", category: "header" },
     { key: "theme.color", value: "red", label: "Couleur principale", category: "theme" },
-    { key: "typography.font", value: "Orbitron", label: "Police d'écriture principale", category: "typography" },
-    { key: "typography.heading_font", value: "Orbitron", label: "Police titres", category: "typography" },
+    { key: "typography.font", value: "Exo 2", label: "Police d'écriture principale", category: "typography" },
+    { key: "typography.heading_font", value: "Exo 2", label: "Police titres", category: "typography" },
     { key: "hero.badge", value: "Atelier à Liévin — 62800", label: "Badge Hero", category: "hero" },
     { key: "hero.title_line1", value: "L'expert de la", label: "Titre hero ligne 1", category: "hero" },
     { key: "hero.title_line2", value: "jante alu", label: "Titre hero ligne 2 (accent)", category: "hero" },
@@ -182,8 +182,15 @@ async function seedSiteContent() {
     { key: "pages.about.image", value: "/images/service-renovation.png", label: "Image page À propos", category: "pages" },
     { key: "pages.guarantees.title", value: "Nos Garanties", label: "Titre page Garanties", category: "pages" },
     { key: "pages.guarantees.content", value: "Toutes nos prestations bénéficient d'une garantie* sur la tenue de peinture et la finition. Nous nous engageons sur la qualité et la durabilité de notre travail.", label: "Contenu page Garanties", category: "pages" },
-    { key: "pages.contact.title", value: "Contactez-nous", label: "Titre page Contact", category: "pages" },
+    { key: "pages.contact.title", value: "Contact & Devis", label: "Titre page Contact", category: "pages" },
     { key: "pages.contact.subtitle", value: "Une question ? Un devis ? Notre équipe vous répond sous 24h.", label: "Sous-titre page Contact", category: "pages" },
+    { key: "pages.contact.espace_client_badge", value: "Déjà client MyJantes ?", label: "Badge Espace Client", category: "pages" },
+    { key: "pages.contact.espace_client_title", value: "Accédez à votre espace personnel", label: "Titre Espace Client", category: "pages" },
+    { key: "pages.contact.espace_client_subtitle", value: "Suivez vos jantes en temps réel, consultez vos devis et factures, prenez rendez-vous en ligne depuis votre espace client dédié.", label: "Sous-titre Espace Client", category: "pages" },
+    { key: "pages.contact.espace_client_cta", value: "Accéder à mon espace client", label: "CTA Espace Client", category: "pages" },
+    { key: "pages.contact.espace_client_url", value: "https://appmyjantes.mytoolsgroup.eu", label: "URL Espace Client", category: "pages" },
+    { key: "pages.contact.form_title", value: "Demandez votre devis gratuit", label: "Titre formulaire devis", category: "pages" },
+    { key: "pages.contact.form_subtitle", value: "Réponse garantie sous 24h — Devis sans engagement", label: "Sous-titre formulaire devis", category: "pages" },
     { key: "footer.tagline", value: "L'expert de la jante alu dans les Hauts-de-France", label: "Slogan footer", category: "footer" },
     { key: "footer.hours_line1", value: "Lun – Ven : 9h – 12h30", label: "Horaires ligne 1", category: "footer" },
     { key: "footer.hours_line2", value: "13h30 – 18h00", label: "Horaires ligne 2", category: "footer" },
@@ -208,8 +215,11 @@ async function seedSiteContent() {
   ];
   const existingKeys = await db.select({ key: siteContent.key }).from(siteContent);
   const existingSet = new Set(existingKeys.map(r => r.key));
+  const forceUpdate = new Set(["typography.font", "typography.heading_font"]);
   for (const item of defaults) {
     if (!existingSet.has(item.key)) {
+      await storage.setSiteContent(item.key, item.value, item.label, item.category);
+    } else if (forceUpdate.has(item.key)) {
       await storage.setSiteContent(item.key, item.value, item.label, item.category);
     }
   }
