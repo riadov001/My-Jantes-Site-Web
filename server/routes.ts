@@ -71,6 +71,23 @@ function parseObjPath(path: string) {
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
+  // Create session table manually to avoid missing table.sql in production bundle
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "session" (
+        "sid" varchar NOT NULL,
+        "sess" json NOT NULL,
+        "expire" timestamp(6) NOT NULL,
+        CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE
+      );
+    `);
+    await pool.query(`CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");`);
+  } catch (e) {
+    console.log("[session] Table already exists or minor error:", (e as Error).message);
+  }
+
+  const isProduction = process.env.NODE_ENV === "production";
+
   app.use(cors({
     origin: [
       "https://appmyjantes.mytoolsgroup.eu",
@@ -85,11 +102,15 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   app.use(
     session({
-      store: new PgSession({ pool, createTableIfMissing: true }),
+      store: new PgSession({ pool, createTableIfMissing: false }),
       secret: process.env.SESSION_SECRET || "myjantes-secret-2024",
       resave: false,
       saveUninitialized: false,
-      cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 },
+      cookie: {
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      },
     })
   );
 
