@@ -1,8 +1,13 @@
 import { Resend } from "resend";
 
-let connectionSettings: any;
+async function getCredentials(): Promise<{ apiKey: string; fromEmail: string }> {
+  if (process.env.RESEND_API_KEY) {
+    return {
+      apiKey: process.env.RESEND_API_KEY,
+      fromEmail: process.env.RESEND_FROM_EMAIL || "MyJantes <noreply@myjantes.fr>",
+    };
+  }
 
-async function getCredentials() {
   const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
   const xReplitToken = process.env.REPL_IDENTITY
     ? "repl " + process.env.REPL_IDENTITY
@@ -10,11 +15,11 @@ async function getCredentials() {
     ? "depl " + process.env.WEB_REPL_RENEWAL
     : null;
 
-  if (!xReplitToken) {
-    throw new Error("X-Replit-Token not found for repl/depl");
+  if (!hostname || !xReplitToken) {
+    throw new Error("Resend not configured: set RESEND_API_KEY or connect via Replit integration");
   }
 
-  connectionSettings = await fetch(
+  const connectionSettings = await fetch(
     "https://" + hostname + "/api/v2/connection?include_secrets=true&connector_names=resend",
     {
       headers: {
@@ -26,7 +31,7 @@ async function getCredentials() {
     .then((res) => res.json())
     .then((data) => data.items?.[0]);
 
-  if (!connectionSettings || !connectionSettings.settings.api_key) {
+  if (!connectionSettings?.settings?.api_key) {
     throw new Error("Resend not connected");
   }
 

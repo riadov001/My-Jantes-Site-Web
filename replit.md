@@ -76,3 +76,21 @@ Categories et clés gérées dynamiquement :
 - Tailwind `auto-red/dark/light` utilisent des CSS variables pour le theming dynamique
 - Object storage configuré via Replit (bucket par défaut)
 - Slider avant/après interactif sur la galerie (`client/src/components/before-after-slider.tsx`) avec support souris, tactile et clavier
+
+## Variables d'environnement (secrets)
+- `DATABASE_URL` — Base de données dev (Replit PostgreSQL interne)
+- `PROD_DB_URL` — Base de données production (URL externe accessible en prod) — utilisée automatiquement quand `NODE_ENV=production`
+- `SESSION_SECRET` — Clé de session Express
+- `RESEND_API_KEY` — Clé API Resend pour l'envoi d'emails (priorité sur l'intégration Replit)
+- `RESEND_FROM_EMAIL` — Expéditeur email (ex: MyJantes <contact@myjantes.fr>)
+- `GOOGLE_API_KEY` — Clé Google API utilisée en fallback pour l'OCR Gemini si `AI_INTEGRATIONS_GEMINI_API_KEY` n'est pas disponible
+- `ADMIN_EMAIL` — Email admin (secret)
+
+## Logique de connexion DB
+- Dev : `DATABASE_URL` (hostname interne Replit)
+- Prod : `PROD_DB_URL` (si défini) sinon `DATABASE_URL`
+- Même logique dans `server/db.ts` et pour le pool de sessions dans `server/routes.ts`
+
+## Logique email (server/email.ts)
+- Si `RESEND_API_KEY` est défini → utilise directement (fonctionne en prod)
+- Sinon → tente l'intégration Replit (fonctionne en dev uniquement)

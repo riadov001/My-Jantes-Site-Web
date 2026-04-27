@@ -73,7 +73,12 @@ function parseObjPath(path: string) {
 }
 
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const dbConnectionString =
+    process.env.NODE_ENV === "production" && process.env.PROD_DB_URL
+      ? process.env.PROD_DB_URL
+      : process.env.DATABASE_URL;
+
+  const pool = new Pool({ connectionString: dbConnectionString });
 
   let dbAvailable = false;
 
@@ -711,9 +716,13 @@ RÈGLES:
         return res.status(400).json({ error: "Seules les images uploadées sur le site sont acceptées" });
       }
 
+      const geminiApiKey = process.env.AI_INTEGRATIONS_GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+      if (!geminiApiKey) return res.status(503).json({ error: "Service OCR non configuré" });
       const genai = new GoogleGenAI({
-        apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
-        httpOptions: { baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL },
+        apiKey: geminiApiKey,
+        httpOptions: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL
+          ? { baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL }
+          : undefined,
       });
 
       const localUrl = `${req.protocol}://${req.get("host")}${imageUrl}`;

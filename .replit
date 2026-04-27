@@ -48,5 +48,3 @@ defaultBucketID = "replit-objstore-d7bf2105-845d-4b10-88ea-cc847f654236"
 [userenv]
 
 [userenv.shared]
-ADMIN_EMAIL = "contact@myjantes.com"
-ADMIN_PASSWORD = "$2b$10$70huSo.lplin2uV0/Y13su0XMbRvxoWdOjqHuq/C41m8EfmZMVV62"
