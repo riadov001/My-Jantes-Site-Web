@@ -6,3 +6,9 @@ id = "PAKGUhXmfUPE5FYky3HCo"
 uri = "file://myjantes-deploy.tar.gz"
 type = "unspecified"
 title = "myjantes-deploy.tar.gz — Site complet prêt pour Hostinger"
+
+[[outputs]]
+id = "gJ3ZzucXu3BW70KcKLuQK"
+uri = "file://myjantes-deploy.zip"
+type = "unspecified"
+title = "myjantes-deploy.zip — Site complet prêt à déployer sur Hostinger"
