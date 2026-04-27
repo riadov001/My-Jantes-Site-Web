@@ -3,13 +3,19 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
 const httpServer = createServer(app);
 
 app.set("trust proxy", 1);
 
-app.use(express.static(path.resolve(import.meta.dirname, "..", "public")));
+const currentDir =
+  typeof __dirname !== "undefined"
+    ? __dirname
+    : path.dirname(fileURLToPath(import.meta.url));
+
+app.use(express.static(path.resolve(currentDir, "..", "public")));
 
 declare module "http" {
   interface IncomingMessage {

@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "PAKGUhXmfUPE5FYky3HCo"
+uri = "file://myjantes-deploy.tar.gz"
+type = "unspecified"
+title = "myjantes-deploy.tar.gz — Site complet prêt pour Hostinger"
