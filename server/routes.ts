@@ -21,7 +21,6 @@ import {
 } from "@shared/schema";
 import { seedDatabase } from "./seed";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
-import OpenAI from "openai";
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
 
@@ -662,35 +661,42 @@ RÈGLES:
 5. Sois concis mais utile. Maximum 3-4 phrases par réponse.
 6. Mets en avant la qualité, le professionnalisme et la proximité de l'atelier.`;
 
-      const openai = new OpenAI({
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-      });
+      const geminiApiKey =
+        process.env.GOOGLE_API_KEY ||
+        process.env.GEMINI_API_KEY ||
+        process.env.AI_INTEGRATIONS_GEMINI_API_KEY;
+      if (!geminiApiKey) {
+        return res.status(503).json({ error: "Service chatbot non configuré" });
+      }
 
-      const chatMessages: { role: "system" | "user" | "assistant"; content: string }[] = [
-        { role: "system", content: systemPrompt },
-        ...history.slice(-10).map((m: any) => ({ role: m.role as "user" | "assistant", content: m.content })),
-        { role: "user", content: message },
+      const genai = new GoogleGenAI({ apiKey: geminiApiKey });
+
+      const contents = [
+        ...history.slice(-10).map((m: any) => ({
+          role: m.role === "assistant" ? "model" : "user",
+          parts: [{ text: m.content as string }],
+        })),
+        { role: "user", parts: [{ text: message as string }] },
       ];
 
       res.setHeader("Content-Type", "text/event-stream");
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      const stream = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: chatMessages,
-        stream: true,
-        max_tokens: 500,
-        temperature: 0.7,
+      const stream = await genai.models.generateContentStream({
+        model: "gemini-2.0-flash",
+        contents,
+        config: {
+          systemInstruction: systemPrompt,
+          maxOutputTokens: 500,
+          temperature: 0.7,
+        },
       });
 
-      let fullResponse = "";
       for await (const chunk of stream) {
-        const content = chunk.choices[0]?.delta?.content || "";
-        if (content) {
-          fullResponse += content;
-          res.write(`data: ${JSON.stringify({ content })}\n\n`);
+        const text = chunk.text;
+        if (text) {
+          res.write(`data: ${JSON.stringify({ content: text })}\n\n`);
         }
       }
 
@@ -716,14 +722,12 @@ RÈGLES:
         return res.status(400).json({ error: "Seules les images uploadées sur le site sont acceptées" });
       }
 
-      const geminiApiKey = process.env.AI_INTEGRATIONS_GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+      const geminiApiKey =
+        process.env.GOOGLE_API_KEY ||
+        process.env.GEMINI_API_KEY ||
+        process.env.AI_INTEGRATIONS_GEMINI_API_KEY;
       if (!geminiApiKey) return res.status(503).json({ error: "Service OCR non configuré" });
-      const genai = new GoogleGenAI({
-        apiKey: geminiApiKey,
-        httpOptions: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL
-          ? { baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL }
-          : undefined,
-      });
+      const genai = new GoogleGenAI({ apiKey: geminiApiKey });
 
       const localUrl = `${req.protocol}://${req.get("host")}${imageUrl}`;
       const controller = new AbortController();
