@@ -2,11 +2,13 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
+import memorystore from "memorystore";
 import cors from "cors";
 import { Pool } from "pg";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
+import bcrypt from "bcryptjs";
 import { storage } from "./storage";
 import { sendContactNotification, sendPasswordResetEmail } from "./email";
 import {
@@ -22,6 +24,8 @@ import { registerObjectStorageRoutes } from "./replit_integrations/object_storag
 import OpenAI from "openai";
 import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
+
+const MemoryStore = memorystore(session);
 
 const PgSession = connectPgSimple(session);
 
@@ -71,6 +75,8 @@ function parseObjPath(path: string) {
 export async function registerRoutes(httpServer: Server, app: Express): Promise<Server> {
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
+  let dbAvailable = false;
+
   // Create session table manually to avoid missing table.sql in production bundle
   try {
     await pool.query(`
@@ -82,8 +88,9 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       );
     `);
     await pool.query(`CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");`);
+    dbAvailable = true;
   } catch (e) {
-    console.log("[session] Table already exists or minor error:", (e as Error).message);
+    console.log("[session] DB unavailable, switching to memory store:", (e as Error).message);
   }
 
   const isProduction = process.env.NODE_ENV === "production";
@@ -100,9 +107,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     credentials: true,
   }));
 
+  const sessionStore = dbAvailable
+    ? new PgSession({ pool, createTableIfMissing: false })
+    : new MemoryStore({ checkPeriod: 86400000 });
+
   app.use(
     session({
-      store: new PgSession({ pool, createTableIfMissing: false }),
+      store: sessionStore,
       secret: process.env.SESSION_SECRET || "myjantes-secret-2024",
       resave: false,
       saveUninitialized: false,
@@ -129,11 +140,24 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.post("/api/auth/login", async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ message: "Identifiants requis" });
-    const user = await storage.validatePassword(username, password);
-    if (!user || !user.isAdmin) return res.status(401).json({ message: "Identifiants invalides" });
-    req.session.userId = user.id;
-    req.session.isAdmin = true;
-    return res.json({ message: "Connecté", user: { id: user.id, username: user.username } });
+
+    try {
+      const user = await storage.validatePassword(username, password);
+      if (!user || !user.isAdmin) return res.status(401).json({ message: "Identifiants invalides" });
+      req.session.userId = user.id;
+      req.session.isAdmin = true;
+      return res.json({ message: "Connecté", user: { id: user.id, username: user.username } });
+    } catch (dbErr) {
+      console.warn("[auth] DB unavailable, trying fallback credentials:", (dbErr as Error).message);
+      const fallbackEmail = process.env.ADMIN_EMAIL || "contact@myjantes.com";
+      const fallbackPassword = process.env.ADMIN_PASSWORD;
+      if (!fallbackPassword) return res.status(503).json({ message: "Service temporairement indisponible" });
+      const validFallback = username === fallbackEmail && (await bcrypt.compare(password, fallbackPassword).catch(() => password === fallbackPassword));
+      if (!validFallback) return res.status(401).json({ message: "Identifiants invalides" });
+      req.session.userId = "admin-fallback";
+      req.session.isAdmin = true;
+      return res.json({ message: "Connecté", user: { id: "admin-fallback", username } });
+    }
   });
 
   app.post("/api/auth/logout", (req, res) => {
