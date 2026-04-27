@@ -7,6 +7,7 @@ import { Link } from "wouter";
 import { ArrowRight, X, Phone } from "lucide-react";
 import type { GalleryItem } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BeforeAfterSlider } from "@/components/before-after-slider";
 
 const categories = [
   { label: "Tout voir", value: "all" },
@@ -143,17 +144,19 @@ export default function Galerie() {
             className="max-w-4xl w-full"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className={`grid ${selected.beforeImage ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"} gap-4`}>
-              {selected.beforeImage && (
-                <div>
-                  <p className="text-white/60 text-xs uppercase tracking-wider mb-2">Avant</p>
-                  <img
-                    src={selected.beforeImage}
-                    alt={`Avant - ${selected.title}`}
-                    className="w-full rounded-lg"
-                  />
-                </div>
-              )}
+            {selected.beforeImage ? (
+              <>
+                <BeforeAfterSlider
+                  beforeImage={selected.beforeImage}
+                  afterImage={selected.afterImage}
+                  alt={selected.title}
+                  className="w-full aspect-[4/3] sm:aspect-video bg-black"
+                />
+                <p className="text-white/40 text-[10px] uppercase tracking-widest text-center mt-3 font-bold">
+                  Glissez le curseur pour comparer
+                </p>
+              </>
+            ) : (
               <div>
                 <p className="text-white/60 text-xs uppercase tracking-wider mb-2">Après</p>
                 <img
@@ -162,9 +165,9 @@ export default function Galerie() {
                   className="w-full rounded-lg"
                 />
               </div>
-            </div>
+            )}
             <div className="mt-4 text-center">
-              <h3 className="text-white font-semibold text-lg">{selected.title}</h3>
+              <h3 className="text-white font-semibold text-lg" data-testid="text-modal-title">{selected.title}</h3>
               {selected.description && (
                 <p className="text-white/60 text-sm mt-1">{selected.description}</p>
               )}

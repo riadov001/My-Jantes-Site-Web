@@ -16,7 +16,6 @@ PORT = "5000"
 deploymentTarget = "autoscale"
 run = ["node", "./dist/index.cjs"]
 build = ["npm", "run", "build"]
-publicDir = "dist/public"
 
 [workflows]
 runButton = "Project"
@@ -43,4 +42,4 @@ waitForPort = 5000
 integrations = ["resend:1.0.0", "javascript_object_storage:2.0.0", "javascript_openai_ai_integrations:2.0.0", "javascript_gemini_ai_integrations:2.0.0"]
 
 [objectStorage]
-defaultBucketID = "replit-objstore-1e186997-8347-406e-8a04-9c4173c69065"
+defaultBucketID = "replit-objstore-d7bf2105-845d-4b10-88ea-cc847f654236"

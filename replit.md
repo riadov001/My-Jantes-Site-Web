@@ -75,3 +75,4 @@ Categories et clés gérées dynamiquement :
 - Lien espace client → appmyjantes.mytoolsgroup.eu
 - Tailwind `auto-red/dark/light` utilisent des CSS variables pour le theming dynamique
 - Object storage configuré via Replit (bucket par défaut)
+- Slider avant/après interactif sur la galerie (`client/src/components/before-after-slider.tsx`) avec support souris, tactile et clavier
