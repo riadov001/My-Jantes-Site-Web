@@ -554,19 +554,52 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       const { message, history = [] } = req.body;
       if (!message) return res.status(400).json({ error: "Message requis" });
 
-      const services = await storage.getSiteServices(true);
-      const faqItems = await storage.getFaqItems(true);
-      const contentItems = await storage.getAllSiteContent();
+      const FALLBACK_SERVICES_CONTEXT = `- Soudure: Réparation structurelle de vos jantes fissurées ou cassées par soudure professionnelle TIG/MIG. | Prix: À partir de 60€/jante | Lien: /services/soudure-jantes
+- Sablage: Décapage complet par sablage pour une préparation parfaite avant rénovation ou peinture. | Prix: Inclus dans la rénovation | Lien: /services/sablage
+- Devoilage: Correction des voiles et déformations par presse hydraulique de précision. | Prix: À partir de 45€/jante | Lien: /services/devoilage
+- Rénovation: Rénovation complète : sablage, apprêt, peinture et vernis haute résistance. Notre prestation phare. | Prix: À partir de 120€/jante | Lien: /services/renovation-jantes
+- Personnalisation: Noir mat, bronze, bicolore, diamantage sur tour numérique... Finitions sur mesure. | Prix: À partir de 100€/jante | Lien: /services/peinture-jantes
+- Hydrodipping: Personnalisation par impression hydrographique pour des finitions uniques. | Prix: Sur devis | Lien: /services/hydrodipping`;
+
+      const FALLBACK_FAQ_CONTEXT = `Q: Combien de temps prend une rénovation de jantes ?
+R: En général, comptez 3 à 5 jours ouvrés pour une rénovation complète. Les réparations simples (soudure, redressage) peuvent être réalisées en 24 à 48h.
+
+Q: Quels types de jantes traitez-vous ?
+R: Nous traitons exclusivement les jantes en alliage aluminium (alu), du 14 au 22 pouces, pour tous types de véhicules.
+
+Q: Proposez-vous un devis gratuit ?
+R: Oui, le diagnostic et le devis sont gratuits. Contactez-nous via le formulaire ou appelez-nous directement.
+
+Q: Intervenez-vous sur place ou faut-il déposer les jantes ?
+R: Les jantes doivent être déposées à notre atelier de Liévin. Nous n'effectuons pas de déplacement à domicile.
+
+Q: Quelles garanties offrez-vous sur votre travail ?
+R: Nous offrons une garantie sur nos prestations. Notre objectif est votre entière satisfaction.`;
+
+      let servicesContext = FALLBACK_SERVICES_CONTEXT;
+      let faqContext = FALLBACK_FAQ_CONTEXT;
       const contentMap: Record<string, string> = {};
-      for (const item of contentItems) contentMap[item.key] = item.value;
 
-      const servicesContext = services.map(s =>
-        `- ${s.title}: ${s.description} | Prix: ${s.price} | Lien: /services/${s.slug}`
-      ).join("\n");
-
-      const faqContext = faqItems.map(f =>
-        `Q: ${f.question}\nR: ${f.answer}`
-      ).join("\n\n");
+      try {
+        const [services, faqItemsDb, contentItems] = await Promise.all([
+          storage.getSiteServices(true),
+          storage.getFaqItems(true),
+          storage.getAllSiteContent(),
+        ]);
+        if (services.length > 0) {
+          servicesContext = services.map(s =>
+            `- ${s.title}: ${s.description} | Prix: ${s.price} | Lien: /services/${s.slug}`
+          ).join("\n");
+        }
+        if (faqItemsDb.length > 0) {
+          faqContext = faqItemsDb.map(f =>
+            `Q: ${f.question}\nR: ${f.answer}`
+          ).join("\n\n");
+        }
+        for (const item of contentItems) contentMap[item.key] = item.value;
+      } catch (dbError) {
+        console.warn("Chatbot: DB unavailable, using fallback data:", (dbError as Error).message);
+      }
 
       const systemPrompt = `Tu es l'assistant virtuel de MyJantes, expert en rénovation de jantes alu situé à Liévin (62800), Hauts-de-France.
 
