@@ -309,14 +309,14 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
                   <label className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-black mb-2 block">Identifiant</label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                    <Input type="email" value={username} onChange={e => setUsername(e.target.value)} className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-auto-red/50" placeholder="contact@myjantes.com" required data-testid="input-login-username" />
+                    <Input type="email" autoComplete="username" value={username} onChange={e => setUsername(e.target.value)} className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-auto-red/50" placeholder="contact@myjantes.com" required data-testid="input-login-username" />
                   </div>
                 </div>
                 <div>
                   <label className="text-white/40 text-[10px] uppercase tracking-[0.2em] font-black mb-2 block">Mot de passe</label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                    <Input type="password" value={password} onChange={e => setPassword(e.target.value)} className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-auto-red/50" placeholder="••••••••" required data-testid="input-login-password" />
+                    <Input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-auto-red/50" placeholder="••••••••" required data-testid="input-login-password" />
                   </div>
                 </div>
                 {error && <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-xs font-bold flex items-center gap-2"><XCircle className="w-4 h-4" /> {error}</div>}
@@ -375,6 +375,8 @@ function AdminApp() {
   const [showAddUser, setShowAddUser] = useState(false);
   const [editingGalleryId, setEditingGalleryId] = useState<string | null>(null);
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
+  const [editingTestimonialId, setEditingTestimonialId] = useState<string | null>(null);
+  const [editingFaqId, setEditingFaqId] = useState<string | null>(null);
 
   const [pwForm, setPwForm] = useState({ current: "", next: "", confirm: "" });
   const [showPw, setShowPw] = useState({ current: false, next: false, confirm: false });
@@ -441,6 +443,10 @@ function AdminApp() {
     mutationFn: (data: any) => apiRequest("POST", "/api/admin/testimonials", data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/testimonials"] }); setShowAddTestimonial(false); setTestimonialForm({ name: "", location: "", rating: 5, content: "", vehicle: "" }); toast({ title: "Avis ajouté" }); },
   });
+  const updateTestimonialMut = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) => apiRequest("PUT", `/api/admin/testimonials/${id}`, data),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/testimonials"] }); setEditingTestimonialId(null); setShowAddTestimonial(false); setTestimonialForm({ name: "", location: "", rating: 5, content: "", vehicle: "" }); toast({ title: "Avis modifié" }); },
+  });
   const deleteTestimonialMut = useMutation({
     mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/testimonials/${id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/testimonials"] }); toast({ title: "Avis supprimé" }); },
@@ -449,6 +455,10 @@ function AdminApp() {
   const addFaqMut = useMutation({
     mutationFn: (data: any) => apiRequest("POST", "/api/admin/faq", data),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/faq"] }); setShowAddFaq(false); setFaqForm({ question: "", answer: "", category: "general", sortOrder: 0 }); toast({ title: "FAQ ajoutée" }); },
+  });
+  const updateFaqMut = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) => apiRequest("PUT", `/api/admin/faq/${id}`, data),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/admin/faq"] }); setEditingFaqId(null); setShowAddFaq(false); setFaqForm({ question: "", answer: "", category: "general", sortOrder: 0 }); toast({ title: "FAQ modifiée" }); },
   });
   const deleteFaqMut = useMutation({
     mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/faq/${id}`),
@@ -528,15 +538,17 @@ function AdminApp() {
     onSuccess: () => { setAuthenticated(false); setLocation("/"); },
   });
 
-  useQuery({
+  const { data: meData } = useQuery<{ authenticated: boolean }>({
     queryKey: ["/api/auth/me"],
     queryFn: async () => {
       const res = await fetch("/api/auth/me", { credentials: "include" });
-      const data = await res.json();
-      setAuthenticated(data.authenticated);
-      return data;
+      return res.json();
     },
+    staleTime: 60_000,
   });
+  useEffect(() => {
+    if (meData) setAuthenticated(meData.authenticated);
+  }, [meData]);
 
   if (authenticated === null) return <div className="min-h-screen bg-auto-dark flex items-center justify-center"><div className="w-12 h-12 border-4 border-auto-red border-t-transparent rounded-full animate-spin" /></div>;
   if (authenticated === false) return <LoginForm onLogin={() => setAuthenticated(true)} />;
@@ -865,7 +877,7 @@ function AdminApp() {
                 {showAddGallery && (
                   <Card className="border-2 border-auto-red/20 shadow-lg">
                     <CardContent className="p-6 space-y-4">
-                      <div className="flex justify-between items-center"><h3 className="font-black uppercase text-sm">Nouvelle réalisation</h3><Button variant="ghost" size="sm" onClick={() => setShowAddGallery(false)}><X className="w-4 h-4" /></Button></div>
+                      <div className="flex justify-between items-center"><h3 className="font-black uppercase text-sm">{editingGalleryId ? "Modifier la réalisation" : "Nouvelle réalisation"}</h3><Button variant="ghost" size="sm" onClick={() => { setShowAddGallery(false); setEditingGalleryId(null); setGalleryForm({ title: "", serviceType: "renovation", afterImage: "", beforeImage: "", description: "" }); }}><X className="w-4 h-4" /></Button></div>
                       <div className="grid sm:grid-cols-2 gap-4">
                         <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Titre</label><Input value={galleryForm.title} onChange={e => setGalleryForm(p => ({ ...p, title: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-gallery-title" /></div>
                         <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Type de service</label>
@@ -879,8 +891,11 @@ function AdminApp() {
                         <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Image Avant (URL)</label><Input value={galleryForm.beforeImage} onChange={e => setGalleryForm(p => ({ ...p, beforeImage: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-gallery-before" /></div>
                       </div>
                       <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Description</label><Textarea value={galleryForm.description} onChange={e => setGalleryForm(p => ({ ...p, description: e.target.value }))} className="bg-gray-50 border-gray-200 min-h-[80px]" data-testid="input-gallery-desc" /></div>
-                      <Button onClick={() => addGalleryMut.mutate(galleryForm)} disabled={!galleryForm.title || !galleryForm.afterImage || addGalleryMut.isPending} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase" data-testid="button-submit-gallery">
-                        {addGalleryMut.isPending ? "Ajout..." : "Ajouter la réalisation"}
+                      <Button onClick={() => {
+                        if (editingGalleryId) updateGalleryMut.mutate({ id: editingGalleryId, data: galleryForm });
+                        else addGalleryMut.mutate(galleryForm);
+                      }} disabled={!galleryForm.title || !galleryForm.afterImage || addGalleryMut.isPending || updateGalleryMut.isPending} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase" data-testid="button-submit-gallery">
+                        {editingGalleryId ? (updateGalleryMut.isPending ? "Modification..." : "Enregistrer les modifications") : (addGalleryMut.isPending ? "Ajout..." : "Ajouter la réalisation")}
                       </Button>
                     </CardContent>
                   </Card>
@@ -888,17 +903,33 @@ function AdminApp() {
 
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {gallery.map(item => (
-                    <Card key={item.id} className="border-0 shadow-sm overflow-hidden group" data-testid={`card-gallery-${item.id}`}>
+                    <Card key={item.id} className={`border-0 shadow-sm overflow-hidden group ${item.published === false ? "opacity-60" : ""}`} data-testid={`card-gallery-${item.id}`}>
                       <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
                         <img src={item.afterImage} alt={item.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
-                        <div className="absolute top-3 left-3"><Badge className="bg-auto-red text-white text-[10px] font-black">{item.serviceType}</Badge></div>
+                        <div className="absolute top-3 left-3 flex gap-2"><Badge className="bg-auto-red text-white text-[10px] font-black">{item.serviceType}</Badge>{item.published === false && <Badge className="bg-gray-700 text-white text-[10px] font-black">Masqué</Badge>}</div>
                       </div>
                       <CardContent className="p-4">
                         <h4 className="font-black text-sm uppercase truncate">{item.title}</h4>
                         {item.description && <p className="text-xs text-gray-400 mt-1 line-clamp-2">{item.description}</p>}
-                        <div className="flex gap-2 mt-3">
-                          <Button variant="outline" size="sm" className="flex-1 text-[10px] font-bold h-8" onClick={() => deleteGalleryMut.mutate(item.id)} data-testid={`button-delete-gallery-${item.id}`}>
-                            <Trash2 className="w-3 h-3 mr-1" /> Supprimer
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          <Button variant="outline" size="sm" className="text-[10px] font-bold h-8 flex-1" onClick={() => {
+                            setGalleryForm({
+                              title: item.title,
+                              serviceType: item.serviceType,
+                              afterImage: item.afterImage,
+                              beforeImage: item.beforeImage || "",
+                              description: item.description || "",
+                            });
+                            setEditingGalleryId(item.id);
+                            setShowAddGallery(true);
+                          }} data-testid={`button-edit-gallery-${item.id}`}>
+                            <Edit2 className="w-3 h-3 mr-1" /> Modifier
+                          </Button>
+                          <Button variant="outline" size="sm" className="text-[10px] font-bold h-8" onClick={() => updateGalleryMut.mutate({ id: item.id, data: { published: !item.published } })} data-testid={`button-toggle-gallery-${item.id}`}>
+                            {item.published === false ? <><Eye className="w-3 h-3 mr-1" /> Publier</> : <><EyeOff className="w-3 h-3 mr-1" /> Masquer</>}
+                          </Button>
+                          <Button variant="outline" size="sm" className="text-[10px] font-bold h-8 text-red-500 hover:bg-red-50" onClick={() => deleteGalleryMut.mutate(item.id)} data-testid={`button-delete-gallery-${item.id}`}>
+                            <Trash2 className="w-3 h-3" />
                           </Button>
                         </div>
                       </CardContent>
@@ -947,7 +978,7 @@ function AdminApp() {
 
                 <div className="space-y-4">
                   {siteServices.map(svc => (
-                    <Card key={svc.id} className="border-0 shadow-sm" data-testid={`card-service-${svc.id}`}>
+                    <Card key={svc.id} className={`border-0 shadow-sm ${svc.published === false ? "opacity-60" : ""}`} data-testid={`card-service-${svc.id}`}>
                       <CardContent className="p-6">
                       <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
                         {svc.image && (
@@ -956,10 +987,11 @@ function AdminApp() {
                           </div>
                         )}
                         <div className="flex-1 min-w-0 w-full">
-                            <div className="flex items-center gap-3 mb-2">
+                            <div className="flex flex-wrap items-center gap-3 mb-2">
                               <h4 className="font-black text-base uppercase">{svc.title}</h4>
                               {svc.badge && <Badge className="bg-auto-red text-white text-[10px]">{svc.badge}</Badge>}
                               {svc.price && <span className="text-xs font-bold text-gray-400">{svc.price}</span>}
+                              {svc.published === false && <Badge className="bg-gray-700 text-white text-[10px] font-black">Masqué</Badge>}
                             </div>
                             <p className="text-sm text-gray-500 line-clamp-2">{svc.description}</p>
                           </div>
@@ -980,6 +1012,9 @@ function AdminApp() {
                                 setShowAddService(true);
                               }} data-testid={`button-edit-service-${svc.id}`}>
                                 <Edit2 className="w-3 h-3 mr-1" /> Modifier
+                              </Button>
+                              <Button variant="outline" size="sm" className="text-[10px] font-bold h-8 flex-1 sm:flex-none" onClick={() => updateServiceMut.mutate({ id: svc.id, data: { published: !svc.published } })} data-testid={`button-toggle-service-${svc.id}`}>
+                                {svc.published === false ? <><Eye className="w-3 h-3 mr-1" /> Publier</> : <><EyeOff className="w-3 h-3 mr-1" /> Masquer</>}
                               </Button>
                               <Button variant="outline" size="sm" className="text-[10px] font-bold h-8 text-red-500 hover:bg-red-50 flex-1 sm:flex-none" onClick={() => deleteServiceMut.mutate(svc.id)} data-testid={`button-delete-service-${svc.id}`}>
                                 <Trash2 className="w-3 h-3 mr-1" /> Supprimer
@@ -1006,7 +1041,7 @@ function AdminApp() {
                 {showAddTestimonial && (
                   <Card className="border-2 border-auto-red/20 shadow-lg">
                     <CardContent className="p-6 space-y-4">
-                      <div className="flex justify-between items-center"><h3 className="font-black uppercase text-sm">Nouvel avis</h3><Button variant="ghost" size="sm" onClick={() => setShowAddTestimonial(false)}><X className="w-4 h-4" /></Button></div>
+                      <div className="flex justify-between items-center"><h3 className="font-black uppercase text-sm">{editingTestimonialId ? "Modifier l'avis" : "Nouvel avis"}</h3><Button variant="ghost" size="sm" onClick={() => { setShowAddTestimonial(false); setEditingTestimonialId(null); setTestimonialForm({ name: "", location: "", rating: 5, content: "", vehicle: "" }); }}><X className="w-4 h-4" /></Button></div>
                       <div className="grid sm:grid-cols-3 gap-4">
                         <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Nom</label><Input value={testimonialForm.name} onChange={e => setTestimonialForm(p => ({ ...p, name: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-testimonial-name" /></div>
                         <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Ville</label><Input value={testimonialForm.location} onChange={e => setTestimonialForm(p => ({ ...p, location: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-testimonial-location" /></div>
@@ -1014,8 +1049,11 @@ function AdminApp() {
                       </div>
                       <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Véhicule</label><Input value={testimonialForm.vehicle} onChange={e => setTestimonialForm(p => ({ ...p, vehicle: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-testimonial-vehicle" /></div>
                       <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Commentaire</label><Textarea value={testimonialForm.content} onChange={e => setTestimonialForm(p => ({ ...p, content: e.target.value }))} className="bg-gray-50 border-gray-200 min-h-[80px]" data-testid="input-testimonial-content" /></div>
-                      <Button onClick={() => addTestimonialMut.mutate(testimonialForm)} disabled={!testimonialForm.name || !testimonialForm.content || addTestimonialMut.isPending} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase" data-testid="button-submit-testimonial">
-                        {addTestimonialMut.isPending ? "Ajout..." : "Ajouter l'avis"}
+                      <Button onClick={() => {
+                        if (editingTestimonialId) updateTestimonialMut.mutate({ id: editingTestimonialId, data: testimonialForm });
+                        else addTestimonialMut.mutate(testimonialForm);
+                      }} disabled={!testimonialForm.name || !testimonialForm.content || addTestimonialMut.isPending || updateTestimonialMut.isPending} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase" data-testid="button-submit-testimonial">
+                        {editingTestimonialId ? (updateTestimonialMut.isPending ? "Modification..." : "Enregistrer les modifications") : (addTestimonialMut.isPending ? "Ajout..." : "Ajouter l'avis")}
                       </Button>
                     </CardContent>
                   </Card>
@@ -1023,21 +1061,40 @@ function AdminApp() {
 
                 <div className="space-y-4">
                   {testimonials.map(t => (
-                    <Card key={t.id} className="border-0 shadow-sm" data-testid={`card-testimonial-${t.id}`}>
+                    <Card key={t.id} className={`border-0 shadow-sm ${t.published === false ? "opacity-60" : ""}`} data-testid={`card-testimonial-${t.id}`}>
                       <CardContent className="p-6">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
+                        <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-3 mb-2">
                               <h4 className="font-black text-sm uppercase">{t.name}</h4>
-                              <span className="text-xs text-gray-400 font-bold">{t.location}</span>
+                              {t.location && <span className="text-xs text-gray-400 font-bold">{t.location}</span>}
                               <div className="flex gap-0.5">{Array.from({ length: t.rating }).map((_, i) => <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />)}</div>
+                              {t.published === false && <Badge className="bg-gray-700 text-white text-[10px] font-black">Masqué</Badge>}
                             </div>
                             {t.vehicle && <p className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2">{t.vehicle}</p>}
                             <p className="text-sm text-gray-600 italic">"{t.content}"</p>
                           </div>
-                          <Button variant="ghost" size="sm" onClick={() => deleteTestimonialMut.mutate(t.id)} className="text-gray-300 hover:text-red-500 shrink-0" data-testid={`button-delete-testimonial-${t.id}`}>
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          <div className="flex flex-row sm:flex-col gap-2 shrink-0 w-full sm:w-auto">
+                            <Button variant="outline" size="sm" className="text-[10px] font-bold h-8 flex-1 sm:flex-none" onClick={() => {
+                              setTestimonialForm({
+                                name: t.name,
+                                location: t.location || "",
+                                rating: t.rating,
+                                content: t.content,
+                                vehicle: t.vehicle || "",
+                              });
+                              setEditingTestimonialId(t.id);
+                              setShowAddTestimonial(true);
+                            }} data-testid={`button-edit-testimonial-${t.id}`}>
+                              <Edit2 className="w-3 h-3 mr-1" /> Modifier
+                            </Button>
+                            <Button variant="outline" size="sm" className="text-[10px] font-bold h-8 flex-1 sm:flex-none" onClick={() => updateTestimonialMut.mutate({ id: t.id, data: { published: !t.published } })} data-testid={`button-toggle-testimonial-${t.id}`}>
+                              {t.published === false ? <><Eye className="w-3 h-3 mr-1" /> Publier</> : <><EyeOff className="w-3 h-3 mr-1" /> Masquer</>}
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => deleteTestimonialMut.mutate(t.id)} className="text-red-500 hover:bg-red-50 h-8" data-testid={`button-delete-testimonial-${t.id}`}>
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -1059,7 +1116,7 @@ function AdminApp() {
                 {showAddFaq && (
                   <Card className="border-2 border-auto-red/20 shadow-lg">
                     <CardContent className="p-6 space-y-4">
-                      <div className="flex justify-between items-center"><h3 className="font-black uppercase text-sm">Nouvelle FAQ</h3><Button variant="ghost" size="sm" onClick={() => setShowAddFaq(false)}><X className="w-4 h-4" /></Button></div>
+                      <div className="flex justify-between items-center"><h3 className="font-black uppercase text-sm">{editingFaqId ? "Modifier la FAQ" : "Nouvelle FAQ"}</h3><Button variant="ghost" size="sm" onClick={() => { setShowAddFaq(false); setEditingFaqId(null); setFaqForm({ question: "", answer: "", category: "general", sortOrder: 0 }); }}><X className="w-4 h-4" /></Button></div>
                       <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Question</label><Input value={faqForm.question} onChange={e => setFaqForm(p => ({ ...p, question: e.target.value }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-faq-question" /></div>
                       <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Réponse</label><Textarea value={faqForm.answer} onChange={e => setFaqForm(p => ({ ...p, answer: e.target.value }))} className="bg-gray-50 border-gray-200 min-h-[100px]" data-testid="input-faq-answer" /></div>
                       <div className="grid sm:grid-cols-2 gap-4">
@@ -1070,8 +1127,11 @@ function AdminApp() {
                         </div>
                         <div><label className="text-[10px] font-black text-gray-400 uppercase block mb-1">Ordre</label><Input type="number" value={faqForm.sortOrder} onChange={e => setFaqForm(p => ({ ...p, sortOrder: parseInt(e.target.value) || 0 }))} className="h-10 bg-gray-50 border-gray-200" data-testid="input-faq-order" /></div>
                       </div>
-                      <Button onClick={() => addFaqMut.mutate(faqForm)} disabled={!faqForm.question || !faqForm.answer || addFaqMut.isPending} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase" data-testid="button-submit-faq">
-                        {addFaqMut.isPending ? "Ajout..." : "Ajouter la FAQ"}
+                      <Button onClick={() => {
+                        if (editingFaqId) updateFaqMut.mutate({ id: editingFaqId, data: faqForm });
+                        else addFaqMut.mutate(faqForm);
+                      }} disabled={!faqForm.question || !faqForm.answer || addFaqMut.isPending || updateFaqMut.isPending} className="bg-auto-red hover:bg-auto-red-dark text-white font-black text-xs uppercase" data-testid="button-submit-faq">
+                        {editingFaqId ? (updateFaqMut.isPending ? "Modification..." : "Enregistrer les modifications") : (addFaqMut.isPending ? "Ajout..." : "Ajouter la FAQ")}
                       </Button>
                     </CardContent>
                   </Card>
@@ -1079,20 +1139,38 @@ function AdminApp() {
 
                 <div className="space-y-3">
                   {faqItems.map(faq => (
-                    <Card key={faq.id} className="border-0 shadow-sm" data-testid={`card-faq-${faq.id}`}>
+                    <Card key={faq.id} className={`border-0 shadow-sm ${faq.published === false ? "opacity-60" : ""}`} data-testid={`card-faq-${faq.id}`}>
                       <CardContent className="p-6">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
+                        <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-3 mb-2">
                               <HelpCircle className="w-4 h-4 text-auto-red shrink-0" />
                               <h4 className="font-black text-sm">{faq.question}</h4>
                               <Badge variant="outline" className="text-[10px]">{faq.category}</Badge>
+                              {faq.published === false && <Badge className="bg-gray-700 text-white text-[10px] font-black">Masqué</Badge>}
                             </div>
                             <p className="text-sm text-gray-500 pl-7">{faq.answer}</p>
                           </div>
-                          <Button variant="ghost" size="sm" onClick={() => deleteFaqMut.mutate(faq.id)} className="text-gray-300 hover:text-red-500 shrink-0" data-testid={`button-delete-faq-${faq.id}`}>
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          <div className="flex flex-row sm:flex-col gap-2 shrink-0 w-full sm:w-auto">
+                            <Button variant="outline" size="sm" className="text-[10px] font-bold h-8 flex-1 sm:flex-none" onClick={() => {
+                              setFaqForm({
+                                question: faq.question,
+                                answer: faq.answer,
+                                category: faq.category,
+                                sortOrder: faq.sortOrder,
+                              });
+                              setEditingFaqId(faq.id);
+                              setShowAddFaq(true);
+                            }} data-testid={`button-edit-faq-${faq.id}`}>
+                              <Edit2 className="w-3 h-3 mr-1" /> Modifier
+                            </Button>
+                            <Button variant="outline" size="sm" className="text-[10px] font-bold h-8 flex-1 sm:flex-none" onClick={() => updateFaqMut.mutate({ id: faq.id, data: { published: !faq.published } })} data-testid={`button-toggle-faq-${faq.id}`}>
+                              {faq.published === false ? <><Eye className="w-3 h-3 mr-1" /> Publier</> : <><EyeOff className="w-3 h-3 mr-1" /> Masquer</>}
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => deleteFaqMut.mutate(faq.id)} className="text-red-500 hover:bg-red-50 h-8" data-testid={`button-delete-faq-${faq.id}`}>
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
