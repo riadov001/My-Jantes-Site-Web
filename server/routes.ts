@@ -276,11 +276,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     const adminEmailContent = await storage.getSiteContentByKey("contact.email");
     sendContactNotification({
       name: result.data.name,
+      firstName: result.data.firstName,
       email: result.data.email,
       phone: result.data.phone,
       vehicle: result.data.vehicle,
       message: result.data.message,
       service: result.data.requestType || result.data.service,
+      imageUrl: result.data.imageUrl,
       adminEmail: adminEmailContent?.value || "contact@myjantes.com",
     }).catch(err => console.error("[email] sendContactNotification failed:", err));
     return res.status(201).json(contact);

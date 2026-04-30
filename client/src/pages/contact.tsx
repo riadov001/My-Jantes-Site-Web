@@ -32,6 +32,14 @@ const contactFormSchema = z.object({
   imageUrl: z.string().optional(),
   message: z.string().min(1, "Informations supplémentaires requises"),
   consent: z.boolean().refine(v => v === true, { message: "Vous devez accepter les conditions" }),
+}).superRefine((data, ctx) => {
+  if ((data.requestType === "devis" || data.requestType === "rdv") && !data.imageUrl) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Une photo est obligatoire pour les demandes de devis et de rendez-vous",
+      path: ["imageUrl"],
+    });
+  }
 });
 
 type ContactForm = z.infer<typeof contactFormSchema>;
@@ -621,7 +629,7 @@ export default function Contact() {
                   <div>
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Photo de vos jantes</p>
                     <div
-                      className="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center cursor-pointer hover:border-auto-red/40 hover:bg-red-50/20 transition-all bg-gray-50/50"
+                      className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all bg-gray-50/50 ${form.formState.errors.imageUrl ? "border-red-400 bg-red-50/30" : "border-gray-200 hover:border-auto-red/40 hover:bg-red-50/20"}`}
                       onClick={() => fileInputRef.current?.click()}
                       onDragOver={e => e.preventDefault()}
                       onDrop={e => {
@@ -679,6 +687,12 @@ export default function Contact() {
                           <><ScanSearch className="w-4 h-4" /><Sparkles className="w-3.5 h-3.5" />Analyser avec l'IA (carte grise / jante)</>
                         )}
                       </button>
+                    )}
+
+                    {form.formState.errors.imageUrl && (
+                      <p className="mt-2 text-sm font-medium text-red-600" data-testid="error-image-required">
+                        {form.formState.errors.imageUrl.message}
+                      </p>
                     )}
 
                     {ocrResult && (

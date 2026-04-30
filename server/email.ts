@@ -48,11 +48,13 @@ async function getUncachableResendClient() {
 
 export interface ContactEmailData {
   name: string;
+  firstName?: string | null;
   email: string;
   phone?: string | null;
   vehicle?: string | null;
   message: string;
   service?: string | null;
+  imageUrl?: string | null;
   adminEmail?: string;
 }
 
@@ -89,7 +91,18 @@ export async function sendContactNotification(data: ContactEmailData): Promise<v
   try {
     const { client, fromEmail } = await getUncachableResendClient();
 
-    const subject = `Nouvelle demande — ${data.name}`;
+    const fullName = [data.firstName, data.name].filter(Boolean).join(" ");
+    const subject = `Nouvelle demande — ${fullName}`;
+
+    const siteBase = process.env.SITE_URL || "https://appmyjantes.mytoolsgroup.eu";
+    const imageHtml = data.imageUrl
+      ? (() => {
+          const absoluteUrl = data.imageUrl.startsWith("http")
+            ? data.imageUrl
+            : `${siteBase}${data.imageUrl}`;
+          return `<hr class="divider" /><div class="field"><div class="label">Photo des jantes</div><div style="margin-top:8px;"><a href="${absoluteUrl}" target="_blank"><img src="${absoluteUrl}" alt="Photo jantes" style="max-width:100%;max-height:300px;border-radius:8px;border:1px solid #e5e7eb;display:block;" /></a><p style="font-size:11px;color:#9ca3af;margin-top:6px;"><a href="${absoluteUrl}" style="color:#dc2626;">Voir en taille réelle</a></p></div></div>`;
+        })()
+      : "";
 
     const html = `
 <!DOCTYPE html>
@@ -122,8 +135,8 @@ export async function sendContactNotification(data: ContactEmailData): Promise<v
     </div>
     <div class="body">
       <div class="field">
-        <div class="label">Nom</div>
-        <div class="value">${data.name}</div>
+        <div class="label">Nom complet</div>
+        <div class="value">${fullName}</div>
       </div>
       <div class="field">
         <div class="label">Email</div>
@@ -137,8 +150,9 @@ export async function sendContactNotification(data: ContactEmailData): Promise<v
         <div class="label">Message</div>
         <div class="message-box">${data.message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
       </div>
+      ${imageHtml}
       <div style="text-align:center;">
-        <a href="mailto:${data.email}?subject=Re: Votre demande MyJantes" class="cta">Répondre à ${data.name}</a>
+        <a href="mailto:${data.email}?subject=Re: Votre demande MyJantes" class="cta">Répondre à ${fullName}</a>
       </div>
     </div>
     <div class="footer">
