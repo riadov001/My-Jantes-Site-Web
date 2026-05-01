@@ -1,0 +1,35 @@
+{
+  "name": "myjantes",
+  "version": "1.0.0",
+  "description": "MyJantes — Site vitrine + Admin",
+  "license": "MIT",
+  "scripts": {
+    "start": "node start.cjs"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "@google-cloud/storage": "^7.19.0",
+    "@google/genai": "^1.43.0",
+    "bcryptjs": "^3.0.3",
+    "connect-pg-simple": "^10.0.0",
+    "cors": "^2.8.6",
+    "drizzle-orm": "^0.39.3",
+    "drizzle-zod": "^0.7.1",
+    "express": "^5.0.1",
+    "express-session": "^1.18.1",
+    "memorystore": "^1.6.7",
+    "multer": "^2.0.2",
+    "nodemailer": "^8.0.1",
+    "openai": "^6.25.0",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "pg": "^8.16.3",
+    "resend": "^4.0.0",
+    "ws": "^8.18.0",
+    "zod": "^3.25.76",
+    "zod-validation-error": "^3.5.4",
+    "date-fns": "^3.6.0",
+    "p-limit": "^7.3.0",
+    "p-retry": "^7.1.1"
+  }
+}

@@ -12,3 +12,9 @@ id = "gJ3ZzucXu3BW70KcKLuQK"
 uri = "file://myjantes-deploy.zip"
 type = "unspecified"
 title = "myjantes-deploy.zip — Site complet prêt à déployer sur Hostinger"
+
+[[outputs]]
+id = "1rbU5tUc8OnpsCh-lUp-6"
+uri = "file://myjantes-hostinger.zip"
+type = "unspecified"
+title = "myjantes-hostinger.zip — Dossier complet Hostinger"
