@@ -17,6 +17,7 @@ import Contact from "@/pages/contact";
 import About from "@/pages/about";
 import FAQ from "@/pages/faq";
 import Garanties from "@/pages/garanties";
+import Blog from "@/pages/blog";
 import Admin from "@/pages/admin";
 import MentionsLegales from "@/pages/mentions-legales";
 import PolitiqueConfidentialite from "@/pages/politique-confidentialite";
@@ -80,6 +81,8 @@ function PublicLayout() {
           <Route path="/services/:id" component={ServiceDetail} />
           <Route path="/galerie" component={Galerie} />
           <Route path="/faq" component={FAQ} />
+          <Route path="/blog" component={Blog} />
+          <Route path="/blog/:slug" component={Blog} />
           <Route path="/contact" component={Contact} />
           <Route path="/a-propos" component={About} />
           <Route path="/garanties" component={Garanties} />
