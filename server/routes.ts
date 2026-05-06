@@ -81,7 +81,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   let dbAvailable = false;
 
-  // Create session table manually to avoid missing table.sql in production bundle
+  // Create all tables if they don't exist (idempotent migration for fresh DB on Hostinger/Neon)
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS "session" (
@@ -92,15 +92,181 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       );
     `);
     await pool.query(`CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");`);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "users" (
+        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+        "username" text NOT NULL UNIQUE,
+        "password" text NOT NULL,
+        "email" text,
+        "is_admin" boolean NOT NULL DEFAULT false,
+        "created_at" timestamp DEFAULT now()
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "activity_logs" (
+        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+        "user_id" varchar NOT NULL,
+        "action" text NOT NULL,
+        "category" text NOT NULL DEFAULT 'general',
+        "details" text,
+        "created_at" timestamp DEFAULT now()
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "contact_requests" (
+        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+        "name" text NOT NULL,
+        "first_name" text,
+        "email" text NOT NULL,
+        "phone" text,
+        "vehicle" text,
+        "service" text,
+        "request_type" text,
+        "nb_wheels" text,
+        "image_url" text,
+        "message" text NOT NULL,
+        "status" text NOT NULL DEFAULT 'nouveau',
+        "created_at" timestamp DEFAULT now()
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "blog_posts" (
+        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+        "title" text NOT NULL,
+        "slug" text NOT NULL UNIQUE,
+        "excerpt" text NOT NULL,
+        "content" text NOT NULL,
+        "cover_image" text,
+        "meta_title" text,
+        "meta_description" text,
+        "published" boolean NOT NULL DEFAULT false,
+        "created_at" timestamp DEFAULT now(),
+        "updated_at" timestamp DEFAULT now()
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "gallery_items" (
+        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+        "title" text NOT NULL,
+        "service_type" text NOT NULL,
+        "before_image" text,
+        "after_image" text NOT NULL,
+        "description" text,
+        "published" boolean NOT NULL DEFAULT true,
+        "created_at" timestamp DEFAULT now()
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "testimonials" (
+        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+        "name" text NOT NULL,
+        "location" text,
+        "rating" integer NOT NULL DEFAULT 5,
+        "content" text NOT NULL,
+        "vehicle" text,
+        "google_review_url" text,
+        "published" boolean NOT NULL DEFAULT true,
+        "created_at" timestamp DEFAULT now()
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "faq_items" (
+        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+        "question" text NOT NULL,
+        "answer" text NOT NULL,
+        "category" text NOT NULL DEFAULT 'general',
+        "sort_order" integer NOT NULL DEFAULT 0,
+        "published" boolean NOT NULL DEFAULT true
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "site_services" (
+        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+        "title" text NOT NULL,
+        "description" text NOT NULL,
+        "image" text NOT NULL DEFAULT '/images/service-renovation.png',
+        "badge" text NOT NULL DEFAULT '',
+        "features" jsonb NOT NULL DEFAULT '[]',
+        "price" text NOT NULL DEFAULT '',
+        "slug" text NOT NULL DEFAULT '',
+        "sort_order" integer NOT NULL DEFAULT 0,
+        "published" boolean NOT NULL DEFAULT true,
+        "created_at" timestamp DEFAULT now()
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "site_content" (
+        "key" text PRIMARY KEY,
+        "value" text NOT NULL,
+        "label" text NOT NULL DEFAULT '',
+        "category" text NOT NULL DEFAULT 'general',
+        "updated_at" timestamp DEFAULT now()
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "page_views" (
+        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+        "path" text NOT NULL,
+        "referrer" text,
+        "user_agent" text,
+        "created_at" timestamp DEFAULT now()
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "media_files" (
+        "id" varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+        "filename" text NOT NULL,
+        "original_name" text NOT NULL,
+        "url" text NOT NULL,
+        "mime_type" text NOT NULL,
+        "size" integer NOT NULL DEFAULT 0,
+        "created_at" timestamp DEFAULT now()
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "conversations" (
+        "id" serial PRIMARY KEY,
+        "title" text NOT NULL,
+        "created_at" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "messages" (
+        "id" serial PRIMARY KEY,
+        "conversation_id" integer NOT NULL REFERENCES "conversations"("id") ON DELETE CASCADE,
+        "role" text NOT NULL,
+        "content" text NOT NULL,
+        "created_at" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
+      );
+    `);
+
+    console.log("[db] Tables vérifiées/créées avec succès");
     dbAvailable = true;
   } catch (e) {
-    console.log("[session] DB unavailable, switching to memory store:", (e as Error).message);
+    console.log("[db] DB unavailable, switching to memory store:", (e as Error).message);
   }
 
   const isProduction = process.env.NODE_ENV === "production";
 
   app.use(cors({
     origin: [
+      "https://myjantes.fr",
+      "http://myjantes.fr",
+      "https://www.myjantes.fr",
+      "http://www.myjantes.fr",
       "https://appmyjantes.mytoolsgroup.eu",
       "http://appmyjantes.mytoolsgroup.eu",
       /\.replit\.app$/,
@@ -274,6 +440,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     if (!result.success) return res.status(400).json({ message: "Données invalides", errors: result.error.errors });
     const contact = await storage.createContactRequest(result.data);
     const adminEmailContent = await storage.getSiteContentByKey("contact.email");
+    const adminEmail = process.env.ADMIN_EMAIL || adminEmailContent?.value || "contact@myjantes.fr";
     sendContactNotification({
       name: result.data.name,
       firstName: result.data.firstName,
@@ -283,7 +450,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       message: result.data.message,
       service: result.data.requestType || result.data.service,
       imageUrl: result.data.imageUrl,
-      adminEmail: adminEmailContent?.value || "contact@myjantes.com",
+      adminEmail,
     }).catch(err => console.error("[email] sendContactNotification failed:", err));
     return res.status(201).json(contact);
   });
