@@ -78,7 +78,7 @@ export default function Services() {
                   <div className="space-y-4">
                     {service.price && (
                       <Badge className="bg-auto-red/10 text-auto-red border-auto-red/20 text-[10px] font-black uppercase tracking-widest px-3 py-1">
-                        {service.price}
+                        {service.price.includes("€") && !service.price.startsWith("À partir de") ? `À partir de ${service.price}` : service.price}
                       </Badge>
                     )}
                     <div className="flex items-center gap-3 flex-wrap">
@@ -115,7 +115,7 @@ export default function Services() {
                       className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-10 h-14 shadow-xl shadow-auto-red/20 transition-all hover:scale-105 active:scale-95"
                       data-testid={`button-service-devis-${service.id}`}
                     >
-                      <Link href="/contact">
+                      <Link href="/contact#form">
                         Devis gratuit <ArrowRight className="ml-2 w-5 h-5" />
                       </Link>
                     </Button>
@@ -143,7 +143,7 @@ export default function Services() {
           <p className="text-white/60 mb-8">Notre équipe répond à toutes vos questions et vous propose le meilleur devis.</p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0 px-8" data-testid="button-services-cta-contact">
-              <Link href="/contact">Nous contacter</Link>
+              <Link href="/contact#form">Nous contacter</Link>
             </Button>
           </div>
         </div>

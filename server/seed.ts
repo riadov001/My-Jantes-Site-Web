@@ -74,9 +74,9 @@ export async function seedDatabase() {
 
 async function updateExistingServices() {
   try {
-    await db.update(siteServices).set({ price: "90 €" }).where(eq(siteServices.slug, "soudure-jantes"));
-    await db.update(siteServices).set({ price: "70 €" }).where(eq(siteServices.slug, "sablage"));
-    await db.update(siteServices).set({ price: "90 €" }).where(eq(siteServices.slug, "devoilage"));
+    await db.update(siteServices).set({ price: "À partir de 90 €" }).where(eq(siteServices.slug, "soudure-jantes"));
+    await db.update(siteServices).set({ price: "À partir de 70 €" }).where(eq(siteServices.slug, "sablage"));
+    await db.update(siteServices).set({ price: "À partir de 90 €" }).where(eq(siteServices.slug, "devoilage"));
     await db.update(siteServices).set({ price: "À partir de 109 €", sortOrder: 6 }).where(eq(siteServices.slug, "renovation-jantes"));
     await db.update(siteServices).set({ price: "À partir de 119 €", sortOrder: 7 }).where(eq(siteServices.slug, "peinture-jantes"));
     await db.update(siteServices).set({ sortOrder: 8 }).where(eq(siteServices.slug, "hydrodipping"));
@@ -123,7 +123,7 @@ async function seedServices() {
       image: "/images/service-renovation.png",
       badge: "Réparation",
       features: ["Diagnostic gratuit avant intervention", "Soudure TIG/MIG professionnelle", "Contrôle d'étanchéité après réparation", "Applicable sur jantes 14 à 28 pouces", "Résultat garanti"],
-      price: "90 €",
+      price: "À partir de 90 €",
       slug: "soudure-jantes",
       sortOrder: 1,
       published: true,
@@ -134,7 +134,7 @@ async function seedServices() {
       image: "/images/service-peinture.png",
       badge: "Préparation",
       features: ["Décapage complet de la peinture", "Élimination de la corrosion", "Préparation de surface optimale", "Compatible tous types de jantes", "Étape clé avant peinture"],
-      price: "70 €",
+      price: "À partir de 70 €",
       slug: "sablage",
       sortOrder: 2,
       published: true,
@@ -145,7 +145,7 @@ async function seedServices() {
       image: "/images/service-redressage.png",
       badge: "Sécurité",
       features: ["Diagnostic gratuit avant intervention", "Presse hydraulique de précision CNC", "Contrôle du voile par laser", "Applicable sur jantes 14 à 28 pouces", "Résultat garanti"],
-      price: "90 €",
+      price: "À partir de 90 €",
       slug: "devoilage",
       sortOrder: 3,
       published: true,

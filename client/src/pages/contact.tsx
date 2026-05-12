@@ -304,7 +304,7 @@ export default function Contact() {
                   <p className={`font-black text-sm leading-tight mb-1 ${selectedService === svc.title ? "text-auto-red" : "text-gray-900"}`}>
                     {svc.title}
                   </p>
-                  <p className="text-[11px] text-gray-400 font-medium leading-tight">{svc.price}</p>
+                  <p className="text-[11px] text-gray-400 font-medium leading-tight">{svc.price.includes("€") && !svc.price.startsWith("À partir de") ? `À partir de ${svc.price}` : svc.price}</p>
                 </button>
               ))}
             </div>

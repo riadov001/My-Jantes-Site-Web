@@ -182,7 +182,7 @@ export default function Galerie() {
           <p className="text-gray-500 mb-8">Un projet similaire ? Contactez-nous pour un devis gratuit.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button asChild size="lg" className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-8 h-12 w-full sm:w-auto" data-testid="button-gallery-cta">
-              <Link href="/contact">
+              <Link href="/contact#form">
                 Devis gratuit <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>

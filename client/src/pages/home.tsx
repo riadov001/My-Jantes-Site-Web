@@ -229,7 +229,7 @@ export default function Home() {
 
           <div className="mt-10 text-center">
             <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-8 h-12">
-              <Link href="/contact">Commencer mon devis gratuit <ArrowRight className="ml-2 w-4 h-4" /></Link>
+              <Link href="/contact#form">Commencer mon devis gratuit <ArrowRight className="ml-2 w-4 h-4" /></Link>
             </Button>
           </div>
         </div>
