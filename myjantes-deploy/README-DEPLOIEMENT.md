@@ -75,7 +75,7 @@ Dans la page Node.js de votre app :
 
 ### 4. Charger les variables d'environnement
 
-Le fichier `.env` contient toutes les variables, **sauf `DATABASE_URL`** qui doit être renseignée avec votre URL PostgreSQL externe (voir étape obligatoire ci-dessous).
+Le fichier `.env` contient **toutes les variables déjà renseignées**, y compris `DATABASE_URL` (URL PostgreSQL Neon externe), `SESSION_SECRET`, `RESEND_API_KEY`, clés IA, etc.
 
 **Deux options :**
 
@@ -92,12 +92,12 @@ Puis dans la page Node.js de hPanel → onglet **"Variables"**, cliquez sur
 Dans hPanel → Node.js → onglet **"Variables d'environnement"**, ajoutez
 chaque clé/valeur depuis le fichier `.env` (ouvrez-le avec un éditeur de texte).
 
-Variables minimum obligatoires :
-- `DATABASE_URL`
-- `SESSION_SECRET`
+Variables à configurer dans hPanel (toutes présentes dans `.env`) :
+- `DATABASE_URL` — URL PostgreSQL Neon (déjà renseignée)
+- `SESSION_SECRET` — clé de session (déjà renseignée)
 - `NODE_ENV` = `production`
 - `PORT` (Hostinger l'injecte tout seul, généralement 3000 ou un port assigné)
-- `SITE_URL` = votre domaine final (ex: `https://myjantes.fr`)
+- `SITE_URL` = `https://myjantes.fr` (déjà renseignée)
 
 Variables optionnelles (mais déjà fournies) :
 - `RESEND_API_KEY` + `RESEND_FROM_EMAIL` (envoi des e-mails formulaire)
