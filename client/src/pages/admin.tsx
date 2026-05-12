@@ -68,6 +68,7 @@ const COLOR_PRESETS = [
 const LOGO_SIZES = [
   { value: "sm", label: "Petit (48px)" }, { value: "md", label: "Moyen (64px)" },
   { value: "lg", label: "Grand (80px)" }, { value: "xl", label: "Très grand (96px)" },
+  { value: "2xl", label: "Maxi (128px)" },
 ];
 
 const CONTENT_FIELDS: { key: string; label: string; category: string; multiline?: boolean; type?: "font-select" | "color-select" | "logo-size-select" | "image-picker" }[] = [
@@ -117,7 +118,8 @@ const CONTENT_FIELDS: { key: string; label: string; category: string; multiline?
   { key: "pages.contact.espace_client_title", label: "Titre — Espace Client", category: "pages" },
   { key: "pages.contact.espace_client_subtitle", label: "Sous-titre — Espace Client", category: "pages", multiline: true },
   { key: "pages.contact.espace_client_cta", label: "Bouton CTA — Espace Client", category: "pages" },
-  { key: "pages.contact.espace_client_url", label: "URL — Espace Client", category: "pages" },
+  { key: "global.espace_client_url", label: "URL Espace Client Pro (global, toutes pages)", category: "pages" },
+  { key: "pages.contact.espace_client_url", label: "URL — Espace Client (page contact)", category: "pages" },
   { key: "pages.contact.form_title", label: "Titre — Formulaire devis", category: "pages" },
   { key: "pages.contact.form_subtitle", label: "Sous-titre — Formulaire devis", category: "pages" },
   { key: "trust_item_1", label: "Bande de confiance — Item 1", category: "trust" },

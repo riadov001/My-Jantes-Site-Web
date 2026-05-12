@@ -165,7 +165,7 @@ export default function Contact() {
   const email = c("contact.email", "contact@myjantes.com");
   const hoursLine1 = c("footer.hours_line1", "Lun – Ven : 9h – 12h30");
   const hoursLine2 = c("footer.hours_line2", "13h30 – 18h00");
-  const espaceClientUrl = c("pages.contact.espace_client_url", "https://appmyjantes.mytoolsgroup.eu");
+  const espaceClientUrl = c("global.espace_client_url", c("pages.contact.espace_client_url", "https://pwapp.myjantes.fr"));
   const espaceClientCta = c("pages.contact.espace_client_cta", "Accéder à mon espace client");
 
   const selectedService = form.watch("service");
@@ -262,113 +262,6 @@ export default function Contact() {
         </div>
       </div>
 
-      {/* ─── ESPACE CLIENT ────────────────────────────────────────────── */}
-      <section className="relative bg-auto-dark overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-auto-red/50 to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(220,38,38,0.08),transparent_70%)]" />
-
-        <div className="relative max-w-6xl mx-auto px-4 py-16 sm:py-20 lg:py-24">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-
-            {/* Left: Content */}
-            <div>
-              <span className="inline-flex items-center gap-2 bg-auto-red/10 border border-auto-red/30 text-auto-red text-[10px] font-black uppercase tracking-[0.25em] px-4 py-2 rounded-full mb-6">
-                <Lock className="w-3 h-3" />
-                {c("pages.contact.espace_client_badge", "Déjà client MyJantes ?")}
-              </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-5 uppercase leading-[0.95] tracking-tight">
-                {c("pages.contact.espace_client_title", "Accédez à votre espace personnel")}
-              </h2>
-              <p className="text-white/55 text-base leading-relaxed mb-8 max-w-lg">
-                {c("pages.contact.espace_client_subtitle", "Suivez vos jantes en temps réel, consultez vos devis et factures, prenez rendez-vous en ligne depuis votre espace client dédié.")}
-              </p>
-
-              <div className="grid sm:grid-cols-2 gap-4 mb-8">
-                {ESPACE_CLIENT_FEATURES.map(feature => (
-                  <div key={feature.title} className="flex gap-3.5 bg-white/4 border border-white/8 rounded-2xl p-4 hover:bg-white/8 transition-colors">
-                    <div className="w-9 h-9 bg-auto-red/10 border border-auto-red/20 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
-                      <feature.icon className="w-4.5 h-4.5 text-auto-red" />
-                    </div>
-                    <div>
-                      <p className="font-black text-white text-sm mb-1">{feature.title}</p>
-                      <p className="text-white/40 text-xs leading-snug">{feature.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3">
-                <a
-                  href={espaceClientUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-testid="button-espace-client"
-                  className="inline-flex items-center justify-center gap-2 bg-auto-red hover:bg-auto-red-dark text-white font-black px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-auto-red/20 hover:shadow-auto-red/40 hover:-translate-y-0.5 text-sm uppercase tracking-wider"
-                >
-                  <Smartphone className="w-4 h-4" />
-                  {espaceClientCta}
-                  <ArrowRight className="w-4 h-4" />
-                </a>
-                <button
-                  onClick={() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                  className="inline-flex items-center justify-center gap-2 border border-white/15 text-white/70 hover:text-white hover:bg-white/8 font-bold px-6 py-3.5 rounded-xl transition-all text-sm"
-                >
-                  Demander un devis
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Right: Mock app card */}
-            <div className="flex justify-center">
-              <div className="relative w-full max-w-sm">
-                <div className="absolute -inset-6 bg-gradient-to-br from-auto-red/15 to-transparent rounded-[3rem] blur-3xl" />
-                <div className="relative bg-[#141414] border border-white/10 rounded-3xl p-7 shadow-2xl">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-auto-red rounded-full" />
-
-                  <div className="flex items-center gap-3 mb-6 pb-5 border-b border-white/8">
-                    <div className="w-10 h-10 bg-auto-red/10 border border-auto-red/20 rounded-xl flex items-center justify-center">
-                      <Smartphone className="w-5 h-5 text-auto-red" />
-                    </div>
-                    <div>
-                      <p className="font-black text-white text-sm">Espace Client MyJantes</p>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                        <span className="text-green-400/70 text-[10px] font-bold uppercase tracking-wider">Connecté</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    {[
-                      { icon: Activity, label: "Ma prestation en cours", value: "En cabine de peinture", dot: "bg-auto-red animate-pulse" },
-                      { icon: FileText, label: "Mon dernier devis", value: "Rénovation — 4 jantes", dot: "bg-green-500" },
-                      { icon: Clock, label: "Prochain RDV", value: "Mer. 12 Mars, 10h00", dot: "bg-blue-400" },
-                      { icon: Star, label: "Ma note", value: "⭐⭐⭐⭐⭐ 5/5", dot: "bg-amber-400" },
-                    ].map(item => (
-                      <div key={item.label} className="flex items-center gap-3 bg-white/4 border border-white/5 rounded-xl px-4 py-3">
-                        <div className={`w-2 h-2 rounded-full shrink-0 ${item.dot}`} />
-                        <item.icon className="w-4 h-4 text-white/30 shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[10px] text-white/35 font-bold uppercase tracking-wider truncate">{item.label}</p>
-                          <p className="text-xs font-bold text-white/80 truncate">{item.value}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-5 pt-4 border-t border-white/8 text-center">
-                    <p className="text-[10px] text-white/25 font-bold uppercase tracking-wider">appmyjantes.mytoolsgroup.eu</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
-      </section>
-
       {/* ─── SERVICES SELECTOR ───────────────────────────────────────── */}
       {services.length > 0 && (
         <section className="bg-gray-50 border-b border-gray-100 py-12">
@@ -432,7 +325,7 @@ export default function Contact() {
       )}
 
       {/* ─── QUOTE FORM ───────────────────────────────────────────────── */}
-      <div ref={formRef} className="bg-white py-12 sm:py-16 lg:py-20 scroll-mt-20">
+      <div id="form" ref={formRef} className="bg-white py-12 sm:py-16 lg:py-20 scroll-mt-20">
         <div className="max-w-3xl mx-auto px-4">
 
           {/* Form header */}
@@ -811,6 +704,111 @@ export default function Contact() {
           </div>
         </div>
       </div>
+
+      {/* ─── ESPACE CLIENT ────────────────────────────────────────────── */}
+      <section className="relative bg-auto-dark overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-auto-red/50 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(220,38,38,0.08),transparent_70%)]" />
+
+        <div className="relative max-w-6xl mx-auto px-4 py-16 sm:py-20 lg:py-24">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+            <div>
+              <span className="inline-flex items-center gap-2 bg-auto-red/10 border border-auto-red/30 text-auto-red text-[10px] font-black uppercase tracking-[0.25em] px-4 py-2 rounded-full mb-6">
+                <Lock className="w-3 h-3" />
+                {c("pages.contact.espace_client_badge", "Déjà client MyJantes ?")}
+              </span>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-5 uppercase leading-[0.95] tracking-tight">
+                {c("pages.contact.espace_client_title", "Accédez à votre espace personnel")}
+              </h2>
+              <p className="text-white/55 text-base leading-relaxed mb-8 max-w-lg">
+                {c("pages.contact.espace_client_subtitle", "Suivez vos jantes en temps réel, consultez vos devis et factures, prenez rendez-vous en ligne depuis votre espace client dédié.")}
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-4 mb-8">
+                {ESPACE_CLIENT_FEATURES.map(feature => (
+                  <div key={feature.title} className="flex gap-3.5 bg-white/4 border border-white/8 rounded-2xl p-4 hover:bg-white/8 transition-colors">
+                    <div className="w-9 h-9 bg-auto-red/10 border border-auto-red/20 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                      <feature.icon className="w-4.5 h-4.5 text-auto-red" />
+                    </div>
+                    <div>
+                      <p className="font-black text-white text-sm mb-1">{feature.title}</p>
+                      <p className="text-white/40 text-xs leading-snug">{feature.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a
+                  href={espaceClientUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="button-espace-client"
+                  className="inline-flex items-center justify-center gap-2 bg-auto-red hover:bg-auto-red-dark text-white font-black px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-auto-red/20 hover:shadow-auto-red/40 hover:-translate-y-0.5 text-sm uppercase tracking-wider"
+                >
+                  <Smartphone className="w-4 h-4" />
+                  {espaceClientCta}
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+                <button
+                  onClick={() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                  className="inline-flex items-center justify-center gap-2 border border-white/15 text-white/70 hover:text-white hover:bg-white/8 font-bold px-6 py-3.5 rounded-xl transition-all text-sm"
+                >
+                  Demander un devis
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex justify-center">
+              <div className="relative w-full max-w-sm">
+                <div className="absolute -inset-6 bg-gradient-to-br from-auto-red/15 to-transparent rounded-[3rem] blur-3xl" />
+                <div className="relative bg-[#141414] border border-white/10 rounded-3xl p-7 shadow-2xl">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-auto-red rounded-full" />
+
+                  <div className="flex items-center gap-3 mb-6 pb-5 border-b border-white/8">
+                    <div className="w-10 h-10 bg-auto-red/10 border border-auto-red/20 rounded-xl flex items-center justify-center">
+                      <Smartphone className="w-5 h-5 text-auto-red" />
+                    </div>
+                    <div>
+                      <p className="font-black text-white text-sm">Espace Client MyJantes</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                        <span className="text-green-400/70 text-[10px] font-bold uppercase tracking-wider">Connecté</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {[
+                      { icon: Activity, label: "Ma prestation en cours", value: "En cabine de peinture", dot: "bg-auto-red animate-pulse" },
+                      { icon: FileText, label: "Mon dernier devis", value: "Rénovation — 4 jantes", dot: "bg-green-500" },
+                      { icon: Clock, label: "Prochain RDV", value: "Mer. 12 Mars, 10h00", dot: "bg-blue-400" },
+                      { icon: Star, label: "Ma note", value: "⭐⭐⭐⭐⭐ 5/5", dot: "bg-amber-400" },
+                    ].map(item => (
+                      <div key={item.label} className="flex items-center gap-3 bg-white/4 border border-white/5 rounded-xl px-4 py-3">
+                        <div className={`w-2 h-2 rounded-full shrink-0 ${item.dot}`} />
+                        <item.icon className="w-4 h-4 text-white/30 shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] text-white/35 font-bold uppercase tracking-wider truncate">{item.label}</p>
+                          <p className="text-xs font-bold text-white/80 truncate">{item.value}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-5 pt-4 border-t border-white/8 text-center">
+                    <p className="text-[10px] text-white/25 font-bold uppercase tracking-wider">pwapp.myjantes.fr</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+      </section>
 
       {/* OCR consent modal */}
       {showOcrConsent && (

@@ -17,6 +17,7 @@ const LOGO_SIZES: Record<string, string> = {
   md: "h-16",
   lg: "h-20",
   xl: "h-24",
+  "2xl": "h-32",
 };
 
 export function Navbar() {

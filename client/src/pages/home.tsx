@@ -15,7 +15,7 @@ const DEFAULT_STATS = [
   { value: "5 000+", label: "Jantes rénovées" },
   { value: "98%", label: "Clients satisfaits" },
   { value: "garantie*", label: "Sur nos prestations" },
-  { value: "48h", label: "Délai moyen" },
+  { value: "24h", label: "Délai moyen" },
 ];
 
 const DEFAULT_TRUST = [
@@ -307,9 +307,9 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             {[
-              { label: "Soudure", price: "90 €" },
-              { label: "Sablage", price: "70 €" },
-              { label: "Devoilage", price: "90 €" },
+              { label: "Soudure", price: "À partir de 90 €" },
+              { label: "Sablage", price: "À partir de 70 €" },
+              { label: "Devoilage", price: "À partir de 90 €" },
               { label: "Rénovation", price: "À partir de 109 €" },
               { label: "Personnalisation", price: "À partir de 119 €" },
             ].map((item) => (
@@ -327,7 +327,7 @@ export default function Home() {
 
           <div className="mt-8 text-center">
             <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-8 h-12">
-              <Link href="/contact">Demander un devis gratuit <ArrowRight className="ml-2 w-4 h-4" /></Link>
+              <Link href="/contact#form">Demander un devis gratuit <ArrowRight className="ml-2 w-4 h-4" /></Link>
             </Button>
           </div>
         </div>
@@ -494,7 +494,7 @@ export default function Home() {
                 ))}
               </div>
               <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-8 h-12">
-                <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">
+                <a href={c("global.espace_client_url", "https://pwapp.myjantes.fr")} target="_blank" rel="noopener noreferrer">
                   Accéder à l'Espace Client Pro <ArrowRight className="ml-2 w-4 h-4" />
                 </a>
               </Button>
@@ -557,12 +557,12 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
             <Button asChild size="lg" className="bg-white text-auto-red hover:bg-white/90 border-0 font-black px-8 h-14">
-              <Link href="/contact">
+              <Link href="/contact#form">
                 Devis gratuit <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="border-white/40 text-white bg-white/10 hover:bg-white/20 px-8 h-14 font-bold">
-              <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">
+              <a href={c("global.espace_client_url", "https://pwapp.myjantes.fr")} target="_blank" rel="noopener noreferrer">
                 Espace Client Pro
               </a>
             </Button>

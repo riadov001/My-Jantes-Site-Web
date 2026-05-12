@@ -105,7 +105,7 @@ export default function About() {
                 <div className="space-y-4">
                   {[
                     c("pages.about.commitment1", "Garantie* sur la tenue de peinture et la finition."),
-                    c("pages.about.commitment2", "Délais d'intervention maîtrisés (48h à 72h en moyenne)."),
+                    c("pages.about.commitment2", "Délais d'intervention maîtrisés (24h à 48h en moyenne)."),
                     c("pages.about.commitment3", "Transparence totale sur les tarifs et les méthodes."),
                     c("pages.about.commitment4", "Soutien de l'économie locale et formation interne."),
                   ].filter(Boolean).map((text, i) => (

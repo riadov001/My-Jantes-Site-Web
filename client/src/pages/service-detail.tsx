@@ -13,6 +13,8 @@ export default function ServiceDetail() {
   const { data: services = [], isLoading } = useQuery<SiteService[]>({
     queryKey: ["/api/services"],
   });
+  const { data: siteContent = {} } = useQuery<Record<string, string>>({ queryKey: ["/api/site-content"] });
+  const c = (key: string, fallback = "") => siteContent[key] || fallback;
 
   const service = services.find((s) => s.slug === id || s.id === id);
 
@@ -126,10 +128,10 @@ export default function ServiceDetail() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-auto-red hover:bg-auto-red-dark text-white px-10 h-14 font-black border-0">
-              <Link href="/contact">Devis gratuit</Link>
+              <Link href="/contact#form">Devis gratuit</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-14 px-10 border-gray-200 font-bold">
-              <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">
+              <a href={c("global.espace_client_url", "https://pwapp.myjantes.fr")} target="_blank" rel="noopener noreferrer">
                 Espace client <ArrowRight className="ml-2 w-4 h-4" />
               </a>
             </Button>

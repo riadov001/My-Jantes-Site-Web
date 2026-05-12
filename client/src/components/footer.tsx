@@ -109,7 +109,7 @@ export function Footer() {
             <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Navigation</h3>
             <ul className="space-y-2.5">
               {[
-                { label: "Espace Client Pro — Pros uniquement", href: "https://appmyjantes.mytoolsgroup.eu", external: true },
+                { label: "Espace Client Pro — Pros uniquement", href: c("global.espace_client_url", "https://pwapp.myjantes.fr"), external: true },
                 { label: "Réalisations", href: "/galerie" },
                 { label: "Nos Garanties", href: "/garanties" },
                 { label: "FAQ", href: "/faq" },

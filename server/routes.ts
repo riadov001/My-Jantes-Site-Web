@@ -760,7 +760,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 - Hydrodipping: Personnalisation par impression hydrographique pour des finitions uniques. | Prix: Sur devis | Lien: /services/hydrodipping`;
 
       const FALLBACK_FAQ_CONTEXT = `Q: Combien de temps prend une rénovation de jantes ?
-R: En général, comptez 3 à 5 jours ouvrés pour une rénovation complète. Les réparations simples (soudure, redressage) peuvent être réalisées en 24 à 48h.
+R: En général, comptez 3 à 5 jours ouvrés pour une rénovation complète. Les réparations simples (soudure, redressage) peuvent être réalisées sous 24h.
 
 Q: Quels types de jantes traitez-vous ?
 R: Nous traitons exclusivement les jantes en alliage aluminium (alu), du 14 au 22 pouces, pour tous types de véhicules.
