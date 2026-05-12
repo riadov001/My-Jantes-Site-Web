@@ -960,7 +960,31 @@ Réponds en JSON avec ces champs (laisse vide si non trouvé):
   });
 
   // Google Reviews endpoint with 5-minute in-memory cache
-  let googleReviewsCache: { data: any[]; expires: number } | null = null;
+  interface GooglePlaceReview {
+    author_name: string;
+    rating: number;
+    text: string;
+    profile_photo_url: string;
+    relative_time_description: string;
+    time: number;
+  }
+
+  interface GooglePlaceDetailsResponse {
+    status: string;
+    result?: {
+      reviews?: GooglePlaceReview[];
+    };
+  }
+
+  interface MappedReview {
+    author_name: string;
+    rating: number;
+    text: string;
+    profile_photo_url: string;
+    relative_time_description: string;
+  }
+
+  let googleReviewsCache: { data: MappedReview[]; expires: number } | null = null;
 
   app.get("/api/google-reviews", async (req, res) => {
     if (googleReviewsCache && googleReviewsCache.expires > Date.now()) {
@@ -971,19 +995,20 @@ Réponds en JSON avec ces champs (laisse vide si non trouvé):
       const placeId = placeIdContent?.value?.trim();
       if (!placeId) return res.json([]);
 
-      const googleApiKey = process.env.GOOGLE_API_KEY || process.env.AI_INTEGRATIONS_GEMINI_API_KEY;
+      const googleApiKey = process.env.GOOGLE_API_KEY;
       if (!googleApiKey) return res.json([]);
 
-      const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=reviews&language=fr&key=${googleApiKey}`;
+      const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=reviews&language=fr&reviews_sort=newest&key=${googleApiKey}`;
       const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
-      const data = await response.json() as any;
+      const data = await response.json() as GooglePlaceDetailsResponse;
 
       if (data.status !== "OK" || !data.result?.reviews) return res.json([]);
 
-      const reviews = (data.result.reviews as any[])
-        .filter((r: any) => r.rating === 5)
+      const reviews: MappedReview[] = data.result.reviews
+        .filter((r) => r.rating === 5)
+        .sort((a, b) => b.time - a.time)
         .slice(0, 5)
-        .map((r: any) => ({
+        .map((r) => ({
           author_name: r.author_name,
           rating: r.rating,
           text: r.text,
