@@ -91,12 +91,14 @@ Dans hPanel → Node.js → onglet **"Variables d'environnement"**, ajoutez chaq
 ```
 NODE_ENV          production
 PORT              3000
-DATABASE_URL      postgresql://neondb_owner:npg_6YWV1iHvowtd@ep-muddy-heart-an3ms7f8.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require
-PROD_DB_URL       postgresql://neondb_owner:npg_6YWV1iHvowtd@ep-muddy-heart-an3ms7f8.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require
-SESSION_SECRET    lHjGf2uc9+1E48755Qs0Ii0/QFUSo3ozsZOUdnsLah48v/Z99H4xt9h4h/a4Lm1+6JtBNDviCOUGsZ1d4QNDTw==
+DATABASE_URL      postgresql://neondb_owner:npg_3ukK6RxencLs@ep-orange-mountain-aq1wcq60.c-8.us-east-1.aws.neon.tech/neondb?sslmode=require
+PROD_DB_URL       postgresql://neondb_owner:npg_3ukK6RxencLs@ep-orange-mountain-aq1wcq60.c-8.us-east-1.aws.neon.tech/neondb?sslmode=require
+SESSION_SECRET    haFb0NsA2UO4s8xaJMQvR1mudrzEjwtLtp9drGTtiF6T/FQ9SSEA56K25sCsm/r4R5OQoggwEqBFmBTL3dvGDQ==
 RESEND_API_KEY    re_eGAAcDNX_FYFsTFkEvXAdCXRa7bbY7RQC
-RESEND_FROM_EMAIL contact@myjantes.fr
-SITE_URL          https://votre-domaine.fr
+RESEND_FROM_EMAIL contact@no-replay.myjantes.fr
+ADMIN_EMAIL       contact@myjantes.com
+GOOGLE_API_KEY    AIzaSyAFrLP8PP5PV4xm2d0Qe5Gdp8dg9CsvPOw
+SITE_URL          https://myjantes.fr
 ```
 
 > Remplacez `https://votre-domaine.fr` par votre vrai domaine.
