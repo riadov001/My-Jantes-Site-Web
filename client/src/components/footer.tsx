@@ -113,7 +113,7 @@ export function Footer() {
                 { label: "Réalisations", href: "/galerie" },
                 { label: "Nos Garanties", href: "/garanties" },
                 { label: "FAQ", href: "/faq" },
-                { label: "Contact & Devis", href: "/contact" },
+                { label: "Contact & Devis", href: "/contact#form" },
               ].map((item) => (
                 <li key={item.label}>
                   {item.external ? (
