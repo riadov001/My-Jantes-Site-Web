@@ -33,7 +33,7 @@ Généré automatiquement lors du build de production.
 
 | Variable | Statut |
 |---|---|
-| `DATABASE_URL` | ✅ Placeholder propre (aucun hostname Replit interne) |
+| `DATABASE_URL` | ✅ URL PostgreSQL externe Neon (renseignée depuis PROD_DB_URL) |
 | `SESSION_SECRET` | ✅ Présent |
 | `NODE_ENV` | ✅ `production` |
 | `SITE_URL` | ✅ `https://myjantes.fr` |
@@ -51,9 +51,7 @@ Généré automatiquement lors du build de production.
 - **Footer** : "Espace Client Pro — Pros uniquement"
 - **Email confirmation client** : envoyé automatiquement à chaque soumission du formulaire contact
 
-## ⚠️ Action requise avant déploiement
+## Prêt au déploiement
 
-Renseigner `DATABASE_URL` dans `myjantes-deploy/.env` avec votre URL PostgreSQL externe (Neon/Supabase) :
-```
-DATABASE_URL=postgresql://USER:PASSWORD@HOST/myjantes?sslmode=require
-```
+Toutes les variables d'environnement sont renseignées, y compris `DATABASE_URL` (URL Neon externe).
+Uploader le contenu de `myjantes-deploy/` sur Hostinger et démarrer l'application Node.js avec `dist/index.cjs`.

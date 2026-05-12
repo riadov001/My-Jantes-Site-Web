@@ -75,8 +75,7 @@ Dans la page Node.js de votre app :
 
 ### 4. Charger les variables d'environnement
 
-Le fichier `.env` est déjà rempli avec les vraies valeurs de votre projet
-(DATABASE_URL Neon, SESSION_SECRET, RESEND_API_KEY, GEMINI…).
+Le fichier `.env` contient toutes les variables, **sauf `DATABASE_URL`** qui doit être renseignée avec votre URL PostgreSQL externe (voir étape obligatoire ci-dessous).
 
 **Deux options :**
 
