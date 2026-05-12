@@ -180,7 +180,7 @@ export async function sendContactNotification(data: ContactEmailData): Promise<v
   }
 }
 
-export async function sendClientConfirmation(toEmail: string, firstName?: string | null): Promise<void> {
+export async function sendClientConfirmation(toEmail: string, _firstName?: string | null): Promise<void> {
   try {
     const { client, fromEmail } = await getUncachableResendClient();
     const html = `
@@ -210,7 +210,7 @@ export async function sendClientConfirmation(toEmail: string, firstName?: string
       <p>Nous vous confirmons la bonne réception de votre demande de devis.</p>
       <p>Notre équipe va étudier votre demande et revenir vers vous dans les plus brefs délais avec une réponse adaptée.</p>
       <p>Si vous avez joint des photos, celles-ci sont bien en cours d'analyse par notre atelier.</p>
-      <p>Pour toute information complémentaire, vous pouvez répondre directement à cet e-mail.</p>
+      <p>Pour toute information complémentaire, n'hésitez pas à nous contacter par téléphone au <a href="tel:+33321408053" style="color:#dc2626;font-weight:700">03 21 40 80 53</a> ou via notre formulaire de contact.</p>
       <p>Merci pour votre confiance.</p>
       <p>Cordialement,<br /><strong>L'équipe MY JANTES</strong></p>
     </div>

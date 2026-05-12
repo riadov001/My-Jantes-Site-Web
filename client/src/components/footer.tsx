@@ -31,6 +31,8 @@ export function Footer() {
         { label: "Soudure", href: "/services" },
         { label: "Sablage", href: "/services" },
         { label: "Devoilage", href: "/services" },
+        { label: "Usinage", href: "/services" },
+        { label: "Tribofinition", href: "/services" },
         { label: "Rénovation", href: "/services" },
         { label: "Personnalisation", href: "/services" },
         { label: "Hydrodipping", href: "/services" },
