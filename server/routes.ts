@@ -981,7 +981,7 @@ Réponds en JSON avec ces champs (laisse vide si non trouvé):
       if (data.status !== "OK" || !data.result?.reviews) return res.json([]);
 
       const reviews = (data.result.reviews as any[])
-        .filter((r: any) => r.rating >= 4)
+        .filter((r: any) => r.rating === 5)
         .slice(0, 5)
         .map((r: any) => ({
           author_name: r.author_name,
