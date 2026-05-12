@@ -959,5 +959,45 @@ Réponds en JSON avec ces champs (laisse vide si non trouvé):
     }
   });
 
+  // Google Reviews endpoint with 5-minute in-memory cache
+  let googleReviewsCache: { data: any[]; expires: number } | null = null;
+
+  app.get("/api/google-reviews", async (req, res) => {
+    if (googleReviewsCache && googleReviewsCache.expires > Date.now()) {
+      return res.json(googleReviewsCache.data);
+    }
+    try {
+      const placeIdContent = await storage.getSiteContentByKey("global.google_place_id");
+      const placeId = placeIdContent?.value?.trim();
+      if (!placeId) return res.json([]);
+
+      const googleApiKey = process.env.GOOGLE_API_KEY || process.env.AI_INTEGRATIONS_GEMINI_API_KEY;
+      if (!googleApiKey) return res.json([]);
+
+      const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=reviews&language=fr&key=${googleApiKey}`;
+      const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      const data = await response.json() as any;
+
+      if (data.status !== "OK" || !data.result?.reviews) return res.json([]);
+
+      const reviews = (data.result.reviews as any[])
+        .filter((r: any) => r.rating >= 4)
+        .slice(0, 5)
+        .map((r: any) => ({
+          author_name: r.author_name,
+          rating: r.rating,
+          text: r.text,
+          profile_photo_url: r.profile_photo_url,
+          relative_time_description: r.relative_time_description,
+        }));
+
+      googleReviewsCache = { data: reviews, expires: Date.now() + 5 * 60 * 1000 };
+      return res.json(reviews);
+    } catch (error) {
+      console.error("[google-reviews] Error:", error);
+      return res.json([]);
+    }
+  });
+
   return httpServer;
 }

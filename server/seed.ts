@@ -263,11 +263,12 @@ async function seedSiteContent() {
     { key: "footer.hours_line1", value: "Lun – Ven : 9h – 12h30", label: "Horaires ligne 1", category: "footer" },
     { key: "footer.hours_line2", value: "13h30 – 18h00", label: "Horaires ligne 2", category: "footer" },
     { key: "footer.hours_short", value: "Lun–Ven 9h–18h", label: "Horaires courts", category: "footer" },
-    { key: "footer.social_instagram", value: "https://www.instagram.com/myjantes_officiel", label: "Lien Instagram", category: "footer" },
-    { key: "footer.social_facebook", value: "https://www.facebook.com/MyJantes", label: "Lien Facebook", category: "footer" },
-    { key: "footer.social_snapchat", value: "https://www.snapchat.com/add/myjantes", label: "Lien Snapchat", category: "footer" },
+    { key: "footer.social_instagram", value: "https://www.instagram.com/myjantes/", label: "Lien Instagram", category: "footer" },
+    { key: "footer.social_facebook", value: "https://www.facebook.com/myjantes", label: "Lien Facebook", category: "footer" },
+    { key: "footer.social_snapchat", value: "https://snapchat.com/add/myjantes", label: "Lien Snapchat", category: "footer" },
     { key: "footer.social_tiktok", value: "https://www.tiktok.com/@myjantes", label: "Lien TikTok", category: "footer" },
     { key: "footer.social_google", value: "https://g.page/r/myjantes/review", label: "Lien avis Google", category: "footer" },
+    { key: "global.google_place_id", value: "", label: "Place ID Google Maps (requis pour les avis Google)", category: "integrations" },
     { key: "nav.link_1_label", value: "Accueil", label: "Nav — Lien 1 : Libellé", category: "nav" },
     { key: "nav.link_1_href", value: "/", label: "Nav — Lien 1 : URL", category: "nav" },
     { key: "nav.link_2_label", value: "Services", label: "Nav — Lien 2 : Libellé", category: "nav" },
@@ -295,6 +296,11 @@ async function seedSiteContent() {
     "pages.contact.espace_client_title",
     "pages.contact.espace_client_subtitle",
     "pages.contact.espace_client_cta",
+    "footer.social_instagram",
+    "footer.social_facebook",
+    "footer.social_snapchat",
+    "footer.social_tiktok",
+    "footer.social_google",
   ]);
   for (const item of defaults) {
     if (!existingSet.has(item.key)) {

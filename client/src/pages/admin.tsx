@@ -128,6 +128,12 @@ const CONTENT_FIELDS: { key: string; label: string; category: string; multiline?
   { key: "footer.tagline", label: "Slogan footer", category: "footer" },
   { key: "footer.hours_line1", label: "Horaires ligne 1", category: "footer" },
   { key: "footer.hours_line2", label: "Horaires ligne 2", category: "footer" },
+  { key: "footer.social_instagram", label: "Lien Instagram", category: "footer" },
+  { key: "footer.social_snapchat", label: "Lien Snapchat", category: "footer" },
+  { key: "footer.social_facebook", label: "Lien Facebook", category: "footer" },
+  { key: "footer.social_tiktok", label: "Lien TikTok", category: "footer" },
+  { key: "footer.social_google", label: "Lien avis Google", category: "footer" },
+  { key: "global.google_place_id", label: "Place ID Google Maps (ex: ChIJ...) — requis pour afficher les avis Google sur le site", category: "integrations" },
 ];
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -135,7 +141,8 @@ const CATEGORY_LABELS: Record<string, string> = {
   nav: "Menu Navigation", hero: "Section Hero",
   contact: "Coordonnées", sections: "Contenus Sections",
   trust: "Confiance", pages: "Pages Internes",
-  legal: "Légal", footer: "Pied de page",
+  legal: "Légal", footer: "Pied de page & Réseaux sociaux",
+  integrations: "Intégrations (Google, etc.)",
 };
 
 function ImagePicker({ value, onChange, label = "Image" }: { value: string; onChange: (url: string) => void; label?: string }) {

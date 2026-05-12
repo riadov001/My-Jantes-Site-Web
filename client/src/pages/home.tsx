@@ -11,6 +11,14 @@ import {
 } from "lucide-react";
 import type { Testimonial, GalleryItem, SiteService } from "@shared/schema";
 
+type GoogleReview = {
+  author_name: string;
+  rating: number;
+  text: string;
+  profile_photo_url: string;
+  relative_time_description: string;
+};
+
 const DEFAULT_STATS = [
   { value: "5 000+", label: "Jantes rénovées" },
   { value: "98%", label: "Clients satisfaits" },
@@ -40,6 +48,7 @@ const whyUs = [
 
 export default function Home() {
   const { data: testimonials = [] } = useQuery<Testimonial[]>({ queryKey: ["/api/testimonials"] });
+  const { data: googleReviews = [] } = useQuery<GoogleReview[]>({ queryKey: ["/api/google-reviews"] });
   const { data: gallery = [] } = useQuery<GalleryItem[]>({ queryKey: ["/api/gallery"] });
   const { data: siteServices = [] } = useQuery<SiteService[]>({ queryKey: ["/api/services"] });
   const { data: siteContent = {} } = useQuery<Record<string, string>>({ queryKey: ["/api/site-content"] });
@@ -424,41 +433,81 @@ export default function Home() {
       )}
 
       {/* ─── AVIS CLIENTS ─────────────────────────────────────────── */}
-      {testimonials.length > 0 && (
+      {(googleReviews.length > 0 || testimonials.length > 0) && (
         <section className="py-16 sm:py-20 lg:py-24 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-10 md:mb-12">
-              <Badge className="mb-4 bg-auto-red/10 text-auto-red border-auto-red/20 text-xs uppercase tracking-widest">Avis vérifiés</Badge>
+              {googleReviews.length > 0 ? (
+                <Badge className="mb-4 bg-green-100 text-green-700 border-green-200 text-xs uppercase tracking-widest">Avis Google ⭐ Vérifiés</Badge>
+              ) : (
+                <Badge className="mb-4 bg-auto-red/10 text-auto-red border-auto-red/20 text-xs uppercase tracking-widest">Avis vérifiés</Badge>
+              )}
               <h2 className="text-4xl sm:text-5xl font-black text-gray-900 uppercase tracking-wide" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
                 {c("sections.testimonials.title", "Ce que disent nos clients")}
               </h2>
               <div className="flex items-center justify-center gap-1 mt-3">
                 {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-amber-400 fill-amber-400" />)}
-                <span className="ml-2 text-gray-500 text-sm font-medium">5/5 — 98 avis clients</span>
+                <span className="ml-2 text-gray-500 text-sm font-medium">5/5 — Avis clients</span>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {testimonials.slice(0, 3).map((t) => (
-                <Card key={t.id} className="border border-gray-100 shadow-sm hover:shadow-md transition-shadow bg-white h-full">
-                  <CardContent className="p-6 flex flex-col h-full">
-                    <div className="flex items-center gap-0.5 mb-4">
-                      {[...Array(t.rating)].map((_, i) => <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
-                    </div>
-                    <p className="text-gray-600 text-sm leading-relaxed flex-grow mb-6 italic">"{t.content}"</p>
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-auto-red/10 rounded-full flex items-center justify-center shrink-0">
-                        <span className="text-auto-red font-black text-sm">{t.name.charAt(0)}</span>
+            {googleReviews.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {googleReviews.slice(0, 3).map((review, i) => (
+                  <Card key={i} className="border border-gray-100 shadow-sm hover:shadow-md transition-shadow bg-white h-full">
+                    <CardContent className="p-6 flex flex-col h-full">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-0.5">
+                          {[...Array(review.rating)].map((_, j) => <Star key={j} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
+                        </div>
+                        <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full uppercase tracking-widest">Google</span>
                       </div>
-                      <div>
-                        <p className="font-bold text-gray-900 text-sm">{t.name}</p>
-                        <p className="text-gray-400 text-xs">{t.vehicle} · {t.location}</p>
+                      <p className="text-gray-600 text-sm leading-relaxed flex-grow mb-6 italic">"{review.text}"</p>
+                      <div className="flex items-center gap-3">
+                        {review.profile_photo_url ? (
+                          <img
+                            src={review.profile_photo_url}
+                            alt={review.author_name}
+                            className="w-9 h-9 rounded-full object-cover shrink-0"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <div className="w-9 h-9 bg-auto-red/10 rounded-full flex items-center justify-center shrink-0">
+                            <span className="text-auto-red font-black text-sm">{review.author_name.charAt(0)}</span>
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-bold text-gray-900 text-sm">{review.author_name}</p>
+                          <p className="text-gray-400 text-xs">{review.relative_time_description}</p>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {testimonials.slice(0, 3).map((t) => (
+                  <Card key={t.id} className="border border-gray-100 shadow-sm hover:shadow-md transition-shadow bg-white h-full">
+                    <CardContent className="p-6 flex flex-col h-full">
+                      <div className="flex items-center gap-0.5 mb-4">
+                        {[...Array(t.rating)].map((_, i) => <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
+                      </div>
+                      <p className="text-gray-600 text-sm leading-relaxed flex-grow mb-6 italic">"{t.content}"</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-auto-red/10 rounded-full flex items-center justify-center shrink-0">
+                          <span className="text-auto-red font-black text-sm">{t.name.charAt(0)}</span>
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-900 text-sm">{t.name}</p>
+                          <p className="text-gray-400 text-xs">{t.vehicle} · {t.location}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}
