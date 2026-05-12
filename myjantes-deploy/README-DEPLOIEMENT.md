@@ -177,7 +177,19 @@ Pas besoin de relancer NPM Install sauf si `package.json` a changé.
 
 Au premier démarrage, le serveur exécute automatiquement un script de seed :
 - Crée le compte admin par défaut.
-- Insère les services, FAQ, témoignages, et contenus du site (si vide).
+- Insère les **8 services** (Soudure, Sablage, Devoilage, Usinage, Tribofinition, Rénovation, Personnalisation, Hydrodipping) avec les tarifs à jour.
+- Insère les FAQ, témoignages, et contenus du site (si vide).
 - Crée la table `session` pour les connexions.
 
 C'est idempotent : ça ne dupliquera jamais les données existantes.
+
+---
+
+## 🗓️ Informations de build
+
+| | |
+|---|---|
+| **Date du build** | 12 mai 2026 |
+| **Nouveautés** | +2 services (Usinage CNC, Tribofinition), section Tarifs, Espace Client Pro, email confirmation client |
+| **Fichier serveur** | `dist/index.cjs` (2 Mo) |
+| **Frontend** | `dist/public/` (18 Mo avec assets) |
