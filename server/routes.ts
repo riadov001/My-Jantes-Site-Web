@@ -10,7 +10,7 @@ import fs from "fs";
 import multer from "multer";
 import bcrypt from "bcryptjs";
 import { storage } from "./storage";
-import { sendContactNotification, sendPasswordResetEmail } from "./email";
+import { sendContactNotification, sendPasswordResetEmail, sendClientConfirmation } from "./email";
 import {
   insertContactSchema,
   insertBlogSchema,
@@ -452,6 +452,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       imageUrl: result.data.imageUrl,
       adminEmail,
     }).catch(err => console.error("[email] sendContactNotification failed:", err));
+    sendClientConfirmation(result.data.email, result.data.firstName).catch(err => console.error("[email] sendClientConfirmation failed:", err));
     return res.status(201).json(contact);
   });
 

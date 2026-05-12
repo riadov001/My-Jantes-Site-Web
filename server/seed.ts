@@ -20,6 +20,8 @@ export async function seedDatabase() {
       const existingServices = await db.select().from(siteServices).limit(1);
       if (existingServices.length === 0) {
         await seedServices();
+      } else {
+        await updateExistingServices();
       }
       await seedSiteContent();
       return;
@@ -70,6 +72,49 @@ export async function seedDatabase() {
   }
 }
 
+async function updateExistingServices() {
+  try {
+    await db.update(siteServices).set({ price: "90 €" }).where(eq(siteServices.slug, "soudure-jantes"));
+    await db.update(siteServices).set({ price: "70 €" }).where(eq(siteServices.slug, "sablage"));
+    await db.update(siteServices).set({ price: "90 €" }).where(eq(siteServices.slug, "devoilage"));
+    await db.update(siteServices).set({ price: "À partir de 109 €", sortOrder: 6 }).where(eq(siteServices.slug, "renovation-jantes"));
+    await db.update(siteServices).set({ price: "À partir de 119 €", sortOrder: 7 }).where(eq(siteServices.slug, "peinture-jantes"));
+    await db.update(siteServices).set({ sortOrder: 8 }).where(eq(siteServices.slug, "hydrodipping"));
+
+    const [existingUsinage] = await db.select().from(siteServices).where(eq(siteServices.slug, "usinage"));
+    if (!existingUsinage) {
+      await db.insert(siteServices).values({
+        title: "Usinage",
+        description: "Usinage de précision sur tour numérique CNC pour diamantage bi-ton et finitions d'origine constructeur.",
+        image: "/images/atelier-tour-cnc.jpg",
+        badge: "CNC",
+        features: ["Tour numérique à commande numérique", "Diamantage bi-ton (jante usinée)", "Résultat identique à l'origine", "Compatible 14 à 22 pouces", "Résultat garanti"],
+        price: "Sur devis",
+        slug: "usinage",
+        sortOrder: 4,
+        published: true,
+      });
+    }
+
+    const [existingTribo] = await db.select().from(siteServices).where(eq(siteServices.slug, "tribofinition"));
+    if (!existingTribo) {
+      await db.insert(siteServices).values({
+        title: "Tribofinition",
+        description: "Polissage et lissage de surface par vibration — idéal pour préparer et sublimer les jantes avant peinture ou usinage.",
+        image: "/images/service-renovation.png",
+        badge: "Finition",
+        features: ["Polissage mécanique par vibration", "Surface lisse et homogène", "Préparation optimale avant peinture", "Compatible tous alliages", "Résultat garanti"],
+        price: "Sur devis",
+        slug: "tribofinition",
+        sortOrder: 5,
+        published: true,
+      });
+    }
+  } catch (error) {
+    console.error("[seed] Erreur updateExistingServices:", error);
+  }
+}
+
 async function seedServices() {
   await db.insert(siteServices).values([
     {
@@ -77,8 +122,8 @@ async function seedServices() {
       description: "Réparation structurelle de vos jantes fissurées ou cassées par soudure professionnelle TIG/MIG.",
       image: "/images/service-renovation.png",
       badge: "Réparation",
-      features: ["Diagnostic gratuit avant intervention", "Soudure TIG/MIG professionnelle", "Contrôle d'étanchéité après réparation", "Applicable on jantes 14 à 22 pouces", "Résultat garanti"],
-      price: "À partir de 60€/jante",
+      features: ["Diagnostic gratuit avant intervention", "Soudure TIG/MIG professionnelle", "Contrôle d'étanchéité après réparation", "Applicable sur jantes 14 à 28 pouces", "Résultat garanti"],
+      price: "90 €",
       slug: "soudure-jantes",
       sortOrder: 1,
       published: true,
@@ -89,7 +134,7 @@ async function seedServices() {
       image: "/images/service-peinture.png",
       badge: "Préparation",
       features: ["Décapage complet de la peinture", "Élimination de la corrosion", "Préparation de surface optimale", "Compatible tous types de jantes", "Étape clé avant peinture"],
-      price: "Inclus dans la rénovation",
+      price: "70 €",
       slug: "sablage",
       sortOrder: 2,
       published: true,
@@ -99,10 +144,32 @@ async function seedServices() {
       description: "Correction des voiles et déformations par presse hydraulique de précision. Sécurité avant tout.",
       image: "/images/service-redressage.png",
       badge: "Sécurité",
-      features: ["Diagnostic gratuit avant intervention", "Presse hydraulique de précision CNC", "Contrôle du voile par laser", "Applicable on jantes 14 à 22 pouces", "Résultat garanti"],
-      price: "À partir de 45€/jante",
+      features: ["Diagnostic gratuit avant intervention", "Presse hydraulique de précision CNC", "Contrôle du voile par laser", "Applicable sur jantes 14 à 28 pouces", "Résultat garanti"],
+      price: "90 €",
       slug: "devoilage",
       sortOrder: 3,
+      published: true,
+    },
+    {
+      title: "Usinage",
+      description: "Usinage de précision sur tour numérique CNC pour diamantage bi-ton et finitions d'origine constructeur.",
+      image: "/images/atelier-tour-cnc.jpg",
+      badge: "CNC",
+      features: ["Tour numérique à commande numérique", "Diamantage bi-ton (jante usinée)", "Résultat identique à l'origine", "Compatible 14 à 22 pouces", "Résultat garanti"],
+      price: "Sur devis",
+      slug: "usinage",
+      sortOrder: 4,
+      published: true,
+    },
+    {
+      title: "Tribofinition",
+      description: "Polissage et lissage de surface par vibration — idéal pour préparer et sublimer les jantes avant peinture ou usinage.",
+      image: "/images/service-renovation.png",
+      badge: "Finition",
+      features: ["Polissage mécanique par vibration", "Surface lisse et homogène", "Préparation optimale avant peinture", "Compatible tous alliages", "Résultat garanti"],
+      price: "Sur devis",
+      slug: "tribofinition",
+      sortOrder: 5,
       published: true,
     },
     {
@@ -111,9 +178,9 @@ async function seedServices() {
       image: "/images/service-renovation.png",
       badge: "Best-seller",
       features: ["Sablage ou décapage chimique complet", "Application d'un apprêt anti-corrosion", "Peinture en cabine professionnelle", "Vernis bi-composant haute résistance", "Contrôle qualité final"],
-      price: "À partir de 120€/jante",
+      price: "À partir de 109 €",
       slug: "renovation-jantes",
-      sortOrder: 4,
+      sortOrder: 6,
       published: true,
     },
     {
@@ -122,9 +189,9 @@ async function seedServices() {
       image: "/images/service-peinture.png",
       badge: "Sur mesure",
       features: ["Plus de 50 couleurs disponibles", "Finitions mat, satiné, brillant, métallisé", "Diamantage sur tour numérique (bi-ton usiné)", "Peinture assortie à la carrosserie", "Peinture à l'eau écologique"],
-      price: "À partir de 100€/jante",
+      price: "À partir de 119 €",
       slug: "peinture-jantes",
-      sortOrder: 5,
+      sortOrder: 7,
       published: true,
     },
     {
@@ -135,7 +202,7 @@ async function seedServices() {
       features: ["Design 100% personnalisable", "Finition laquée par-dessus", "Effet unique et exclusif", "Sur devis uniquement"],
       price: "Sur devis",
       slug: "hydrodipping",
-      sortOrder: 6,
+      sortOrder: 8,
       published: true,
     },
   ]);
@@ -144,14 +211,14 @@ async function seedServices() {
 async function seedSiteContent() {
   const defaults = [
     { key: "header.logo_url", value: "/images/logo-myjantes.png", label: "URL du logo", category: "header" },
-    { key: "header.logo_size", value: "lg", label: "Taille du logo", category: "header" },
+    { key: "header.logo_size", value: "xl", label: "Taille du logo", category: "header" },
     { key: "theme.color", value: "red", label: "Couleur principale", category: "theme" },
     { key: "typography.font", value: "Exo 2", label: "Police d'écriture principale", category: "typography" },
     { key: "typography.heading_font", value: "Exo 2", label: "Police titres", category: "typography" },
     { key: "hero.badge", value: "Atelier à Liévin — 62800", label: "Badge Hero", category: "hero" },
     { key: "hero.title_line1", value: "L'expert de la", label: "Titre hero ligne 1", category: "hero" },
     { key: "hero.title_line2", value: "jante alu", label: "Titre hero ligne 2 (accent)", category: "hero" },
-    { key: "hero.subtitle", value: "Soudure · Sablage · Devoilage · Rénovation · Personnalisation · Hydrodipping", label: "Sous-titre hero", category: "hero" },
+    { key: "hero.subtitle", value: "Soudure · Sablage · Devoilage · Rénovation · Usinage · Tribofinition · Personnalisation · Hydrodipping", label: "Sous-titre hero", category: "hero" },
     { key: "hero.cta_primary", value: "Devis gratuit", label: "Bouton principal CTA", category: "hero" },
     { key: "hero.cta_gallery", value: "Voir les réalisations", label: "Bouton galerie CTA", category: "hero" },
     { key: "hero.bg_video", value: "/attached_assets/generated_videos/wheel_painting_illustration.mp4", label: "Vidéo fond hero", category: "hero" },
@@ -184,11 +251,11 @@ async function seedSiteContent() {
     { key: "pages.guarantees.content", value: "Toutes nos prestations bénéficient d'une garantie* sur la tenue de peinture et la finition. Nous nous engageons sur la qualité et la durabilité de notre travail.", label: "Contenu page Garanties", category: "pages" },
     { key: "pages.contact.title", value: "Contact & Devis", label: "Titre page Contact", category: "pages" },
     { key: "pages.contact.subtitle", value: "Une question ? Un devis ? Notre équipe vous répond sous 24h.", label: "Sous-titre page Contact", category: "pages" },
-    { key: "pages.contact.espace_client_badge", value: "Déjà client MyJantes ?", label: "Badge Espace Client", category: "pages" },
-    { key: "pages.contact.espace_client_title", value: "Accédez à votre espace personnel", label: "Titre Espace Client", category: "pages" },
-    { key: "pages.contact.espace_client_subtitle", value: "Suivez vos jantes en temps réel, consultez vos devis et factures, prenez rendez-vous en ligne depuis votre espace client dédié.", label: "Sous-titre Espace Client", category: "pages" },
-    { key: "pages.contact.espace_client_cta", value: "Accéder à mon espace client", label: "CTA Espace Client", category: "pages" },
-    { key: "pages.contact.espace_client_url", value: "https://appmyjantes.mytoolsgroup.eu", label: "URL Espace Client", category: "pages" },
+    { key: "pages.contact.espace_client_badge", value: "Espace Client Pro", label: "Badge Espace Client Pro", category: "pages" },
+    { key: "pages.contact.espace_client_title", value: "Accédez à votre Espace Client Pro", label: "Titre Espace Client Pro", category: "pages" },
+    { key: "pages.contact.espace_client_subtitle", value: "Espace en ligne réservé aux professionnels. Suivez vos jantes en temps réel, consultez vos devis et factures.", label: "Sous-titre Espace Client Pro", category: "pages" },
+    { key: "pages.contact.espace_client_cta", value: "Accéder à l'Espace Client Pro", label: "CTA Espace Client Pro", category: "pages" },
+    { key: "pages.contact.espace_client_url", value: "https://appmyjantes.mytoolsgroup.eu", label: "URL Espace Client Pro", category: "pages" },
     { key: "pages.contact.form_title", value: "Demandez votre devis gratuit", label: "Titre formulaire devis", category: "pages" },
     { key: "pages.contact.form_subtitle", value: "Réponse garantie sous 24h — Devis sans engagement", label: "Sous-titre formulaire devis", category: "pages" },
     { key: "footer.tagline", value: "L'expert de la jante alu dans les Hauts-de-France", label: "Slogan footer", category: "footer" },
@@ -215,7 +282,16 @@ async function seedSiteContent() {
   ];
   const existingKeys = await db.select({ key: siteContent.key }).from(siteContent);
   const existingSet = new Set(existingKeys.map(r => r.key));
-  const forceUpdate = new Set(["typography.font", "typography.heading_font"]);
+  const forceUpdate = new Set([
+    "typography.font",
+    "typography.heading_font",
+    "header.logo_size",
+    "hero.subtitle",
+    "pages.contact.espace_client_badge",
+    "pages.contact.espace_client_title",
+    "pages.contact.espace_client_subtitle",
+    "pages.contact.espace_client_cta",
+  ]);
   for (const item of defaults) {
     if (!existingSet.has(item.key)) {
       await storage.setSiteContent(item.key, item.value, item.label, item.category);

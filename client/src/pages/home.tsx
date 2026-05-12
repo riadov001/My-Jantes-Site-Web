@@ -287,22 +287,63 @@ export default function Home() {
         </section>
       )}
 
-      {/* ─── ATELIER VIDEO + AVANTAGES ────────────────────────────── */}
+      {/* ─── TARIFS ───────────────────────────────────────────────── */}
+      <section className="py-16 sm:py-20 lg:py-24 bg-gray-950 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-auto-red" />
+        <div className="absolute inset-0 pointer-events-none opacity-5">
+          <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-auto-red blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-auto-red blur-2xl" />
+        </div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10 md:mb-12">
+            <Badge className="mb-4 bg-auto-red/20 text-auto-red-light border-auto-red/30 text-xs uppercase tracking-widest">Tarifs</Badge>
+            <h2 className="text-4xl sm:text-5xl font-black text-white uppercase tracking-wide" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
+              Nos prix transparents
+            </h2>
+            <p className="text-white/50 mt-3 max-w-xl mx-auto">
+              Des tarifs clairs, sans surprise. Devis gratuit sous 24h pour votre projet.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            {[
+              { label: "Soudure", price: "90 €" },
+              { label: "Sablage", price: "70 €" },
+              { label: "Devoilage", price: "90 €" },
+              { label: "Rénovation", price: "À partir de 109 €" },
+              { label: "Personnalisation", price: "À partir de 119 €" },
+            ].map((item) => (
+              <div key={item.label} className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 hover:border-auto-red/30 transition-all">
+                <p className="text-white/60 text-xs uppercase tracking-widest font-bold mb-3">{item.label}</p>
+                <p className="text-white font-black text-xl mb-1" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>{item.price}</p>
+                <p className="text-white/30 text-xs">par jante</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-center text-white/30 text-xs mt-6 italic">
+            *Tarifs pour jantes de 14" à 28". Devis personnalisé sur demande.
+          </p>
+
+          <div className="mt-8 text-center">
+            <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-8 h-12">
+              <Link href="/contact">Demander un devis gratuit <ArrowRight className="ml-2 w-4 h-4" /></Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── ATELIER IMAGE + AVANTAGES ────────────────────────────── */}
       <section className="py-16 sm:py-20 lg:py-24 bg-gray-50 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-video">
-              {c("sections.workshop.media")?.endsWith(".mp4") ? (
-                <video autoPlay muted loop playsInline className="w-full h-full object-cover">
-                  <source src={c("sections.workshop.media")} type="video/mp4" />
-                </video>
-              ) : (
-                <img 
-                  src={c("sections.workshop.media", "/attached_assets/generated_videos/automotive_workshop_illustration.mp4")} 
-                  alt="Atelier MyJantes" 
-                  className="w-full h-full object-cover" 
-                />
-              )}
+              <img
+                src={c("sections.workshop.image", "/images/atelier-machines.jpg")}
+                alt="Atelier MyJantes — tour numérique et équipements"
+                className="w-full h-full object-cover"
+                onError={(e) => { (e.target as HTMLImageElement).src = "/images/service-renovation.png"; }}
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
               <div className="absolute bottom-5 left-5 sm:bottom-6 sm:left-6 text-white">
                 <p className="text-xs font-bold uppercase tracking-widest text-auto-red mb-1">Atelier MyJantes</p>
@@ -429,12 +470,12 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="order-2 lg:order-1">
-              <Badge className="mb-5 bg-auto-red/20 text-auto-red-light border-auto-red/30 uppercase tracking-[0.2em] text-xs font-bold">Espace Client</Badge>
+              <Badge className="mb-5 bg-auto-red/20 text-auto-red-light border-auto-red/30 uppercase tracking-[0.2em] text-xs font-bold">Espace Client Pro</Badge>
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-5 leading-tight uppercase tracking-wide" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
                 Gérez tout depuis votre <span className="text-auto-red">smartphone</span>
               </h2>
               <p className="text-white/60 text-base sm:text-lg mb-8 leading-relaxed">
-                Accédez à votre espace personnel pour suivre en temps réel l'avancement de vos jantes, gérer vos devis, factures et prendre rendez-vous en un clic.
+                Accédez à votre Espace Client Pro pour suivre en temps réel l'avancement de vos jantes, gérer vos devis, factures et prendre rendez-vous en un clic.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                 {[
@@ -454,7 +495,7 @@ export default function Home() {
               </div>
               <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-8 h-12">
                 <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">
-                  Accéder à l'Espace client <ArrowRight className="ml-2 w-4 h-4" />
+                  Accéder à l'Espace Client Pro <ArrowRight className="ml-2 w-4 h-4" />
                 </a>
               </Button>
             </div>
@@ -467,7 +508,7 @@ export default function Home() {
                     <div className="w-20 h-20 bg-auto-red/10 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-auto-red/20">
                       <Smartphone className="w-10 h-10 text-auto-red" />
                     </div>
-                    <p className="font-black text-white text-2xl uppercase tracking-tighter" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>Espace Client</p>
+                    <p className="font-black text-white text-2xl uppercase tracking-tighter" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>Espace Client Pro</p>
                     <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-white/5 rounded-full border border-white/10">
                       <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                       <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Connecté au réseau</span>
@@ -522,7 +563,7 @@ export default function Home() {
             </Button>
             <Button asChild size="lg" variant="outline" className="border-white/40 text-white bg-white/10 hover:bg-white/20 px-8 h-14 font-bold">
               <a href="https://appmyjantes.mytoolsgroup.eu" target="_blank" rel="noopener noreferrer">
-                Espace client
+                Espace Client Pro
               </a>
             </Button>
           </div>
