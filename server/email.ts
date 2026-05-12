@@ -4,7 +4,7 @@ async function getCredentials(): Promise<{ apiKey: string; fromEmail: string }> 
   if (process.env.RESEND_API_KEY) {
     return {
       apiKey: process.env.RESEND_API_KEY,
-      fromEmail: process.env.RESEND_FROM_EMAIL || "MyJantes <noreply@myjantes.fr>",
+      fromEmail: process.env.RESEND_FROM_EMAIL || "MyJantes <contact@no-replay.myjantes.fr>",
     };
   }
 
@@ -37,7 +37,7 @@ async function getCredentials(): Promise<{ apiKey: string; fromEmail: string }> 
 
   return {
     apiKey: connectionSettings.settings.api_key as string,
-    fromEmail: (connectionSettings.settings.from_email as string) || "MyJantes <noreply@myjantes.fr>",
+    fromEmail: (connectionSettings.settings.from_email as string) || "MyJantes <contact@no-replay.myjantes.fr>",
   };
 }
 

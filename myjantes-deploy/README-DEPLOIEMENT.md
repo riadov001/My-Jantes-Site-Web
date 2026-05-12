@@ -30,10 +30,12 @@ myjantes-deploy/
    (les hébergements mutualisés "Single" et anciens plans ne supportent pas Node).
 2. **Node.js 20.x** disponible dans hPanel → Avancé → "Node.js".
 3. **Base PostgreSQL** : Hostinger ne fournit que MySQL en mutualisé.
-   Le fichier `.env` pointe déjà vers la base **Neon** existante du projet.
-   Vous pouvez :
-   - **Garder cette base** (elle restera fonctionnelle, mais hébergée chez Neon).
-   - **Migrer vers une nouvelle base** (Neon gratuit, Supabase, ou VPS).
+   ⚠️ **OBLIGATOIRE** : Vous devez créer une base PostgreSQL externe et renseigner `DATABASE_URL` dans le `.env`.
+   - **Neon** (recommandé, gratuit) : https://neon.tech → "New Project" → copier la "Connection string".
+   - **Supabase** (alternative gratuite) : https://supabase.com.
+   Remplacez la valeur `DATABASE_URL` dans le fichier `.env` avant de déployer.
+4. **Resend — domaine expéditeur** : Le domaine `no-replay.myjantes.fr` doit être **vérifié dans Resend**.
+   Allez sur https://resend.com → Domains → Add Domain → suivez les instructions DNS.
 
 ---
 
