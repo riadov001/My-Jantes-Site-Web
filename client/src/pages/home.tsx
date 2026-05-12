@@ -472,10 +472,10 @@ export default function Home() {
             <div className="order-2 lg:order-1">
               <Badge className="mb-5 bg-auto-red/20 text-auto-red-light border-auto-red/30 uppercase tracking-[0.2em] text-xs font-bold">Espace Client Pro</Badge>
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-5 leading-tight uppercase tracking-wide" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>
-                Gérez tout depuis votre <span className="text-auto-red">smartphone</span>
+                Gérez tout depuis votre <span className="text-auto-red">espace Pro</span>
               </h2>
               <p className="text-white/60 text-base sm:text-lg mb-8 leading-relaxed">
-                Accédez à votre Espace Client Pro pour suivre en temps réel l'avancement de vos jantes, gérer vos devis, factures et prendre rendez-vous en un clic.
+                Réservé aux professionnels (garagistes, revendeurs…). Suivez en temps réel l'avancement de vos jantes, gérez vos devis, factures et prenez rendez-vous en un clic.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                 {[

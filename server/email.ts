@@ -183,7 +183,6 @@ export async function sendContactNotification(data: ContactEmailData): Promise<v
 export async function sendClientConfirmation(toEmail: string, firstName?: string | null): Promise<void> {
   try {
     const { client, fromEmail } = await getUncachableResendClient();
-    const prenom = firstName || "là";
     const html = `
 <!DOCTYPE html>
 <html>
@@ -195,60 +194,29 @@ export async function sendClientConfirmation(toEmail: string, firstName?: string
     .header { background: #111; padding: 32px 40px; text-align: center; }
     .header h1 { color: #fff; font-size: 22px; font-weight: 900; margin: 0; letter-spacing: -0.5px; }
     .badge { display: inline-block; background: #dc2626; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 1px; margin-top: 12px; }
-    .body { padding: 36px 40px; }
-    .steps { margin: 24px 0; }
-    .step { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
-    .step-num { background: #dc2626; color: #fff; font-size: 12px; font-weight: 900; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .step-text { font-size: 14px; color: #374151; padding-top: 4px; line-height: 1.5; }
-    .cta { display: inline-block; margin-top: 8px; background: #dc2626; color: #fff !important; font-size: 14px; font-weight: 700; padding: 13px 30px; border-radius: 8px; text-decoration: none; }
+    .body { padding: 36px 40px; color: #374151; font-size: 15px; line-height: 1.7; }
     .footer { background: #f9fafb; padding: 20px 40px; text-align: center; }
     .footer p { font-size: 12px; color: #9ca3af; margin: 4px 0; }
-    .divider { border: none; border-top: 1px solid #e5e7eb; margin: 24px 0; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
       <h1>MyJantes</h1>
-      <div class="badge">Demande bien reçue !</div>
+      <div class="badge">Confirmation de demande</div>
     </div>
     <div class="body">
-      <p style="color:#111827;font-size:16px;font-weight:700;margin-bottom:4px">Bonjour ${prenom},</p>
-      <p style="color:#6b7280;font-size:14px;line-height:1.7;margin-top:0">
-        Merci pour votre demande ! Nous l'avons bien reçue et notre équipe vous répondra dans les <strong>24 heures</strong> avec un devis personnalisé.
-      </p>
-      <hr class="divider" />
-      <p style="color:#374151;font-size:14px;font-weight:700;margin-bottom:12px">Ce qui se passe ensuite :</p>
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-text">Nous analysons votre demande et préparons votre devis gratuit sous 24h.</div>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-text">Vous recevez votre estimation par email ou téléphone selon votre préférence.</div>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-text">Vous déposez vos jantes à notre atelier : 46 rue de la Convention, 62800 Liévin.</div>
-        </div>
-        <div class="step">
-          <div class="step-num">4</div>
-          <div class="step-text">Vos jantes vous sont restituées avec leur garantie*.</div>
-        </div>
-      </div>
-      <hr class="divider" />
-      <p style="color:#6b7280;font-size:13px;margin-bottom:20px">
-        Une question urgente ? N'hésitez pas à nous appeler directement au <a href="tel:+33321408053" style="color:#dc2626;font-weight:700">03 21 40 80 53</a> ou à nous écrire sur WhatsApp.
-      </p>
-      <div style="text-align:center">
-        <a href="https://myjantes.fr" class="cta">Visiter notre site</a>
-      </div>
+      <p>Bonjour,</p>
+      <p>Nous vous confirmons la bonne réception de votre demande de devis.</p>
+      <p>Notre équipe va étudier votre demande et revenir vers vous dans les plus brefs délais avec une réponse adaptée.</p>
+      <p>Si vous avez joint des photos, celles-ci sont bien en cours d'analyse par notre atelier.</p>
+      <p>Pour toute information complémentaire, vous pouvez répondre directement à cet e-mail.</p>
+      <p>Merci pour votre confiance.</p>
+      <p>Cordialement,<br /><strong>L'équipe MY JANTES</strong></p>
     </div>
     <div class="footer">
       <p>MyJantes · 46 rue de la Convention, 62800 Liévin</p>
       <p>Lun–Ven 9h–12h30 / 13h30–18h · <a href="tel:+33321408053" style="color:#9ca3af">03 21 40 80 53</a></p>
-      <p style="margin-top:8px;font-size:11px;color:#d1d5db">* Garantie sur la tenue de peinture et la finition de nos prestations.</p>
     </div>
   </div>
 </body>
@@ -257,7 +225,8 @@ export async function sendClientConfirmation(toEmail: string, firstName?: string
     await client.emails.send({
       from: fromEmail,
       to: toEmail,
-      subject: "Votre demande chez MyJantes — Nous vous répondons sous 24h",
+      replyTo: fromEmail,
+      subject: "Confirmation de réception de votre demande de devis - MyJantes",
       html,
     });
 
