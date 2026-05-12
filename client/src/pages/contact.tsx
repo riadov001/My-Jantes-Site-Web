@@ -799,7 +799,7 @@ export default function Contact() {
                   </div>
 
                   <div className="mt-5 pt-4 border-t border-white/8 text-center">
-                    <p className="text-[10px] text-white/25 font-bold uppercase tracking-wider">pwapp.myjantes.fr</p>
+                    <p className="text-[10px] text-white/25 font-bold uppercase tracking-wider">{espaceClientUrl.replace(/^https?:\/\//, "")}</p>
                   </div>
                 </div>
               </div>
