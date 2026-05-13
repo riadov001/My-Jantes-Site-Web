@@ -14,11 +14,13 @@ myjantes-deploy/
 │   └── public/              Frontend React buildé
 ├── public/                  Assets statiques (fonts, médias)
 ├── shared/                  Schéma de base de données partagé
+├── database-schema.sql      ✅ Script SQL de création de toutes les tables
 ├── package.json             Dépendances Node
 ├── package-lock.json        Verrouillage des versions
 ├── drizzle.config.ts        Config ORM (migrations DB)
 ├── .env                     ✅ Variables d'environnement (DÉJÀ REMPLIES)
 ├── .env.production          Copie de sauvegarde
+├── BUILD-MANIFEST.md        Informations de build
 └── README-DEPLOIEMENT.md    Ce fichier
 ```
 
@@ -184,11 +186,27 @@ C'est idempotent : ça ne dupliquera jamais les données existantes.
 
 ---
 
+## 🗃️ Base de données — initialisation manuelle (optionnel)
+
+Le serveur crée automatiquement toutes les tables au premier démarrage.
+Si vous souhaitez les créer manuellement (ex. : depuis Neon SQL Editor), utilisez le fichier `database-schema.sql` :
+
+1. Ouvrez [console.neon.tech](https://console.neon.tech) → votre projet → onglet **SQL Editor**.
+2. Copiez-collez le contenu de `database-schema.sql`.
+3. Exécutez. Toutes les tables seront créées (idempotent — sans risque si elles existent déjà).
+
+Tables créées : `session`, `users`, `activity_logs`, `contact_requests`, `blog_posts`,
+`gallery_items`, `testimonials`, `faq_items`, `site_services`, `site_content`,
+`page_views`, `media_files`, `conversations`, `messages`.
+
+---
+
 ## 🗓️ Informations de build
 
 | | |
 |---|---|
-| **Date du build** | 12 mai 2026 |
-| **Nouveautés** | +2 services (Usinage CNC, Tribofinition), section Tarifs, Espace Client Pro, email confirmation client |
-| **Fichier serveur** | `dist/index.cjs` (2 Mo) |
+| **Date du build** | 13 mai 2026 |
+| **Nouveautés** | Réseaux sociaux réels, avis Google Places, script SQL base de données |
+| **Build précédent** | +2 services (Usinage CNC, Tribofinition), section Tarifs, Espace Client Pro, email confirmation client |
+| **Fichier serveur** | `dist/index.cjs` (1,9 Mo) |
 | **Frontend** | `dist/public/` (18 Mo avec assets) |
