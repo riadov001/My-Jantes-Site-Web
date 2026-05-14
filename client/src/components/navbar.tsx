@@ -38,7 +38,7 @@ export function Navbar() {
   })).filter(l => l.label);
 
   const ctaLabel = siteContent["nav.cta_label"] || "Devis gratuit";
-  const ctaHref = siteContent["nav.cta_href"] || "/contact";
+  const ctaHref = siteContent["nav.cta_href"] || "/contact#formulaire";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);

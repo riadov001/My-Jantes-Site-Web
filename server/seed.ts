@@ -280,13 +280,14 @@ async function seedSiteContent() {
     { key: "nav.link_5_label", value: "Contact", label: "Nav — Lien 5 : Libellé", category: "nav" },
     { key: "nav.link_5_href", value: "/contact", label: "Nav — Lien 5 : URL", category: "nav" },
     { key: "nav.cta_label", value: "Devis gratuit", label: "Nav — Bouton CTA : Libellé", category: "nav" },
-    { key: "nav.cta_href", value: "/contact", label: "Nav — Bouton CTA : URL", category: "nav" },
+    { key: "nav.cta_href", value: "/contact#formulaire", label: "Nav — Bouton CTA : URL", category: "nav" },
   ];
   const existingKeys = await db.select({ key: siteContent.key }).from(siteContent);
   const existingSet = new Set(existingKeys.map(r => r.key));
   const forceUpdate = new Set([
     "typography.font",
     "typography.heading_font",
+    "nav.cta_href",
     "header.logo_size",
     "hero.subtitle",
     "stats",
