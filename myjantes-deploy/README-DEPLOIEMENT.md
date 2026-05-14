@@ -10,16 +10,16 @@ Site web complet (vitrine + admin) prêt à déployer.
 ```
 myjantes-deploy/
 ├── dist/                    Application compilée (serveur + frontend)
-│   ├── index.cjs            Point d'entrée du serveur
+│   ├── index.cjs            Serveur Node.js bundlé
 │   └── public/              Frontend React buildé
 ├── public/                  Assets statiques (fonts, médias)
 ├── shared/                  Schéma de base de données partagé
 ├── database-schema.sql      ✅ Script SQL de création de toutes les tables
-├── package.json             Dépendances Node
+├── start.cjs                ✅ Point d'entrée — charge .env puis démarre le serveur
+├── package.json             Dépendances Node (inclut dotenv)
 ├── package-lock.json        Verrouillage des versions
 ├── drizzle.config.ts        Config ORM (migrations DB)
 ├── .env                     ✅ Variables d'environnement (DÉJÀ REMPLIES)
-├── .env.production          Copie de sauvegarde
 ├── BUILD-MANIFEST.md        Informations de build
 └── README-DEPLOIEMENT.md    Ce fichier
 ```
@@ -66,7 +66,7 @@ myjantes-deploy/
    - **Racine de l'application** : `/home/USER/domains/votre-domaine.fr/myjantes`
      (ou le chemin où vous avez extrait les fichiers).
    - **URL de l'application** : `votre-domaine.fr` (ou un sous-domaine).
-   - **Fichier de démarrage** : `dist/index.cjs`
+   - **Fichier de démarrage** : `start.cjs`
 3. Cliquez sur **Créer**.
 
 ### 3. Installer les dépendances
@@ -75,35 +75,32 @@ Dans la page Node.js de votre app :
 1. Cliquez sur **Exécuter NPM Install**.
 2. Attendez la fin (peut prendre 1-2 minutes).
 
-### 4. Charger les variables d'environnement
+### 4. Variables d'environnement
 
-Le fichier `.env` contient **toutes les variables déjà renseignées**, y compris `DATABASE_URL` (URL PostgreSQL Neon externe), `SESSION_SECRET`, `RESEND_API_KEY`, clés IA, etc.
+Le fichier `.env` est **déjà rempli avec toutes les valeurs** et sera chargé
+automatiquement par `start.cjs` via dotenv au démarrage. Aucune saisie manuelle
+n'est nécessaire dans hPanel.
 
-**Deux options :**
+> ⚠️ Si vous préférez ne pas utiliser le `.env`, vous pouvez copier-coller les
+> variables dans hPanel → Node.js → onglet **"Variables d'environnement"**.
 
-**Option A — Garder le `.env`** (le plus simple)
-Le serveur ne charge pas automatiquement `.env`. Pour l'activer, ajoutez en
-haut de votre fichier `dist/index.cjs` (ou via NPM Install) :
-```bash
-npm install dotenv
-```
-Puis dans la page Node.js de hPanel → onglet **"Variables"**, cliquez sur
-**"Importer depuis .env"** et sélectionnez le fichier.
+**Récapitulatif des variables clés (toutes présentes dans `.env`) :**
 
-**Option B — Saisir manuellement** (recommandée Hostinger)
-Dans hPanel → Node.js → onglet **"Variables d'environnement"**, ajoutez
-chaque clé/valeur depuis le fichier `.env` (ouvrez-le avec un éditeur de texte).
+| Variable | Statut | Description |
+|---|---|---|
+| `DATABASE_URL` | ✅ Renseignée | URL PostgreSQL Neon externe |
+| `SESSION_SECRET` | ✅ Renseignée | Clé de session Express |
+| `NODE_ENV` | ✅ `production` | Mode production |
+| `SITE_URL` | ✅ `https://myjantes.fr` | URL du site |
+| `RESEND_API_KEY` | ✅ Renseignée | Clé Resend pour l'envoi d'emails |
+| `RESEND_FROM_EMAIL` | ✅ Renseignée | Expéditeur email |
+| `ADMIN_EMAIL` | ✅ `contact@myjantes.fr` | Email de notification admin |
+| `GOOGLE_API_KEY` | ✅ Renseignée | Clé Google AI (Gemini OCR + avis Google) |
+| `GEMINI_API_KEY` | ✅ Renseignée | Clé Gemini (chatbot IA) |
 
-Variables à configurer dans hPanel (toutes présentes dans `.env`) :
-- `DATABASE_URL` — URL PostgreSQL Neon (déjà renseignée)
-- `SESSION_SECRET` — clé de session (déjà renseignée)
-- `NODE_ENV` = `production`
-- `PORT` (Hostinger l'injecte tout seul, généralement 3000 ou un port assigné)
-- `SITE_URL` = `https://myjantes.fr` (déjà renseignée)
-
-Variables optionnelles (mais déjà fournies) :
-- `RESEND_API_KEY` + `RESEND_FROM_EMAIL` (envoi des e-mails formulaire)
-- `AI_INTEGRATIONS_GEMINI_API_KEY` (OCR carte grise)
+> ⚠️ **Email** : Le domaine `no-replay.myjantes.fr` doit être **vérifié dans Resend**
+> pour que les emails partent. Allez sur https://resend.com → Domains → vérifiez que
+> `no-replay.myjantes.fr` est bien actif (DNS TXT/MX configurés).
 
 ### 5. Démarrer l'application
 
@@ -112,6 +109,9 @@ Variables optionnelles (mais déjà fournies) :
 3. Visitez `https://votre-domaine.fr/admin` :
    - **Identifiant** : `contact@myjantes.com`
    - **Mot de passe** : `MyJantes@2026!*`
+
+> 💡 **Astuce** : Si le site ne démarre pas, vérifiez dans les logs hPanel que le
+> fichier de démarrage est bien `start.cjs` (et non `dist/index.cjs` ou `server.js`).
 
 ### 6. Vérifications post-déploiement
 
