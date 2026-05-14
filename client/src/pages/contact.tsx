@@ -544,7 +544,7 @@ export default function Contact() {
           </div>
 
           {/* Quick contact strip */}
-          <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="mt-8 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <a href={phoneHref} className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-auto-red/30 hover:bg-red-50/30 transition-all group" data-testid="link-phone">
               <div className="w-9 h-9 bg-auto-red/10 rounded-xl flex items-center justify-center shrink-0">
                 <Phone className="w-4 h-4 text-auto-red" />
@@ -563,7 +563,7 @@ export default function Contact() {
                 <p className="font-bold text-gray-900 text-xs">Envoyer un message</p>
               </div>
             </a>
-            <a href={`mailto:${email}`} className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-blue-200 hover:bg-blue-50/30 transition-all group sm:col-auto col-span-2" data-testid="link-email">
+            <a href={`mailto:${email}`} className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-2xl p-4 hover:border-blue-200 hover:bg-blue-50/30 transition-all group" data-testid="link-email">
               <div className="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center shrink-0">
                 <Mail className="w-4 h-4 text-blue-600" />
               </div>
@@ -572,6 +572,27 @@ export default function Contact() {
                 <p className="font-bold text-gray-900 text-xs truncate">{email}</p>
               </div>
             </a>
+            <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-2xl p-4">
+              <div className="w-9 h-9 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
+                <Clock className="w-4 h-4 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Horaires</p>
+                <p className="font-bold text-gray-900 text-xs">{hoursLine1}</p>
+                <p className="font-bold text-gray-900 text-xs">{hoursLine2}</p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-2xl p-4">
+              <div className="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center shrink-0">
+                <MapPin className="w-4 h-4 text-gray-600" />
+              </div>
+              <div>
+                <p className="text-[9px] font-black text-gray-400 uppercase tracking-wider">Adresse</p>
+                <p className="font-bold text-gray-900 text-xs">{address}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

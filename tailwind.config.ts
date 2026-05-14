@@ -91,7 +91,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["Montserrat", "Open Sans", "sans-serif"],
+        sans: ["var(--font-sans)", "Montserrat", "Open Sans", "sans-serif"],
+        heading: ["var(--font-heading)", "Mishorma", "Eurostile Extended", "sans-serif"],
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
       },

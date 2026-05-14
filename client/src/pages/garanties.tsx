@@ -72,7 +72,7 @@ export default function Garanties() {
             <h3 className="text-2xl font-black mb-4" style={{ fontFamily: `'${fontFamily}', sans-serif` }}>Une question sur la garantie ?</h3>
             <p className="text-white/60 mb-8">Notre équipe est à votre disposition pour tout complément d'information.</p>
             <Button asChild size="lg" className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-10">
-              <Link href="/contact">Nous contacter</Link>
+              <Link href="/contact#formulaire">Nous contacter</Link>
             </Button>
           </section>
         </div>
