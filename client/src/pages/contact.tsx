@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,8 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import {
   Phone, Mail, MapPin, Clock, CheckCircle2, Send, Smartphone, ArrowRight,
-  Upload, X, LayoutDashboard, Monitor, Globe, Zap, ScanSearch, Sparkles,
-  Loader2, FileText, Activity, Lock, Star, ChevronRight
+  Upload, X, Activity, Globe, FileText, Lock, Star, ChevronRight
 } from "lucide-react";
 import { Link } from "wouter";
 import type { SiteService as Service } from "@shared/schema";
@@ -64,9 +62,6 @@ export default function Contact() {
   const { data: services = [] } = useQuery<Service[]>({ queryKey: ["/api/services"] });
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [ocrAnalyzing, setOcrAnalyzing] = useState(false);
-  const [ocrResult, setOcrResult] = useState<{ vehicle?: string; plate?: string; wheelInfo?: string; details?: string } | null>(null);
-  const [showOcrConsent, setShowOcrConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
@@ -74,7 +69,15 @@ export default function Contact() {
   const c = (key: string, fallback = "") => content[key] || fallback;
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    const hash = window.location.hash;
+    if (hash === "#formulaire" || hash === "#form") {
+      setTimeout(() => {
+        const el = document.getElementById("formulaire") || document.getElementById("form");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }, []);
 
   const form = useForm<ContactForm>({
@@ -95,7 +98,6 @@ export default function Contact() {
       setSubmitted(true);
       form.reset();
       setUploadedImage(null);
-      setOcrResult(null);
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
     onError: () => {
@@ -121,43 +123,6 @@ export default function Contact() {
     }
   };
 
-  const runOcrAnalysis = async () => {
-    if (!uploadedImage) return;
-    setOcrAnalyzing(true);
-    try {
-      const res = await fetch("/api/ocr", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl: uploadedImage }),
-      });
-      const json = await res.json();
-      if (res.ok && json.data) {
-        const data = json.data;
-        setOcrResult(data);
-        if (data.vehicle) form.setValue("vehicle", data.vehicle);
-        if (data.wheelInfo || data.details) {
-          const current = form.getValues("message");
-          const ocrInfo = [data.wheelInfo, data.details].filter(Boolean).join(" — ");
-          form.setValue("message", current ? `${current}\n\n[IA] ${ocrInfo}` : `[IA] ${ocrInfo}`);
-        }
-        toast({ title: "Analyse terminée", description: "Les informations détectées ont été ajoutées au formulaire." });
-      } else {
-        toast({ title: "Erreur d'analyse", description: json.error || "L'analyse n'a pas pu aboutir.", variant: "destructive" });
-      }
-    } catch {
-      toast({ title: "Erreur d'analyse", description: "L'analyse IA n'a pas pu aboutir.", variant: "destructive" });
-    } finally {
-      setOcrAnalyzing(false);
-      setShowOcrConsent(false);
-    }
-  };
-
-  const selectService = (svc: Service) => {
-    form.setValue("service", svc.title);
-    form.setValue("requestType", "devis");
-    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   const phone = c("contact.phone", "03 21 40 80 53");
   const phoneHref = c("contact.phone_href", "tel:+33321408053");
   const whatsappHref = c("contact.whatsapp_href", "https://wa.me/33671370418");
@@ -167,8 +132,6 @@ export default function Contact() {
   const hoursLine2 = c("footer.hours_line2", "13h30 – 18h00");
   const espaceClientUrl = c("global.espace_client_url", c("pages.contact.espace_client_url", "https://pwapp.myjantes.fr"));
   const espaceClientCta = c("pages.contact.espace_client_cta", "Accéder à mon espace client");
-
-  const selectedService = form.watch("service");
 
   const schema = {
     "@context": "https://schema.org",
@@ -262,70 +225,8 @@ export default function Contact() {
         </div>
       </div>
 
-      {/* ─── SERVICES SELECTOR ───────────────────────────────────────── */}
-      {services.length > 0 && (
-        <section className="bg-gray-50 border-b border-gray-100 py-12">
-          <div className="max-w-5xl mx-auto px-4">
-            <div className="text-center mb-8">
-              <p className="text-[10px] uppercase tracking-[0.25em] text-auto-red font-black mb-2">Nos prestations</p>
-              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 uppercase tracking-tight">
-                Quelle prestation vous intéresse ?
-              </h2>
-              <p className="text-gray-400 text-sm mt-2">Cliquez sur une prestation pour pré-remplir votre formulaire de devis.</p>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              {services.filter(s => s.published).map(svc => (
-                <button
-                  key={svc.id}
-                  type="button"
-                  onClick={() => selectService(svc)}
-                  data-testid={`card-service-${svc.slug}`}
-                  className={`group relative rounded-2xl border-2 p-4 text-left transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer ${
-                    selectedService === svc.title
-                      ? "border-auto-red bg-auto-red/5 shadow-md shadow-auto-red/10"
-                      : "border-gray-200 bg-white hover:border-auto-red/40"
-                  }`}
-                >
-                  {selectedService === svc.title && (
-                    <div className="absolute top-2 right-2">
-                      <CheckCircle2 className="w-4 h-4 text-auto-red" />
-                    </div>
-                  )}
-                  {svc.badge && (
-                    <span className={`inline-block mb-2.5 text-[9px] uppercase tracking-wider font-black px-2 py-0.5 rounded-full ${
-                      svc.badge === "Best-seller"
-                        ? "bg-auto-red/10 text-auto-red"
-                        : "bg-gray-100 text-gray-500"
-                    }`}>
-                      {svc.badge}
-                    </span>
-                  )}
-                  <p className={`font-black text-sm leading-tight mb-1 ${selectedService === svc.title ? "text-auto-red" : "text-gray-900"}`}>
-                    {svc.title}
-                  </p>
-                  <p className="text-[11px] text-gray-400 font-medium leading-tight">{svc.price.includes("€") && !svc.price.startsWith("À partir de") ? `À partir de ${svc.price}` : svc.price}</p>
-                </button>
-              ))}
-            </div>
-
-            {selectedService && (
-              <div className="mt-4 text-center">
-                <span className="inline-flex items-center gap-2 text-sm text-auto-red font-bold bg-auto-red/5 border border-auto-red/20 rounded-full px-5 py-2">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <strong>{selectedService}</strong> sélectionné — formulaire pré-rempli ci-dessous
-                  <button type="button" onClick={() => form.setValue("service", "")} className="ml-1 text-auto-red/60 hover:text-auto-red">
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                </span>
-              </div>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* ─── QUOTE FORM ───────────────────────────────────────────────── */}
-      <div id="form" ref={formRef} className="bg-white py-12 sm:py-16 lg:py-20 scroll-mt-20">
+      {/* ─── QUOTE FORM (anchor #formulaire) ─────────────────────────── */}
+      <div id="formulaire" ref={formRef} className="bg-white py-12 sm:py-16 lg:py-20 scroll-mt-20">
         <div className="max-w-3xl mx-auto px-4">
 
           {/* Form header */}
@@ -447,6 +348,7 @@ export default function Contact() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
+                                <SelectItem value="Je ne sais pas">Je ne sais pas</SelectItem>
                                 {services.filter(s => s.published).map(s => (
                                   <SelectItem key={s.id} value={s.title}>{s.title}</SelectItem>
                                 ))}
@@ -549,7 +451,7 @@ export default function Contact() {
                           <img src={uploadedImage} className="max-h-40 mx-auto rounded-xl object-cover shadow-md" alt="Photo uploadée" />
                           <button
                             type="button"
-                            onClick={e => { e.stopPropagation(); setUploadedImage(null); form.setValue("imageUrl", ""); setOcrResult(null); }}
+                            onClick={e => { e.stopPropagation(); setUploadedImage(null); form.setValue("imageUrl", ""); }}
                             className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 shadow-md"
                           >
                             <X className="w-3.5 h-3.5" />
@@ -566,41 +468,10 @@ export default function Contact() {
                       )}
                     </div>
 
-                    {uploadedImage && !ocrResult && (
-                      <button
-                        type="button"
-                        onClick={() => setShowOcrConsent(true)}
-                        disabled={ocrAnalyzing}
-                        className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-bold rounded-xl transition-all shadow-md disabled:opacity-50"
-                        data-testid="button-ocr-analyze"
-                      >
-                        {ocrAnalyzing ? (
-                          <><Loader2 className="w-4 h-4 animate-spin" />Analyse IA en cours...</>
-                        ) : (
-                          <><ScanSearch className="w-4 h-4" /><Sparkles className="w-3.5 h-3.5" />Analyser avec l'IA (carte grise / jante)</>
-                        )}
-                      </button>
-                    )}
-
                     {form.formState.errors.imageUrl && (
                       <p className="mt-2 text-sm font-medium text-red-600" data-testid="error-image-required">
                         {form.formState.errors.imageUrl.message}
                       </p>
-                    )}
-
-                    {ocrResult && (
-                      <div className="mt-3 bg-purple-50 border border-purple-200 rounded-2xl p-4" data-testid="ocr-results">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Sparkles className="w-4 h-4 text-purple-600" />
-                          <span className="text-xs font-black text-purple-700 uppercase tracking-wider">Résultat de l'analyse IA</span>
-                        </div>
-                        <div className="space-y-1 text-sm text-purple-900">
-                          {ocrResult.vehicle && <p><strong>Véhicule :</strong> {ocrResult.vehicle}</p>}
-                          {ocrResult.plate && <p><strong>Immatriculation :</strong> {ocrResult.plate}</p>}
-                          {ocrResult.wheelInfo && <p><strong>Jantes :</strong> {ocrResult.wheelInfo}</p>}
-                          {ocrResult.details && <p><strong>Détails :</strong> {ocrResult.details}</p>}
-                        </div>
-                      </div>
                     )}
                   </div>
 
@@ -809,42 +680,6 @@ export default function Contact() {
 
         <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
       </section>
-
-      {/* OCR consent modal */}
-      {showOcrConsent && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-purple-100 rounded-2xl flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <h3 className="font-black text-gray-900 text-base">Analyse IA de l'image</h3>
-                <p className="text-xs text-gray-500">Consentement requis</p>
-              </div>
-            </div>
-            <p className="text-sm text-gray-600 leading-relaxed mb-6">
-              En cliquant sur "Analyser", vous acceptez que votre image soit analysée par notre IA pour détecter automatiquement les informations de votre véhicule et vos jantes. Ces données restent confidentielles.
-            </p>
-            <div className="flex gap-3">
-              <Button
-                onClick={runOcrAnalysis}
-                disabled={ocrAnalyzing}
-                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-black"
-              >
-                {ocrAnalyzing ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Analyse...</> : "Analyser"}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowOcrConsent(false)}
-                className="flex-1 border-gray-200 font-bold"
-              >
-                Annuler
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

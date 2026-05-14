@@ -115,7 +115,7 @@ export default function Services() {
                       className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-10 h-14 shadow-xl shadow-auto-red/20 transition-all hover:scale-105 active:scale-95"
                       data-testid={`button-service-devis-${service.id}`}
                     >
-                      <Link href="/contact#form">
+                      <Link href="/contact#formulaire">
                         Devis gratuit <ArrowRight className="ml-2 w-5 h-5" />
                       </Link>
                     </Button>
@@ -143,7 +143,7 @@ export default function Services() {
           <p className="text-white/60 mb-8">Notre équipe répond à toutes vos questions et vous propose le meilleur devis.</p>
           <div className="flex gap-4 justify-center flex-wrap">
             <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0 px-8" data-testid="button-services-cta-contact">
-              <Link href="/contact#form">Nous contacter</Link>
+              <Link href="/contact#formulaire">Nous contacter</Link>
             </Button>
           </div>
         </div>

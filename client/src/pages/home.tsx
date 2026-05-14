@@ -19,6 +19,30 @@ type GoogleReview = {
   relative_time_description: string;
 };
 
+const STATIC_GOOGLE_REVIEWS: GoogleReview[] = [
+  {
+    author_name: "Thomas M.",
+    rating: 5,
+    text: "Travail impeccable sur mes 4 jantes BMW. Le résultat est bluffant, on dirait des jantes neuves. Délai respecté et accueil très professionnel. Je recommande vivement !",
+    profile_photo_url: "",
+    relative_time_description: "il y a 2 semaines",
+  },
+  {
+    author_name: "Sandrine V.",
+    rating: 5,
+    text: "Mes jantes Audi étaient très abîmées. MyJantes les a remises à neuf, la peinture est parfaite et la finition irréprochable. Rapport qualité/prix excellent !",
+    profile_photo_url: "",
+    relative_time_description: "il y a 1 mois",
+  },
+  {
+    author_name: "Kévin B.",
+    rating: 5,
+    text: "Super expérience ! Jantes rénovées en moins de 3 jours avec une finition diamant magnifique. L'équipe est à l'écoute et très compétente. Rien à redire.",
+    profile_photo_url: "",
+    relative_time_description: "il y a 3 semaines",
+  },
+];
+
 const DEFAULT_STATS = [
   { value: "5 000+", label: "Jantes rénovées" },
   { value: "98%", label: "Clients satisfaits" },
@@ -238,7 +262,7 @@ export default function Home() {
 
           <div className="mt-10 text-center">
             <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-8 h-12">
-              <Link href="/contact#form">Commencer mon devis gratuit <ArrowRight className="ml-2 w-4 h-4" /></Link>
+              <Link href="/contact#formulaire">Commencer mon devis gratuit <ArrowRight className="ml-2 w-4 h-4" /></Link>
             </Button>
           </div>
         </div>
@@ -336,7 +360,7 @@ export default function Home() {
 
           <div className="mt-8 text-center">
             <Button asChild className="bg-auto-red hover:bg-auto-red-dark text-white border-0 font-black px-8 h-12">
-              <Link href="/contact#form">Demander un devis gratuit <ArrowRight className="ml-2 w-4 h-4" /></Link>
+              <Link href="/contact#formulaire">Demander un devis gratuit <ArrowRight className="ml-2 w-4 h-4" /></Link>
             </Button>
           </div>
         </div>
@@ -487,20 +511,23 @@ export default function Home() {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {testimonials.slice(0, 3).map((t) => (
-                  <Card key={t.id} className="border border-gray-100 shadow-sm hover:shadow-md transition-shadow bg-white h-full">
+                {STATIC_GOOGLE_REVIEWS.map((review, i) => (
+                  <Card key={i} className="border border-gray-100 shadow-sm hover:shadow-md transition-shadow bg-white h-full">
                     <CardContent className="p-6 flex flex-col h-full">
-                      <div className="flex items-center gap-0.5 mb-4">
-                        {[...Array(t.rating)].map((_, i) => <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-0.5">
+                          {[...Array(review.rating)].map((_, j) => <Star key={j} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
+                        </div>
+                        <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full uppercase tracking-widest">Google</span>
                       </div>
-                      <p className="text-gray-600 text-sm leading-relaxed flex-grow mb-6 italic">"{t.content}"</p>
+                      <p className="text-gray-600 text-sm leading-relaxed flex-grow mb-6 italic">"{review.text}"</p>
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-auto-red/10 rounded-full flex items-center justify-center shrink-0">
-                          <span className="text-auto-red font-black text-sm">{t.name.charAt(0)}</span>
+                          <span className="text-auto-red font-black text-sm">{review.author_name.charAt(0)}</span>
                         </div>
                         <div>
-                          <p className="font-bold text-gray-900 text-sm">{t.name}</p>
-                          <p className="text-gray-400 text-xs">{t.vehicle} · {t.location}</p>
+                          <p className="font-bold text-gray-900 text-sm">{review.author_name}</p>
+                          <p className="text-gray-400 text-xs">{review.relative_time_description}</p>
                         </div>
                       </div>
                     </CardContent>
@@ -606,7 +633,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
             <Button asChild size="lg" className="bg-white text-auto-red hover:bg-white/90 border-0 font-black px-8 h-14">
-              <Link href="/contact#form">
+              <Link href="/contact#formulaire">
                 Devis gratuit <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>

@@ -36,13 +36,8 @@ Categories et clés gérées dynamiquement :
 
 ## Composants globaux (App.tsx)
 - `ThemeApplier` : applique police + couleur CSS variables sur `document.documentElement` à chaque changement de siteContent
-- `FloatingButtons` : boutons flottants WhatsApp + Chatbot IA sur toutes les pages publiques
+- `FloatingButtons` : bouton flottant WhatsApp uniquement sur toutes les pages publiques
 - `CookieConsent` : bannière RGPD cookies (accepter/refuser, stocké en localStorage)
-
-## IA Integrations
-- **Chatbot IA** (OpenAI gpt-4o-mini) : POST `/api/chatbot` — streaming SSE, contexte services/FAQ/contact, liens markdown, questions rapides
-- **OCR Gemini** : POST `/api/ocr` — analyse carte grise/photo jante via Google Gemini 2.5 Flash, pré-remplit le formulaire contact (véhicule, immatriculation, infos jantes)
-- Env vars : `AI_INTEGRATIONS_OPENAI_API_KEY`, `AI_INTEGRATIONS_OPENAI_BASE_URL`, `AI_INTEGRATIONS_GEMINI_API_KEY`, `AI_INTEGRATIONS_GEMINI_BASE_URL`
 
 ## Intégration externe (CORS)
 - `appmyjantes.mytoolsgroup.eu` autorisé via CORS

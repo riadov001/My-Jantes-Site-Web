@@ -48,8 +48,8 @@ function ThemeApplier() {
     const font = siteContent["typography.font"] || "Montserrat";
     document.documentElement.style.setProperty("--font-sans", `'${font}', sans-serif`);
 
-    const headingFont = siteContent["typography.heading_font"] || "Eurostile Extended";
-    document.documentElement.style.setProperty("--font-heading", `'${headingFont}', '${font}', sans-serif`);
+    const headingFont = siteContent["typography.heading_font"] || "Mishorma";
+    document.documentElement.style.setProperty("--font-heading", `'${headingFont}', 'Eurostile Extended', '${font}', sans-serif`);
 
     const fontSize = siteContent["typography.font_size"] || "16";
     document.documentElement.style.setProperty("--base-font-size", `${fontSize}px`);

@@ -128,7 +128,7 @@ export default function ServiceDetail() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-auto-red hover:bg-auto-red-dark text-white px-10 h-14 font-black border-0">
-              <Link href="/contact#form">Devis gratuit</Link>
+              <Link href="/contact#formulaire">Devis gratuit</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-14 px-10 border-gray-200 font-bold">
               <a href={c("global.espace_client_url", "https://pwapp.myjantes.fr")} target="_blank" rel="noopener noreferrer">
