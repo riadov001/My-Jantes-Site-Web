@@ -1,0 +1,46 @@
+npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+
+added 651 packages, and audited 652 packages in 12s
+
+114 packages are looking for funding
+  run `npm fund` for details
+
+22 vulnerabilities (6 low, 5 moderate, 10 high, 1 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+npm notice
+npm notice New major version of npm available! 10.9.3 -> 11.14.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.14.1
+npm notice To update run: npm install -g npm@11.14.1
+npm notice
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/u883852230/domains/magenta-mole-642441.hostingersite.com/public_html/.builds/source/myjantes-deploy/script/build.ts' imported from /home/u883852230/domains/magenta-mole-642441.hostingersite.com/public_html/.builds/source/myjantes-deploy/
+    at finalizeResolution (node:internal/modules/esm/resolve:274:11)
+    at moduleResolve (node:internal/modules/esm/resolve:859:10)
+    at defaultResolve (node:internal/modules/esm/resolve:983:11)
+    at nextResolve (node:internal/modules/esm/hooks:748:28)
+    at resolveBase (file:///home/u883852230/domains/magenta-mole-642441.hostingersite.com/public_html/.builds/source/myjantes-deploy/node_modules/tsx/dist/esm/index.mjs?1778744586343:2:3744)
+    at resolveDirectory (file:///home/u883852230/domains/magenta-mole-642441.hostingersite.com/public_html/.builds/source/myjantes-deploy/node_modules/tsx/dist/esm/index.mjs?1778744586343:2:4243)
+    at resolveTsPaths (file:///home/u883852230/domains/magenta-mole-642441.hostingersite.com/public_html/.builds/source/myjantes-deploy/node_modules/tsx/dist/esm/index.mjs?1778744586343:2:4984)
+    at resolve (file:///home/u883852230/domains/magenta-mole-642441.hostingersite.com/public_html/.builds/source/myjantes-deploy/node_modules/tsx/dist/esm/index.mjs?1778744586343:2:5361)
+    at nextResolve (node:internal/modules/esm/hooks:748:28)
+    at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+  code: 'ERR_MODULE_NOT_FOUND',
+  url: 'file:///home/u883852230/domains/magenta-mole-642441.hostingersite.com/public_html/.builds/source/myjantes-deploy/script/build.ts'
+}
+
+Node.js v22.18.0
+[31mERROR: Failed to build the application[0m
