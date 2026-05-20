@@ -48,3 +48,4 @@ defaultBucketID = "replit-objstore-d7bf2105-845d-4b10-88ea-cc847f654236"
 [userenv]
 
 [userenv.shared]
+RESEND_FROM_EMAIL = "MyJantes <contact@apps.myjantes.fr>"
