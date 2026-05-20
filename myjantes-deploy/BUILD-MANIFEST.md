@@ -15,8 +15,8 @@ Généré automatiquement lors du build de production.
 ### Serveur (`dist/index.cjs`)
 | | |
 |---|---|
-| **Taille** | 2 012 084 octets (≈ 1,9 Mo) |
-| **SHA-256** | `44a572db5c23e08eac8ef43ce8901feff05cc504b67c93f6b7575ff430ecb705` |
+| **Taille** | 2 033 637 octets (≈ 1,9 Mo) |
+| **SHA-256** | `2759c5422ca2e29df1f69e640c54d4d5219ab4349be71df0114ba282c77e30ef` |
 | **Format** | CommonJS (esbuild bundlé) |
 | **Entrée** | `server/index.ts` |
 
@@ -31,26 +31,28 @@ Généré automatiquement lors du build de production.
 
 ## Variables d'environnement (.env) — statut
 
-| Variable | Statut |
-|---|---|
-| `DATABASE_URL` | ✅ URL PostgreSQL externe Neon (renseignée) |
-| `PROD_DB_URL` | ✅ URL PostgreSQL production (prioritaire en prod) |
-| `SESSION_SECRET` | ✅ Présent |
-| `NODE_ENV` | ✅ `production` |
-| `SITE_URL` | ✅ `https://myjantes.fr` |
-| `RESEND_API_KEY` | ✅ Présent |
-| `RESEND_FROM_EMAIL` | ✅ `MyJantes <contact@apps.myjantes.fr>` |
-| `ADMIN_EMAIL` | ✅ Présent |
-| `GOOGLE_API_KEY` | ✅ Présent (Google Reviews) |
-| `GEMINI_API_KEY` | ✅ Présent (chatbot IA) |
+| Variable | Statut | Description |
+|---|---|---|
+| `DATABASE_URL` | ✅ Renseignée | URL PostgreSQL Neon production |
+| `PROD_DB_URL` | ✅ Renseignée | Même URL (prioritaire en prod) |
+| `SESSION_SECRET` | ✅ Présent | Clé de chiffrement sessions |
+| `NODE_ENV` | ✅ `production` | Mode production |
+| `SITE_URL` | ✅ `https://myjantes.fr` | URL publique du site |
+| `RESEND_API_KEY` | ✅ Présent | Clé Resend pour l'envoi d'emails |
+| `RESEND_FROM_EMAIL` | ✅ `MyJantes <contact@apps.myjantes.fr>` | Expéditeur email |
+| `ADMIN_EMAIL` | ✅ Présent | Email de notification admin |
+| `GEMINI_API_KEY` | ⚠️ À remplir | Clé Google AI Studio pour le chatbot |
+
+> **Note chatbot IA** : Sur Replit, l'intégration native Gemini est utilisée (aucune clé requise).
+> Sur Hostinger, renseignez `GEMINI_API_KEY` depuis https://aistudio.google.com/apikey.
 
 ## Changements depuis le build précédent (14 mai 2026)
 
-- ✅ **Email expéditeur** : `contact@apps.myjantes.fr` (principal) avec fallback automatique sur `contact@myjantes.mytoolsgroup.eu` si le domaine principal est rejeté
-- ✅ **Variable `RESEND_FROM_EMAIL`** : ajoutée et configurée
-- ✅ **Chatbot IA Gemini** (`gemini-2.5-flash`) : widget flottant sur toutes les pages publiques, assistant spécialisé MyJantes
-- ✅ **Routes chatbot** enregistrées (`/api/conversations`, `/api/conversations/:id/messages`)
-- ✅ **Logique fallback email** : réessai automatique avec domaine secondaire en cas d'erreur domaine/403/422
+- ✅ **BDD production** : nouvelle URL Neon (`ep-cold-cherry-aqtge5ff`) dans `DATABASE_URL` et `PROD_DB_URL`
+- ✅ **Reconnexion automatique Neon** : retry exponentiel (jusqu'à 4 tentatives) si l'endpoint est en veille
+- ✅ **Email expéditeur** : `contact@apps.myjantes.fr` + fallback auto `myjantes.mytoolsgroup.eu`
+- ✅ **Chatbot IA Gemini** (`gemini-2.5-flash`) : widget flottant, streaming SSE, prompt MyJantes
+- ✅ **Intégration native Replit Gemini** : plus besoin de clé perso sur Replit (crédits Replit)
 
 ## Fichiers inclus dans ce dossier
 
@@ -70,17 +72,16 @@ myjantes-deploy/
 │   └── fonts/                 EurostileExtended, BebasNeue, etc.
 ├── uploads/                   Médias uploadés depuis l'admin
 ├── database-schema.sql        ✅ Script SQL de création de toutes les tables
+├── start.cjs                  ✅ Point d'entrée — charge .env puis démarre le serveur
 ├── package.json               Dépendances Node
 ├── package-lock.json          Verrouillage des versions
 ├── drizzle.config.ts          Config ORM
-├── .env                       Variables d'environnement (DÉJÀ REMPLIES)
+├── .env                       Variables d'environnement (DÉJÀ REMPLIES — sauf GEMINI_API_KEY)
 ├── BUILD-MANIFEST.md          Ce fichier
 └── README-DEPLOIEMENT.md      Guide de déploiement complet
 ```
 
 ## Prêt au déploiement
 
-Toutes les variables d'environnement sont renseignées, y compris `DATABASE_URL` (URL Neon externe).
-Les tables sont créées automatiquement au premier démarrage. Le fichier `database-schema.sql`
-permet une initialisation manuelle si besoin (Neon SQL Editor, psql, etc.).
-Uploader le contenu de `myjantes-deploy/` sur Hostinger et démarrer avec `start.cjs`.
+Uploadez le contenu de `myjantes-deploy/` sur Hostinger, renseignez `GEMINI_API_KEY` dans le `.env`,
+puis démarrez avec `start.cjs`. Les tables sont créées automatiquement au premier démarrage.
