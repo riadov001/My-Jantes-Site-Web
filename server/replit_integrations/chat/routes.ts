@@ -1,14 +1,42 @@
 import type { Express, Request, Response } from "express";
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 import { chatStorage } from "./storage";
 
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
+function getGeminiClient() {
+  const apiKey = process.env.AI_INTEGRATIONS_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+  const baseUrl = process.env.AI_INTEGRATIONS_GEMINI_BASE_URL;
+
+  if (!apiKey) throw new Error("Gemini API key not configured");
+
+  return new GoogleGenAI({
+    apiKey,
+    ...(baseUrl ? { httpOptions: { baseUrl } } : {}),
+  });
+}
+
+const SYSTEM_PROMPT = `Tu es l'assistant virtuel de MyJantes, l'expert de la jante alu basé à Liévin (62800) dans les Hauts-de-France.
+
+Ton rôle est d'aider les clients avec :
+- Des informations sur les prestations : rénovation, peinture, soudure, sablage, dévoi­lage, usinage (diamantage sur tour numérique), tribofinition, hydrodipping, personnalisation
+- Des questions sur les tarifs (rénovation à partir de 109 €, soudure à partir de 90 €, etc.)
+- Des conseils sur l'entretien et la rénovation des jantes alu
+- La prise de contact et les devis gratuits
+- Les horaires : Lundi–Vendredi 9h–12h30 / 13h30–18h
+- L'adresse : 46 rue de la Convention, 62800 Liévin
+- Le téléphone : 03 21 40 80 53
+- WhatsApp : 06 71 37 04 18
+- L'espace client : https://pwapp.myjantes.fr
+
+Règles importantes :
+- Réponds toujours en français
+- Sois professionnel, chaleureux et concis
+- Pour les devis précis, invite toujours le client à envoyer des photos via le formulaire de contact ou WhatsApp
+- Ne donne pas de prix ferme sans avoir vu les jantes — précise que c'est une estimation
+- Si on te demande autre chose que la jante/véhicule/MyJantes, redirige poliment vers ta spécialité
+- N'utilise pas de jargon technique excessif avec les clients
+- Tu peux utiliser des emojis avec modération 🔧`;
 
 export function registerChatRoutes(app: Express): void {
-  // Get all conversations
   app.get("/api/conversations", async (req: Request, res: Response) => {
     try {
       const conversations = await chatStorage.getAllConversations();
@@ -19,7 +47,6 @@ export function registerChatRoutes(app: Express): void {
     }
   });
 
-  // Get single conversation with messages
   app.get("/api/conversations/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id as string);
@@ -35,11 +62,10 @@ export function registerChatRoutes(app: Express): void {
     }
   });
 
-  // Create new conversation
   app.post("/api/conversations", async (req: Request, res: Response) => {
     try {
       const { title } = req.body;
-      const conversation = await chatStorage.createConversation(title || "New Chat");
+      const conversation = await chatStorage.createConversation(title || "Nouvelle conversation");
       res.status(201).json(conversation);
     } catch (error) {
       console.error("Error creating conversation:", error);
@@ -47,7 +73,6 @@ export function registerChatRoutes(app: Express): void {
     }
   });
 
-  // Delete conversation
   app.delete("/api/conversations/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id as string);
@@ -59,55 +84,54 @@ export function registerChatRoutes(app: Express): void {
     }
   });
 
-  // Send message and get AI response (streaming)
   app.post("/api/conversations/:id/messages", async (req: Request, res: Response) => {
     try {
       const conversationId = parseInt(req.params.id as string);
       const { content } = req.body;
 
-      // Save user message
+      if (!content?.trim()) {
+        return res.status(400).json({ error: "Message content required" });
+      }
+
       await chatStorage.createMessage(conversationId, "user", content);
 
-      // Get conversation history for context
       const messages = await chatStorage.getMessagesByConversation(conversationId);
-      const chatMessages = messages.map((m) => ({
-        role: m.role as "user" | "assistant",
-        content: m.content,
+      const history = messages.slice(0, -1).map((m) => ({
+        role: m.role === "assistant" ? "model" : "user" as "user" | "model",
+        parts: [{ text: m.content }],
       }));
 
-      // Set up SSE
       res.setHeader("Content-Type", "text/event-stream");
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      // Stream response from OpenAI
-      const stream = await openai.chat.completions.create({
-        model: "gpt-5.1",
-        messages: chatMessages,
-        stream: true,
-        max_completion_tokens: 8192,
+      const ai = getGeminiClient();
+      const chat = ai.chats.create({
+        model: "gemini-2.5-flash",
+        config: { systemInstruction: SYSTEM_PROMPT },
+        history,
       });
+
+      const stream = await chat.sendMessageStream({ message: content });
 
       let fullResponse = "";
 
       for await (const chunk of stream) {
-        const content = chunk.choices[0]?.delta?.content || "";
-        if (content) {
-          fullResponse += content;
-          res.write(`data: ${JSON.stringify({ content })}\n\n`);
+        const text = chunk.text;
+        if (text) {
+          fullResponse += text;
+          res.write(`data: ${JSON.stringify({ content: text })}\n\n`);
         }
       }
 
-      // Save assistant message
       await chatStorage.createMessage(conversationId, "assistant", fullResponse);
 
       res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
       res.end();
     } catch (error) {
-      console.error("Error sending message:", error);
-      // Check if headers already sent (SSE streaming started)
+      console.error("[chat] Error:", error);
       if (res.headersSent) {
-        res.write(`data: ${JSON.stringify({ error: "Failed to send message" })}\n\n`);
+        res.write(`data: ${JSON.stringify({ error: "Erreur lors de la réponse" })}\n\n`);
         res.end();
       } else {
         res.status(500).json({ error: "Failed to send message" });
@@ -115,4 +139,3 @@ export function registerChatRoutes(app: Express): void {
     }
   });
 }
-

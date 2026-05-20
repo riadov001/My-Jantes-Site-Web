@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { ChatWidget } from "@/components/chat-widget";
 
 export function FloatingButtons() {
   const { data: siteContent = {} } = useQuery<Record<string, string>>({ queryKey: ["/api/site-content"] });
@@ -6,7 +7,8 @@ export function FloatingButtons() {
   const whatsappHref = siteContent["contact.whatsapp_href"] || "https://wa.me/33671370418?text=Bonjour,%20je%20souhaite%20un%20devis%20pour%20mes%20jantes.";
 
   return (
-    <div className="fixed bottom-6 right-4 sm:right-6 z-50">
+    <div className="fixed bottom-6 right-4 sm:right-6 z-50 flex flex-col items-end gap-3">
+      <ChatWidget />
       <a
         href={whatsappHref}
         target="_blank"

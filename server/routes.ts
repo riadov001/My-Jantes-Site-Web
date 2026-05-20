@@ -21,6 +21,7 @@ import {
 } from "@shared/schema";
 import { seedDatabase } from "./seed";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
+import { registerChatRoutes } from "./replit_integrations/chat";
 
 import { z } from "zod";
 
@@ -303,6 +304,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   });
 
   registerObjectStorageRoutes(app);
+  registerChatRoutes(app);
 
   await seedDatabase();
 
