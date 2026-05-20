@@ -35,8 +35,9 @@ myjantes-deploy/
 2. **Node.js 20.x** disponible dans hPanel → Avancé → "Node.js".
 3. **Base PostgreSQL externe** : Hostinger ne fournit que MySQL en mutualisé.
    ✅ La base Neon est déjà configurée dans le `.env` — rien à faire.
-4. **Resend — domaine expéditeur** : Le domaine `no-replay.myjantes.fr` doit être **vérifié dans Resend**.
-   Allez sur https://resend.com → Domains → vérifiez que `no-replay.myjantes.fr` est actif (DNS TXT configurés).
+4. **Resend — domaine expéditeur** : Le domaine `apps.myjantes.fr` doit être **vérifié dans Resend**.
+   Allez sur https://resend.com → Domains → vérifiez que `apps.myjantes.fr` est actif (DNS TXT configurés).
+   En cas d'échec, le système bascule automatiquement sur `myjantes.mytoolsgroup.eu` (fallback).
 
 ---
 
@@ -91,12 +92,14 @@ n'est nécessaire dans hPanel.
 | `NODE_ENV` | ✅ `production` | Mode production |
 | `SITE_URL` | ✅ `https://myjantes.fr` | URL du site |
 | `RESEND_API_KEY` | ✅ Renseignée | Clé Resend pour l'envoi d'emails |
-| `RESEND_FROM_EMAIL` | ✅ Renseignée | Expéditeur email (`contact@no-replay.myjantes.fr`) |
-| `ADMIN_EMAIL` | ✅ `contact@myjantes.com` | Email de notification admin |
+| `RESEND_FROM_EMAIL` | ✅ Renseignée | Expéditeur email (`contact@apps.myjantes.fr`) |
+| `ADMIN_EMAIL` | ✅ Renseignée | Email de notification admin |
+| `GEMINI_API_KEY` | ✅ Renseignée | Clé API Gemini (chatbot IA) |
 
-> ⚠️ **Email** : Le domaine `no-replay.myjantes.fr` doit être **vérifié dans Resend**
+> ⚠️ **Email** : Le domaine `apps.myjantes.fr` doit être **vérifié dans Resend**
 > pour que les emails partent. Allez sur https://resend.com → Domains → vérifiez que
-> `no-replay.myjantes.fr` est bien actif (DNS TXT/MX configurés).
+> `apps.myjantes.fr` est bien actif (DNS TXT/MX configurés).
+> En cas d'échec, le système bascule automatiquement sur `myjantes.mytoolsgroup.eu`.
 
 ### 5. Démarrer l'application
 
@@ -156,7 +159,8 @@ Pas besoin de relancer NPM Install sauf si `package.json` a changé.
 
 ### Les e-mails ne partent pas
 - Vérifiez `RESEND_API_KEY`.
-- Vérifiez que le domaine `no-replay.myjantes.fr` est bien vérifié dans Resend.
+- Vérifiez que le domaine `apps.myjantes.fr` est bien vérifié dans Resend (DNS TXT/MX actifs).
+- Le système bascule automatiquement sur `myjantes.mytoolsgroup.eu` en cas d'échec — consultez les logs serveur pour voir si le fallback s'est déclenché.
 - Consultez le dashboard Resend → Logs pour voir les tentatives d'envoi.
 
 ### Les polices ne s'affichent pas (Mishorma, Exo 2)
