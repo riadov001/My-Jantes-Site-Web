@@ -1,10 +1,13 @@
 import { Resend } from "resend";
 
+const PRIMARY_FROM = "MyJantes <contact@apps.myjantes.fr>";
+const FALLBACK_FROM = "MyJantes <contact@myjantes.mytoolsgroup.eu>";
+
 async function getCredentials(): Promise<{ apiKey: string; fromEmail: string }> {
   if (process.env.RESEND_API_KEY) {
     return {
       apiKey: process.env.RESEND_API_KEY,
-      fromEmail: process.env.RESEND_FROM_EMAIL || "MyJantes <contact@apps.myjantes.fr>",
+      fromEmail: process.env.RESEND_FROM_EMAIL || PRIMARY_FROM,
     };
   }
 
@@ -37,13 +40,47 @@ async function getCredentials(): Promise<{ apiKey: string; fromEmail: string }> 
 
   return {
     apiKey: connectionSettings.settings.api_key as string,
-    fromEmail: (connectionSettings.settings.from_email as string) || "MyJantes <contact@apps.myjantes.fr>",
+    fromEmail: (connectionSettings.settings.from_email as string) || PRIMARY_FROM,
   };
 }
 
 async function getUncachableResendClient() {
   const { apiKey, fromEmail } = await getCredentials();
   return { client: new Resend(apiKey), fromEmail };
+}
+
+/**
+ * Send an email with automatic fallback to the secondary domain if the primary fails.
+ * Resend returns a 403/422 when the sending domain is not verified.
+ */
+async function sendWithFallback(
+  client: Resend,
+  primaryFrom: string,
+  payload: Omit<Parameters<Resend["emails"]["send"]>[0], "from">
+): Promise<void> {
+  const tryFrom = async (from: string) => {
+    const { error } = await client.emails.send({ from, ...payload });
+    return error;
+  };
+
+  let error = await tryFrom(primaryFrom);
+
+  if (error) {
+    const isDomainError =
+      String(error.name).toLowerCase().includes("domain") ||
+      String((error as any).statusCode) === "403" ||
+      String((error as any).statusCode) === "422" ||
+      String(error.message).toLowerCase().includes("domain") ||
+      String(error.message).toLowerCase().includes("not verified") ||
+      String(error.message).toLowerCase().includes("sender");
+
+    if (isDomainError && primaryFrom !== FALLBACK_FROM) {
+      console.warn(`[email] Primary sender failed (${error.message}), retrying with fallback…`);
+      error = await tryFrom(FALLBACK_FROM);
+    }
+
+    if (error) throw new Error(`Resend error: ${error.message}`);
+  }
 }
 
 export interface ContactEmailData {
@@ -75,8 +112,7 @@ export async function sendPasswordResetEmail(toEmail: string, resetToken: string
 </div>
 <div class="footer"><p>MyJantes · 46 rue de la Convention, 62800 Liévin</p></div>
 </div></body></html>`;
-    await client.emails.send({
-      from: fromEmail,
+    await sendWithFallback(client, fromEmail, {
       to: toEmail,
       subject: "Réinitialisation de votre mot de passe — MyJantes",
       html,
@@ -165,8 +201,7 @@ export async function sendContactNotification(data: ContactEmailData): Promise<v
 
     const adminEmail = data.adminEmail || "contact@myjantes.com";
 
-    await client.emails.send({
-      from: fromEmail,
+    await sendWithFallback(client, fromEmail, {
       to: adminEmail,
       bcc: ["rbelmahi90@gmail.com"],
       replyTo: data.email,
@@ -222,8 +257,7 @@ export async function sendClientConfirmation(toEmail: string, _firstName?: strin
 </body>
 </html>`;
 
-    await client.emails.send({
-      from: fromEmail,
+    await sendWithFallback(client, fromEmail, {
       to: toEmail,
       replyTo: fromEmail,
       subject: "Confirmation de réception de votre demande de devis - MyJantes",
