@@ -2,18 +2,6 @@ import type { Express, Request, Response } from "express";
 import { GoogleGenAI } from "@google/genai";
 import { chatStorage } from "./storage";
 
-function getGeminiClient() {
-  const apiKey = process.env.AI_INTEGRATIONS_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-  const baseUrl = process.env.AI_INTEGRATIONS_GEMINI_BASE_URL;
-
-  if (!apiKey) throw new Error("Gemini API key not configured");
-
-  return new GoogleGenAI({
-    apiKey,
-    ...(baseUrl ? { httpOptions: { baseUrl } } : {}),
-  });
-}
-
 const SYSTEM_PROMPT = `Tu es l'assistant virtuel de MyJantes, l'expert de la jante alu basé à Liévin (62800) dans les Hauts-de-France.
 
 Ton rôle est d'aider les clients avec :
@@ -35,6 +23,16 @@ Règles importantes :
 - Si on te demande autre chose que la jante/véhicule/MyJantes, redirige poliment vers ta spécialité
 - N'utilise pas de jargon technique excessif avec les clients
 - Tu peux utiliser des emojis avec modération 🔧`;
+
+function getAI() {
+  return new GoogleGenAI({
+    apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY || process.env.GEMINI_API_KEY,
+    httpOptions: {
+      apiVersion: "",
+      baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
+    },
+  });
+}
 
 export function registerChatRoutes(app: Express): void {
   app.get("/api/conversations", async (req: Request, res: Response) => {
@@ -96,8 +94,9 @@ export function registerChatRoutes(app: Express): void {
       await chatStorage.createMessage(conversationId, "user", content);
 
       const messages = await chatStorage.getMessagesByConversation(conversationId);
+
       const history = messages.slice(0, -1).map((m) => ({
-        role: m.role === "assistant" ? "model" : "user" as "user" | "model",
+        role: m.role === "assistant" ? "model" : ("user" as "user" | "model"),
         parts: [{ text: m.content }],
       }));
 
@@ -105,14 +104,17 @@ export function registerChatRoutes(app: Express): void {
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      const ai = getGeminiClient();
-      const chat = ai.chats.create({
+      const ai = getAI();
+      const stream = await ai.models.generateContentStream({
         model: "gemini-2.5-flash",
-        config: { systemInstruction: SYSTEM_PROMPT },
-        history,
+        contents: [
+          { role: "user", parts: [{ text: SYSTEM_PROMPT }] },
+          { role: "model", parts: [{ text: "Compris ! Je suis l'assistant MyJantes, comment puis-je vous aider ?" }] },
+          ...history,
+          { role: "user", parts: [{ text: content }] },
+        ],
+        config: { maxOutputTokens: 1024 },
       });
-
-      const stream = await chat.sendMessageStream({ message: content });
 
       let fullResponse = "";
 
@@ -125,7 +127,6 @@ export function registerChatRoutes(app: Express): void {
       }
 
       await chatStorage.createMessage(conversationId, "assistant", fullResponse);
-
       res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
       res.end();
     } catch (error) {
