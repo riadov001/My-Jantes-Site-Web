@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
-const PRIMARY_FROM = "MyJantes <contact@apps.myjantes.fr>";
-const FALLBACK_FROM = "MyJantes <contact@myjantes.mytoolsgroup.eu>";
+const PRIMARY_FROM = "MyJantes <contact@myjantes.mytoolsgroup.eu>";
+const FALLBACK_FROM = "MyJantes <contact@apps.myjantes.fr>";
 
 async function getCredentials(): Promise<{ apiKey: string; fromEmail: string }> {
   if (process.env.RESEND_API_KEY) {
